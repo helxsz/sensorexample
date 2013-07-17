@@ -1,0 +1,191 @@
+
+<style>
+
+
+
+#project-header {
+display: inline;
+float: left;
+margin-left: 10px;
+margin-right: 10px;
+width: 940px;
+padding-bottom: 4px;
+padding-top: 25px;
+}
+running_board {
+text-align: center;
+}
+#project-header #title {
+margin-bottom: 5px;
+}
+
+#project-header #title a {
+color: #0b1902;
+}
+
+#project-header #subtitle {
+color: #0b1902;
+margin-bottom: 33px;
+}
+
+#project-header ul#running-board-nav li {
+margin: 0 18px 0 0;
+}
+
+#project-header ul li {
+display: inline;
+}
+
+#project-header ul#project-metadata {
+float: right;
+margin-bottom: 4px;
+}
+
+#project-header ul#project-metadata li {
+margin: 0 0 0 20px;
+}
+
+#project-header ul li .count {
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+-o-border-radius: 3px;
+-ms-border-radius: 3px;
+-khtml-border-radius: 3px;
+border-radius: 3px;
+font-size: 12px;
+margin-bottom: 10px;
+background: #75796f;
+color: #fff;
+padding: 2px 6px;
+font-weight: bold;
+}
+
+
+
+
+
+
+</style>
+
+<!--
+<div class=" ">
+	<% if(locals.course) { %> 
+           <div id="project-header">
+                <div class="NS-project_-running_board">
+                    <h2 id="title">
+                       <a href="/course/<%= locals.course._id %>"><%= locals.course.title %></a>
+					   
+                    </h2>
+                    <p id="subtitle">
+                      <span class="creator">
+                         by
+                        <a href="/profile/<%= locals.tutor_name %>" > <%= locals.tutor.name %> </a>
+                      </span>
+                    </p>
+                </div>
+				
+				<div class="row">
+				
+                  <ul id="running-board-nav" class="span4">
+                    <li>
+                        <a class='content_nav' href="/course/<%= locals.course._id %>/detail" class="current" id="home_nav">Home</a>
+                    </li>
+                    <li>                      
+                        <a class='content_nav' href="/course/<%= locals.course._id %>/posts" id="posts_nav">Classes
+						   <span class="count">   <%= locals.course.stat.p_count %>   </span>
+						</a> 
+                    </li>
+                    <li>
+                        <a class='content_nav' href="/course/<%= locals.course._id %>/students" id="students_nav">Students
+                             <span class="count">   <%= locals.course.stat.s_count %>   </span>						     
+                        </a>
+					</li>
+                    <li>
+                        <a class='content_nav' href="/course/<%= locals.course._id %>/comments" id="comments_nav">Comments
+                               <span class="count">  <%= locals.course.stat.c_count %>  </span>
+                        </a>
+                    </li>
+					<% if(locals.student ||locals.tutor) { %>
+					    <li>
+                            <a class='content_nav' href="/course/<%= locals.course._id %>/questions" id="question_nav">Questions
+                               <span class="count">  <%= locals.course.stat.q_count %>  </span>
+                            </a>
+                        </li>					
+					<%   }  %>
+                  </ul>
+				
+                  <ul id="project-metadata" class="span2">
+                    <li class="location">
+                        <a href="/discover/cities/<%= locals.course.city %>"><span class="ss-icon ss-location"></span><%= locals.course.city %></a>
+				    </li>
+                    <li class="tags">                      
+						<% for(var i=0; i<locals.course.tags.length; i++) {%>
+                             <li><a href="/discover/categories/<%= locals.course.tags[i] %>"><span></span><%= locals.course.tags[i] %></a></li>
+                        <% } %>
+				    </li>
+                    <li class="category">                      
+                        <a href="/discover/tags/<%= locals.course.cate %>"><span class="ss-icon ss-location"></span><%= locals.course.cate %></a>
+				    </li>					
+                  </ul>
+			    </div>	
+        </div>
+	<% } %>
+	
+</div>
+-->
+
+<style>
+
+.content-wrap {
+background-color: #fff;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+-o-border-radius: 5px;
+-ms-border-radius: 5px;
+-khtml-border-radius: 5px;
+border-radius: 5px;
+border: 1px solid #d0d5cb;
+padding: 25px 15px;
+-moz-box-shadow: 0 0 0 4px rgba(208,213,203,0.3);
+-webkit-box-shadow: 0 0 0 4px rgba(208,213,203,0.3);
+-o-box-shadow: 0 0 0 4px rgba(208,213,203,0.3);
+box-shadow: 0 0 0 4px rgba(208,213,203,0.3);
+
+
+background: #fff;
+margin: 0 auto;
+padding: 30px 15px;
+}
+
+
+
+
+</style>
+<div class="">
+   <div class="content-wrap row">
+        <div class="span4">
+		    <h2 id="title">
+                <a href="/course/<%= locals.course._id %>"><%= locals.course.title %></a>		   
+            </h2>
+		    <div id="descriptionPane"> 
+				<%= locals.course.desc %>
+            </div>
+		</div>		
+   </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/showdown.js"></script>
+<script>
+var converter;
+converter = new Showdown.converter();
+var inputPane = document.getElementById("inputPane");
+convertText();
+function convertText() {
+	var text;
+	text = converter.makeHtml(  $('#descriptionPane').text() );
+	$('#descriptionPane').html(  text  );
+	console.log(text);
+};
+
+</script>
+

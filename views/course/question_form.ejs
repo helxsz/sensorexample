@@ -1,0 +1,70 @@
+<script src="../assets/js/bootstrap-datepicker.js"></script>
+
+	<div class="row-fluid">
+      <div id="course-form-container" >
+        <form method="post" action="/course/new" id="course-form" class="form-horizontal well" >
+            <input type="hidden" name="_csrf" value="<%= token %>"/>
+            <h1></h1>
+            <p id="sub1" class="subheading">start course.</p>
+            <hr>
+            <fieldset>
+                <div id="description-cg" class="control-group">
+                    <label for="description-tf" class="control-label">description</label>
+                    <div class="controls">
+                        <input id="description-tf" type="text" name="question_description" value="" class="input-xlarge">
+                    </div>
+                </div>
+                <div id="durl-cg" class="control-group">
+                    <label for="durl-tf" class="control-label">question description url</label>
+                    <div class="controls">
+                        <input id="durl-tf" type="text" name="question_url" value="" class="input-xlarge">
+                    </div>
+                </div>				
+                <hr>
+                <p id="sub2" class="subheading"></p>
+				
+				<!-- answer -->
+				<div class="clearfix">
+                    <label id="optionsRadio">List of options</label>
+                        <div class="input">
+                            <ul class="inputs-list">
+                                <li>
+                                    <label>
+                                            <input type="radio" checked="" name="answer" value="option1">
+                                            <span>Option one </span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                            <input type="radio" name="answer" value="option2">
+                                            <span>Option two</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                </div>
+				
+				<!--  level  -->
+                <div class="clearfix">
+                    <label for="mediumSelect">Select</label>
+                    <div class="input">
+                        <select class="medium" name="level" id="mediumSelect">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                </div>				
+				
+		        
+				
+	
+                 <div class="form-actions">
+                      <button type="submit" id="account-form-btn2" class="btn"></button>
+                </div>
+             </fieldset>
+        </form>
+      </div>
+    </div>

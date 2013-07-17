@@ -1,0 +1,114 @@
+<style>
+.NS_projects__edit_nav #project-edit-nav-wrap {
+background: rgba(228, 225, 187, 0.8);
+padding: 10px 0;
+width: 100%;
+z-index: 10;
+}
+
+.container {
+margin-left: auto;
+margin-right: auto;
+width: 960px;
+}
+
+.NS_projects__edit_nav #project-edit-nav {
+margin: 0;
+padding: 0;
+border: 0;
+overflow: hidden;
+display: inline;
+float: left;
+margin-left: 10px;
+margin-right: 10px;
+width: 940px;
+}
+
+.NS_projects__edit_nav #project-edit-nav li {
+list-style-image: none;
+list-style-type: none;
+margin-left: 0;
+white-space: nowrap;
+display: inline;
+float: left;
+padding-left: 0;
+padding-right: 0;
+}
+
+.NS_projects__edit_nav #steps-nav {
+margin: 0;
+padding: 0;
+border: 0;
+overflow: hidden;
+}
+
+.NS_projects__edit_nav #project-edit-nav .steps a {
+border-left-width: 0;
+border-right-width: 0;
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-o-border-radius: 0;
+-ms-border-radius: 0;
+-khtml-border-radius: 0;
+border-radius: 0;
+padding: 0 40px 0 31px;
+position: relative;
+}
+</style>
+
+<div class="NS_projects__edit_nav" id="project-edit-nav-wrap-wrap">
+    <div id="project-edit-nav-wrap" style="position: static; top: auto; bottom: auto;">
+        <div class="container">
+            <ul id="project-edit-nav">
+                <li class="steps">
+
+                    <ol id="steps-nav">
+                        <li class="first">
+                            <a href="#guidelines" class="completed">
+                                <span class="divider first"></span>
+                                <span class="icon-status"></span>
+                                    Guidelines
+                                <span class="divider last"></span>
+                            </a>
+                        </li>
+                    </ol>
+
+
+                </li>
+                <li class="questions">
+                    <a class="tab"  href="/course/<%= locals.course._id %>/setting/questions">
+                        <span class="icon-preview"></span>
+                      Questions Page
+                    </a>
+                </li>
+				
+				<li class="delete">
+				    <form method="post" action="/course/<%= locals.course._id %>" id="account-form" class="form-horizontalspan6" >
+                       <input type="hidden" name="_csrf" value="<%= token %>"/>
+	                   <input type="hidden" name="_method" value="delete" />  
+	                   <button id="btn-logout" class="btn btn-primary"><i class="icon-lock icon-white"></i>delete course</button>	
+                    </form>	
+				</li>	
+            </ul>
+
+			
+
+			
+			<!--
+			<div id="confirm-preview-nav">
+                <p><strong>Everything in order?</strong> You can submit your project now or edit further.</p>
+                <ul>
+                    <li id="submit_edit">
+                        <a href="#" class="button button_blue" data-for="#preview">Edit</a>
+                    </li>
+                    <li id="submit_confirmation">
+                        <form accept-charset="UTF-8" action="/projects/1220062481/1254844941/submit" method="post"><div style="margin:0;padding:0;display:inline"><input class="hidden" name="utf8" type="hidden" value="?"><input class="hidden" name="_method" type="hidden" value="put"><input class="hidden" name="authenticity_token" type="hidden" value="shie31VsN2lu6dRKRhZSsWFcwKPiDP3JcZ1IdRwhT64="></div>
+                            <input class="button button_green submit" name="commit" type="submit" value="Submit now">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+			-->
+        </div>
+    </div>
+</div>

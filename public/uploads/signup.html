@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f2f9fe;
+  background: -moz-radial-gradient(center, ellipse cover, #f2f9fe 0%, #d6f0fd 100%);
+/* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #f2f9fe), color-stop(100%, #d6f0fd));
+/* Chrome,Safari4+ */
+  background: -webkit-radial-gradient(center, ellipse cover, #f2f9fe 0%, #d6f0fd 100%);
+/* Chrome10+,Safari5.1+ */
+  background: -o-radial-gradient(center, ellipse cover, #f2f9fe 0%, #d6f0fd 100%);
+/* Opera 12+ */
+  background: -ms-radial-gradient(center, ellipse cover, #f2f9fe 0%, #d6f0fd 100%);
+/* IE10+ */
+  background: radial-gradient(center, ellipse cover, #f2f9fe 0%, #d6f0fd 100%);
+/* W3C */
+}	
+#account-form-container {
+  width: 460px;
+  margin: 100px auto;
+}
+#country-list {
+  width: 280px;
+}
+    </style>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]
+    -->   
+   <script src="../assets/js/jquery-1.8.1.min.js"></script>   
+   <script src="../assets/js/underscore.js"></script>
+   <script src="../assets/js/backbone-min.js"></script>
+   <script src="../assets/js/jquery.tmpl.min.js"></script>  
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+
+    <script type="text/template" id="headerTemplate"> 
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Project name</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Action</a></li>
+                  <li><a href="#">Another action</a></li>
+                  <li><a href="#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li class="nav-header">Nav header</li>
+                  <li><a href="#">Separated link</a></li>
+                  <li><a href="#">One more separated link</a></li>
+                </ul>
+              </li>
+            </ul>
+            <form class="navbar-form pull-right">
+              <input class="span2" type="text" placeholder="Email">
+              <input class="span2" type="password" placeholder="Password">
+              <button type="submit" class="btn">Sign in</button>
+            </form>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+     </div>
+    </script>
+
+<script type="text/template" id="formTemplate">   
+<div id="account-form-container">
+  <form method="post" id="account-form" class="form-horizontal well span6" action="/signup" enctype="application/x-www-form-urlencoded">
+    <h1></h1>
+    <p id="sub1" class="subheading">Please tell us a little about yourself.</p>
+    <hr>
+    <fieldset>
+      <div id="name-cg" class="control-group">
+        <label for="name-tf" class="control-label">Username</label>
+        <div class="controls">
+          <input id="name-tf" type="text" name="username" class="input-xlarge">
+        </div>
+      </div>
+      <div id="email-cg" class="control-group">
+        <label for="email-tf" class="control-label">Email</label>
+        <div class="controls">
+          <input id="email-tf" type="text" name="email" class="input-xlarge">
+        </div>
+      </div>
+      <hr>
+      <div id="pass-cg" class="control-group">
+        <label for="pass-tf" class="control-label">Password</label>
+        <div class="controls">
+          <input id="pass-tf" type="password" name="password" value="" class="input-xlarge">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="account-form-btn1" class="btn"></button>
+        <button type="submit" id="account-form-btn2" class="btn"></button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+<!-- display form errors in a custom modal window //-->
+<div class="modal-form-errors modal hide fade">
+  <div class="modal-header">
+    <button data-dismiss="modal" class="close">x</button>
+    <h3>Whoops!</h3>
+  </div>
+  <div class="modal-body">
+    <p class="subheading">It looks like there was a problem.</p>
+    <ul></ul>
+  </div>
+  <div class="modal-footer">
+    <button data-dismiss="modal" class="btn btn-warning">OK</button>
+  </div>
+</div>
+   </script>
+    
+  <body>
+
+    <div class="container">
+	
+    </div> 
+	
+  </body>
+<script>
+window.AppRouter = Backbone.Router.extend({	 
+    routes:{
+    	'':'home'
+    },
+    initialize:function () {
+    	console.log('init route');    	
+        $('body').append( new FormView().render().el) ; 	    
+    },
+    home:function(){
+    	console.log('home');
+    }
+});
+
+window.FormView = Backbone.View.extend({
+    template:_.template($("#formTemplate").html()),
+    initialize: function () {
+    },
+    events:{
+    	"click .btn": "signup",
+    },
+    dropHandler: function (event) {
+    	console.log('drophandler');
+        event.stopPropagation();
+        event.preventDefault();
+        var e = event.originalEvent;
+        e.dataTransfer.dropEffect = 'copy';
+        this.pictureFile = e.dataTransfer.files[0];
+
+        // Read the image file from the local file system and display it in the img tag
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            $('#picture').attr('src', reader.result);
+        };
+        reader.readAsDataURL(this.pictureFile);
+    },
+    render: function () {
+    	this.setElement(this.template());
+        return this;
+    },
+    change: function (event) {
+        // Apply the change to the model
+        var target = event.target;
+        var change = {};
+        change[target.name] = target.value;
+        this.model.set(change);
+    },
+    signup: function(){
+    	console.log('signup');
+        var self = this;
+        console.log('before save   '+this.$('#pass-tf').val(),this.$('#name-tf').val(),this.$('#email-tf').val());  	
+    }
+});
+
+
+$(function(){
+   var app = new AppRouter();
+   Backbone.history.start({pushState : true});
+})
+</script> 
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fablab</title>
+
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+   <script src="/assets/js/jquery-1.9.1.min.js"></script>   
+   <script src="/assets/js/underscore.js"></script>
+   <script src="/assets/js/backbone/backbone-min.js"></script>
+   <script src="/assets/js/socket.io.js"></script>
+
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>  
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>
+   
+   
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="../assets/ico/favicon.png">		
+
+
+
+
+
+	
+  
+  </head>
+<style>
+body {
+  text-align: center;
+  background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
+  background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+}
+
+ <style>
+ .content{
+     position: relative;
+	margin-top:140px;	 
+ }
+ 
+.alert {
+background-color: #eee;
+color: #555;
+text-shadow: 0 1px rgba(255,255,255,0.3);
+width: 568px;
+max-width: 100%;
+min-width: 568px;
+margin: 0 auto;
+padding: 0 18px;
+margin-top: 30px;
+margin-bottom: 30px;
+padding: 10px 10px 10px 10px;
+text-align: left;
+border: 1px solid #ccc;
+border-radius: 5px;
+box-shadow: 0 0 10px #ccc;
+}
+
+.alert .close {
+top: -2px;
+right: 0px;
+line-height: 20px;
+}
+
+
+
+.page-title:after {
+content: 'beta';
+font-size: 0.17em;
+font-weight: 400;
+background: #62c98f;
+letter-spacing: 1px;
+border-radius: 100%;
+width: 44px;
+height: 44px;
+display: inline-block;
+line-height: 47px;
+position: relative;
+top: -45px;
+color:#ffffff;
+}
+
+
+.notify {
+background-color: #fff;
+color: #444444;
+font-weight: bold;
+left: 0;
+padding: 0;
+position: fixed;
+text-align: center;
+top: 0;
+width: 100%;
+z-index: 100;
+}
+
+#close-notify {
+cursor: pointer;
+font-size: 14px;
+line-height: 22px;
+padding: 0 3px;
+position: absolute;
+right: 5px;
+text-decoration: none;
+top: 5px;
+}
+
+
+
+ </style>
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+
+			
+            <% include header %>	
+    	 		
+	        <% include intro %>
+
+<!--			
+			<div class="alert">
+			    <a href="#" class="close icon notranslate">X</a>
+				<span class="msg">Welcome to the new Lifehacker. 
+				    <a href="http://lifehacker.com/welcome-to-the-new-lifehacker-472650381" class="nowrap">Learn More ?</a>
+				</span>
+			</div>
+			
+			<div class="page-title">Developer Center</div>			
+
+			
+			<div class="banner">
+              <div class="rand" style="height: 98px;">
+                <img data-src="https://static.squarespace.com/static/ta/5134cbefe4b0c6fb04df8065/6291/assets/tour/rand-fishkin.jpg" data-image-dimensions="98x98" style="display: inline-block;" class="lazy-loaded" alt="Squarespace Rand Fishkin" src="https://static.squarespace.com/static/ta/5134cbefe4b0c6fb04df8065/6291/assets/tour/rand-fishkin.jpg?format=100w">
+              </div>
+              <div class="info">
+                <span class="name">Rand Fishkin, CEO</span>
+                <span class="name">SEOmoz</span>
+              </div>
+			  
+			  <blockquote class="quote">
+                 The Squarespace team has put together a remarkable platform. Every aspect of the product - user experience, featureset, SEO friendliness, design and more - all work together to create one of the few content management systems I'm proud to recommend.
+              </blockquote>			  
+            </div>
+			
+			
+            <div class="notify">           
+                <a id="close-notify" onclick="notify.close(true)">¡Á</a>
+            </div>			
+			
+     <form action="" method="get" id="support" class="support-search-big">
+        <div id="fauxForm">
+          <input id="q" maxlength="100" type="text" placeholder="Ask a question" value="">
+        </div>
+        <input id="support-search-submit" class="submit" type="submit" value="Search">
+     </form>			
+-->
+
+		
+			
+			
+			
+			<% include video %>
+			<% include widget/flip %>
+	        <div class="container-fluid content">		    
+                <% include user/wall %>
+	        </div>
+	        <div class="container-fluid content">	
+                <% include course/course_list %>		
+            </div>
+
+	        <% include press %>
+            <% include footer %>
+			
+		</div>
+	</div>				
+  </body>
+
+  
+<script>
+
+initWebsocket();
+function initWebsocket(){
+            console.log('init train socket');
+            var socket =  io.connect(':8082/');
+						
+            socket.on('connect', function(message) {
+                console.log('on connect',message);
+            });
+            socket.on('news', function(message){
+			   console.log(message);			   
+            });
+}
+
+</script>  
+  
+</html>

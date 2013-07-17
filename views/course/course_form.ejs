@@ -1,0 +1,637 @@
+<style>
+.board {
+padding-bottom: 30px;
+padding-top: 30px;
+background: rgb(219, 224, 213);
+margin-bottom: 40px;
+}
+.board-description{
+margin-left: auto;
+margin-right: auto;
+ width: 460px;;
+}
+.board-title{
+color:rgb(85, 131, 143);
+}
+
+.form_container{
+margin-left: auto;
+margin-right: auto;
+width: 1000px;
+}
+
+
+#basic_form input:not( #tags_tag, #image_tf)  {
+border-radius: 0;
+border: 0;
+padding: .8em 14px;
+box-shadow: none;
+border: 0;
+margin-bottom: 20px;
+width: 383px;
+background: white;
+border: none;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+#basic_form textarea{
+border-radius: 0;
+border: 0;
+padding: .8em 14px;
+box-shadow: none;
+border: 0;
+margin-bottom: 20px;
+width: 383px;
+background: white;
+border: none;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+
+.form-horizontal .control-label {
+float: left;
+width: 40px;
+padding-top: 5px;
+text-align: right;
+}
+
+.form-horizontal .controls {
+margin-left: 140px;
+}
+.control{
+
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+-o-border-radius: 6px;
+-ms-border-radius: 6px;
+-khtml-border-radius: 6px;
+border-radius: 6px;
+overflow: hidden;
+height: auto;
+margin-bottom: 12px;
+padding: 14px 3px 14px 4px;
+
+background: rgb(205, 216, 194);
+}
+
+
+.tagsinput {
+border: 1px solid #CCC;
+background: #FFF;
+padding: 5px;
+width: 480px;
+height: 100px;
+overflow-y: auto;
+}
+</style>
+
+<div class="row-fluid">
+
+    <div class="board"> 
+	    <div class="board-description">
+            <h2 class="board-title">Course Detail</h2> 
+            <p>Start by giving it a name, a pic, and other important details </p> 
+        </div>        
+    </div>
+	 
+    <div class="form_container row">	 
+        <form method="post" action="/course/new" id="basic_form" class="form-horizontal form_content span8" enctype="multipart/form-data" style=" padding-right:30px;border-right: 1px dotted #d0d5cb;">
+            <input type="hidden" name="_csrf" value="<%= token %>"/>
+	        <input type="hidden" name="_method" value="put" />  
+
+            <fieldset>
+                <div id="title-cg" class="control-group control">
+                    <label for="title-tf" class="control-label">Title</label>
+                    <div class="controls">
+                        <input id="title-tf" type="text" name="title" value="" class="input-xlarge">
+						<span ><span class="character_counter" data-maxlength="60">60</span>/60</span>
+                    </div>
+					
+                </div>
+
+                <div id="description-cg" class="control-group control">
+                    <label for="summary-tf" class="control-label">Summary</label>
+                    <div class="controls">
+						<textarea id="summary-tf" type="text" name="summary" value="" class="mdm-input" style="margin-bottom: 5px; height: 108px; width: 400px;"> </textarea>
+                        <span ><span class="character_counter" data-maxlength="60">130</span>/130</span>
+					</div>
+
+                    <label for="description-tf" class="control-label">Description</label>
+                    <div class="controls">
+						<textarea id="description-tf" type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
+                        <span ><span class="character_counter" data-maxlength="60">130</span>/130</span>
+					</div>
+					
+      		    </div>
+
+                <div id="image-cg" class="control-group control">
+                    <label for="description-tf" class="control-label">Image</label>
+                    <div class="controls">
+					    <img id="img_prev" src="#" alt="your image" />
+						<input id="image-tf" type="file" name="image" value=""  onchange="readURL(this);" > </input>
+					</div>						
+      		    </div>				
+				
+                <div id="category-cg" class="control-group control">
+                    <label for="category-tf" class="control-label">Category</label>
+                    <div class="controls">				
+                        <select class="required select" id="project_category_id" name="project[category_id]"><option value=""></option>
+                        <option value="1">Art</option><option value="20">Conceptual Art</option><option value="26">Crafts</option><option value="21">Digital Art</option><option value="22">Illustration</option><option value="23">Painting</option><option value="24">Performance Art</option><option value="54">Mixed Media</option><option value="53">Public Art</option><option value="25">Sculpture</option><option value="3">&nbsp;Comics</option><option value="6">&nbsp;Dance</option><option value="7">&nbsp;Design</option><option value="27">Graphic Design</option><option value="28">Product Design</option><option value="9">&nbsp;Fashion</option><option value="11">&nbsp;Film &amp; Video</option><option value="29">Animation</option><option value="30">Documentary</option><option value="31">Narrative Film</option><option value="32">Short Film</option><option value="33">Webseries</option><option value="10">&nbsp;Food</option><option value="12">&nbsp;Games</option><option value="34">Tabletop Games</option><option value="35">Video Games</option><option value="14">&nbsp;Music</option><option value="36">Classical Music</option><option value="37">Country &amp; Folk</option><option value="38">Electronic Music</option><option value="39">Hip-Hop</option><option value="40">Indie Rock</option><option value="41">Jazz</option><option value="42">Pop</option><option value="43">Rock</option><option value="44">World Music</option><option value="15">&nbsp;Photography</option><option value="18">&nbsp;Publishing</option><option value="45">Art Book</option><option value="46">Children's Book</option><option value="47">Fiction</option><option value="13">Journalism</option><option value="48">Nonfiction</option><option value="49">Periodical</option><option value="50">Poetry</option><option value="16">&nbsp;Technology</option><option value="52">Hardware</option><option value="51">Open Software</option><option value="17">&nbsp;Theater</option></select>				
+					</div>						
+      		    </div>								
+
+                <div id="city-cg" class="control-group control">
+                    <label for="city-tf" class="control-label">City</label>
+                    <div class="controls">						
+						<input id="city-tf" name="city" type="text" class="tt-hint"  >						
+                    </div>
+                </div>
+				
+                <div id="tags-cg" class="control-group control">
+                    <label for="tags-tf" class="control-label">Tags</label>
+                    <div class="controls">         
+						<input name="tags" id="tags" value="foo" />
+                    </div>
+                </div>
+				
+                <div class="control-group control">
+								    
+                    <div class="span6" sytle="margin-left:10px" >
+                        from:					
+                        <input id="picker_start" type="text">
+                    </div>
+					
+					<div class="span5">
+                        to:					
+                        <input id="picker_end" type="text">
+                    </div>
+                </div>			
+	
+                 <div class="form-actions">
+                      <button type="submit" id="account-form-btn2" class="btn"></button>
+                </div>
+             </fieldset>
+        </form>
+		
+		<div class="span4"   >
+		
+		    <!-- <textarea  type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea> -->
+		</div>
+	</div>	
+</div>
+<style>
+
+.tt-hint {
+width: 396px;
+height: 30px;
+padding: 8px 12px;
+font-size: 24px;
+line-height: 30px;
+border: 2px solid #ccc;
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+outline: none;
+}
+
+.tt-dropdown-menu {
+width: 422px;
+margin-top: 12px;
+padding: 8px 0;
+background-color: #fff;
+border: 1px solid #ccc;
+border: 1px solid rgba(0, 0, 0, 0.2);
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+</style>
+
+
+<script type="text/javascript" src="/assets/js/pickadate.min.js"></script>
+<script type="text/javascript" src="/assets/js/rainbow.js"></script>
+<style>
+.pickadate__input--active {
+    border-color: #0089ec !important;
+}
+
+
+
+/**
+ * The picker holder
+ */
+.pickadate__holder {
+
+    /* The base font-size */
+    font-size: 16px;
+
+    line-height: 1.2;
+    color: #000;
+
+    position: absolute;
+    z-index: 10000;
+
+    width: 100%;
+    height: 0;
+}
+
+
+/**
+ * The frame that bounds the calendar
+ */
+.pickadate__frame {
+    position: relative;
+    max-width: 420px;
+    min-width: 256px;
+    max-height: 0;
+    overflow-y: hidden;
+
+    -webkit-transition: all .15s ease-out;
+       -moz-transition: all .15s ease-out;
+            transition: all .15s ease-out;
+}
+
+
+/**
+ * When the calendar opens
+ */
+.pickadate__holder--opened .pickadate__frame {
+    top: .5em;
+    max-height: 25em;
+
+    -webkit-box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+       -moz-box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+            box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+}
+
+
+/**
+ * The calendar itself
+ */
+
+.pickadate__calendar {
+    color: #000;
+    background: #fff;
+
+    padding: 1em;
+    font-size: 1em;
+
+    /* Add the borders */
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 6px;
+       -moz-border-radius: 6px;
+            border-radius: 6px;
+}
+
+
+
+/**
+ * The calendar table of dates
+ */
+.pickadate__table {
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: inherit;
+    width: 100%;
+    margin-top: .75em;
+}
+
+/* Remove browser stylings on a table cell */
+.pickadate__table td {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/**
+ * The header containing the month and year tags/selectors
+ */
+.pickadate__header {
+    text-align: center;
+    position: relative;
+}
+
+.pickadate__nav--prev,
+.pickadate__nav--next {
+    position: absolute;
+    top: -.1em;
+    padding: .5em;
+    margin: -.5em;
+    text-align: center;
+    min-width: 24px;
+    height: 24px;
+    line-height: 26px;
+}
+.pickadate__nav--prev {
+    left: 0;
+}
+.pickadate__nav--next {
+    right: 0;
+}
+
+
+.pickadate__month,
+.pickadate__year {
+    font-weight: 500;
+    display: inline-block;
+}
+.pickadate__year {
+    color: #999;
+    font-size: .8em;
+    font-style: italic;
+    margin-left: .5em;
+}
+
+
+
+.pickadate__select--month,
+.pickadate__select--year {
+    font-size: .8em;
+    border: 1px solid #ccc;
+    height: 2.5em;
+    margin-top: -.5em;
+}
+.pickadate__select--month {
+    width: 35%;
+}
+.pickadate__select--year {
+    width: 22.5%;
+    margin-left: .5em;
+}
+.pickadate__select--month:focus,
+.pickadate__select--year:focus {
+    border-color: #0089ec;
+}
+
+
+
+
+/**
+ * The weekday labels
+ */
+.pickadate__weekday {
+    width: 14.285714286%; /* 100/7 */
+    font-size: .75em;
+    padding-bottom: .5em;
+    color: #999;
+    font-weight: 500;
+}
+
+
+/**
+ * The days on the calendar
+ */
+.pickadate__day {
+    padding: .33em 0 .25em;
+    font-weight: 100;
+    border: 1px solid #fff;
+    margin-bottom: 1px;
+}
+
+/**
+ * The various states of a day
+ */
+.pickadate__day--today {
+    color: #0089ec;
+    position: relative;
+}
+.pickadate__day--today:before {
+    content: " ";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-top: .5em solid #0059bc;
+    border-left: .5em solid transparent;
+}
+.pickadate__day--selected,
+.pickadate__day--selected:hover {
+    border-color: #0089ec;
+}
+.pickadate__day--highlighted {
+    background: #fff;
+}
+.pickadate__day--disabled:before {
+    border-top-color: #aaa;
+}
+.pickadate__day--outfocus {
+    color: #ddd;
+
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+    filter: alpha(opacity=75);
+    -moz-opacity: .75;
+         opacity: .75;
+}
+
+
+
+/**
+ * The footer containing the "today" and "clear" buttons
+ */
+.pickadate__footer {
+    text-align: center;
+    margin: .5em 0 -.5em;
+}
+
+.pickadate__button--today,
+.pickadate__button--clear {
+    border: 1px solid #fff;
+    background: #fff;
+    font-size: .8em;
+    padding: .66em 0;
+    margin: 0 2.5%;
+    font-weight: bold;
+    width: 40%;
+}
+.pickadate__button--today:before,
+.pickadate__button--clear:before {
+    position: relative;
+    display: inline-block;
+    height: 0;
+}
+.pickadate__button--today:before {
+    content: " ";
+    margin-right: .45em;
+    top: -.05em;
+    width: 0;
+    border-top: .66em solid #0059bc;
+    border-left: .66em solid transparent;
+}
+.pickadate__button--clear:before {
+    content: "\D7";
+    margin-right: .35em;
+    top: -.1em;
+    color: #e20;
+    vertical-align: top;
+    font-size: 1.1em;
+}
+.pickadate__button--today:focus,
+.pickadate__button--clear:focus {
+    background: #b1dcfb;
+    border-color: #0089ec;
+    outline: none;
+}
+
+
+
+
+/**
+ * The hover effect on any buttons
+ */
+.pickadate__day--infocus:hover,
+.pickadate__day--outfocus:hover,
+.pickadate__nav--prev:hover,
+.pickadate__nav--next:hover,
+.pickadate__button--today:hover,
+.pickadate__button--clear:hover {
+    cursor: pointer;
+    color: #000;
+    background: #b1dcfb;
+}
+.pickadate__day--disabled,
+.pickadate__day--disabled:hover {
+    background: #f5f5f5;
+    border-color: #f5f5f5;
+    color: #ddd;
+    cursor: default;
+}
+.pickadate__day--highlighted:hover,
+.pickadate__holder--focused .pickadate__day--highlighted {
+    background: #0089ec;
+    color: #fff;
+}
+</style>
+<script>
+$( '#picker_start' ).pickadate({});
+$( '#picker_end' ).pickadate({});
+
+</script>
+
+
+<script type="text/javascript" src="/assets/js/showdown.js"></script>
+<script type="text/javascript" src="/assets/js/a-tools.js"></script>
+<script type="text/javascript" src="/assets/js/mdmagick.js"></script>
+
+<link href="/assets/css/mdmagick.css" rel="stylesheet">
+<link href="/assets/css/icon_font/style.css" rel="stylesheet">
+<script>
+$('#description-tf').bind('keypress', onKey);
+$('#description-tf').bind('paste', onPaste);
+$('#title-tf').bind('keypress', onKey);
+$('#title-tf').bind('paste', onPaste);
+
+function onPaste(e){
+   var value = $(this).val();
+   var length = value.length;
+   if(e.target.id=='description-tf'){
+         $(this).find('.counter').text( 130-length );
+   }else if(e.target.id=='title-tf'){
+         $(this).find('.counter').text( 60-length );
+   }}
+
+function onKey(e){
+
+   var value = $(this).val();
+   var length = value.length;
+   if(e.target.id=='description-tf'){
+         $(this).find('.counter').text( 130-length );
+		 console.log( e.target.id,$(e.target.id).find('.counter').text() ,130-length);
+   }else if(e.target.id=='title-tf'){
+         $(this).find('.counter').text( 60-length );
+		 console.log( e.target.id,$(e.target).find('.counter').text() ,60-length);
+   }  
+}
+
+
+
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+       $('#img_prev').attr('src', e.target.result).width(42).height(42);
+    };
+    reader.readAsDataURL(input.files[0]);
+    }
+}
+
+//http://saravani.wordpress.com/2012/03/14/preview-of-an-image-before-it-is-uploaded/
+//http://tutorialzine.com/2011/09/html5-file-upload-jquery-php/
+//http://blogs.sitepointstatic.com/examples/tech/filedrag/3/index.html
+</script>	
+
+
+
+<script src="/assets/js/typeahead.min.js"></script>
+<script>
+$('#city-tf').typeahead({
+    name: 'countries'
+	,local: ['timtrueman', 'JakeHarding', 'vskarich']
+    //prefetch: '../data/countries.json',
+    ,limit: 10
+	,beforeSend: function () {
+      $('.progress').show();
+    },
+    complete: function () {
+      $('.progress').hide();
+    }
+});
+/*
+
+$('.typeahead').typeahead({
+    source: function (typeahead, query) {
+        return $.get('/typeahead', { query: query }, function (data) {
+            return typeahead.process(data);
+        });
+    }
+});
+
+*/
+
+</script>
+
+
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'></script>
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/start/jquery-ui.css" />
+<script src="/assets/js/jquery/jquery.tagsinput.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/js/jquery/jquery.tagsinput.css" />
+
+<script>
+$('#tags').tagsInput({    
+  autocomplete_url:'http://myserver.com/api/autocomplete',
+  autocomplete:{selectFirst:true,width:'100px',autoFill:false}
+});
+/*
+https://github.com/xoxco/jQuery-Tags-Input
+$('#tags').addTag('foo');
+$('#tags').removeTag('bar');
+$('#tags').importTags('foo,bar,baz');
+
+$(selector).tagsInput({
+   'autocomplete_url': url_to_autocomplete_api,
+   'autocomplete': { option: value, option: value},
+   'height':'100px',
+   'width':'300px',
+   'interactive':true,
+   'defaultText':'add a tag',
+   'onAddTag':callback_function,
+   'onRemoveTag':callback_function,
+   'onChange' : callback_function,
+   'removeWithBackspace' : true,
+   'minChars' : 0,
+   'maxChars' : 0 //if not provided there is no limit,
+   'placeholderColor' : '#666666'
+});
+
+*/
+</script>

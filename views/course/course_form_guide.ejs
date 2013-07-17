@@ -1,0 +1,175 @@
+<style>
+.board {
+padding-bottom: 30px;
+padding-top: 30px;
+background: rgb(219, 224, 213);
+margin-bottom: 40px;
+}
+
+.board-title{
+color:rgb(85, 131, 143);
+}
+.board-description{
+margin-left: auto;
+margin-right: auto;
+ width: 460px;;
+}
+
+.board_container{
+margin-left: auto;
+margin-right: auto;
+width: 1000px;
+}
+
+.board_container .row{
+margin-left:-20px;
+}
+
+.section_area:not(#guide_about){
+margin-bottom:30px;
+padding-bottom:10px;
+border-bottom: 1px dotted #d0d5cb;
+}
+
+
+
+#continue {
+border-top: 1px solid #d0d5cb;
+padding-top: 30px;
+}
+
+#continue input.checkbox {
+display: inline-block;
+vertical-align: top;
+margin-right: 5px;
+}
+
+#continue label {
+display: -moz-inline-box;
+display: -moz-inline-stack;
+-moz-box-orient: vertical;
+display: inline-block;
+vertical-align: middle;
+zoom: 1;
+color: #ec645a;
+font-size: 12px;
+margin-bottom: 10px;
+font-weight: bold;
+width: 400px;
+}
+
+#continue .start {
+display: inline;
+float: right;
+border-radius: 8px;
+-moz-border-radius: 8px;
+-webkit-border-radius: 8px;
+color: white;
+background: #D63C23;
+margin-right: 0;
+height: 20px;
+letter-spacing: 0;
+font-size: 14px;
+line-height: 14px;
+font-weight: bold;
+text-align: center;
+text-decoration: none;
+-webkit-appearance: none;
+-webkit-font-smoothing: antialiased;
+padding: 14px 16px 30px;
+}
+
+#continue .disabled{
+background: rgb(202, 200, 200);
+color: white;
+}
+
+
+</style>
+<div class="row-fluid">
+
+    <div class="board"> 
+	    <div class="board-description">
+            <h2 class="board-title">To start the course</h2> 
+            <p>  These are our guidelines to read:  </p> 
+        </div>        
+    </div>
+	
+	<div class="board_container row">
+	    <div class="span8" style=" padding-right:30px;border-right: 1px dotted #d0d5cb;">
+		
+		    <section class="section_area">
+                <div class="row">
+                    <h3 class="big_type">Everything on Kickstarter must be a project.</h3>
+                    <p>A project is something with a clear end, like making an album, a film, or a new game. A project will eventually be completed, and something will be produced as a result.</p>
+                </div>
+                <div class="row">
+                    <h3 class="big_type">Every project on Kickstarter must fit into one of our categories.</h3>
+                    <p>Our categories are Art, Comics, Dance, Design, Fashion, Film, Food, Games, Music, Photography, Publishing, Technology, and Theater.</p>
+                </div>
+            </section>
+
+		    <section class="section_area">
+                <div class="row">
+                    <h3 class="big_type">Hardware and Product Design guidelines.</h3>
+                    <p>A project is something with a clear end, like making an album, a film, or a new game. A project will eventually be completed, and something will be produced as a result.</p>
+					<ul>
+					  <li> Kickstarter cannot be used to raise money for causes, whether it's the Red Cross or a scholarship, or for "fund my life" projects, like tuition or bills. </li>
+					  <li>Kickstarter cannot be used to sell equity or solicit loans.</li>
+					</ul>
+                </div>
+            </section>
+
+		    <section class="section_area" id="guide_about">
+                <div class="row">
+                    <h3 class="big_type">About these guidelines.</h3>
+                    <p>Kickstarter mission is to help bring creative projects to life. Since launching in April 2009, weve adjusted these guidelines several times to add more of them to fit new uses, or to simplify them as we learn (and after seeing 100,000+ projects, we have learned a ton). The guidelines are never perfect, but we care deeply about trying to get them right. We aim to be as open as possible while protecting the health and creative spirit of Kickstarter for the long term. Thanks for reading.</p>
+                </div>
+            </section>
+
+            <form id="continue" action="/course/new/guide" method="POST" enctype="application/x-www-form-urlencoded">
+			    <input type="hidden" name="_csrf" value="<%= token %>"/>
+                <input class="checkbox" id="guidelines_accept" name="guidelines_accept" type="checkbox" value="1">
+                <label class="unselected" for="guidelines_accept">I understand that in order to launch, my project must meet the Project Guidelines and I must meet eligibility requirements.</label>
+                <input id="btn" type="submit" class="start disabled" value="Start your course"></input>				
+            </form>           			
+        </div>
+		
+		<div class="span4"  >
+		
+		</div>
+	</div>	
+</div>	
+
+<script>
+var accept_check = $('#guidelines_accept'),
+	form = $('#continue'),
+	btn = $('#btn');
+btn.attr('disabled','true');
+	
+accept_check.on('change',function(){
+	if($(this).is(':checked')){
+	    btn.removeAttr("disabled");
+        btn.removeClass('disabled');		
+	}else{
+	    btn.attr('disabled','true');
+		btn.addClass('disabled');
+	}
+})	
+
+/*	
+form.on('submit',function(e){
+    console.log('click');		
+    e.preventDefault();
+    $.ajax({
+           type: "POST",
+           url: "/course/new/guide",
+           data: $(this).serialize(), 
+           success: function(data)
+           {
+               console.log(data);
+           }
+         });	
+});
+*/
+</script>	

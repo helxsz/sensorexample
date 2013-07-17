@@ -1,0 +1,140 @@
+<style>
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
+[class*="fontawesome-"]:before {
+  font-family: 'fontawesome', sans-serif;
+}
+
+
+
+
+
+.students{
+margin: 0 auto;
+
+margin-bottom:30px;
+}
+
+.student {
+  width: 400px;
+  height: 125px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #ccc;
+  overflow: hidden;
+
+}
+
+.student img {
+  float: left;
+  width: 125px;
+  height: 125px;
+  border-right: 1px solid #eee;
+}
+
+.student article {
+float: right;
+padding: 5px 14px 5px;
+width: 221px;
+height: 80px;
+border-bottom: 1px solid #eee;
+}
+
+.student h2 {
+  margin: 0 0 7px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+  color: #555;  
+}
+
+.student p {
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+  color: #555;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  -webkit-font-smoothing: antialiased;
+  font-style, font-weight, letter-spacing, line-height, word-spacing: normal;    
+}
+
+.student nav {
+float: right;
+margin: 5px;
+width: 221px;
+}
+
+.student nav ul li {
+  float: right;
+  display: inline-block;
+}
+
+.student nav ul li a {
+  margin: 0 8px;
+  font-size: 0.8rem;
+}
+
+.student nav ul li span {
+color: #444;
+font-weight: bold;
+}
+.student nav ul li .fontawesome-retweet, nav ul li .fontawesome-reply {
+  color: #aaa;
+}
+
+.student nav ul li .fontawesome-star {
+  color: #4099FF;
+}
+
+.student nav li.time {
+  float: left;
+  color: #aaa;
+}
+
+
+h1.noresults {
+height: 60px;
+font-family: "MuseoSans_light";
+font-size: 2.35em;
+font-weight: lighter;
+color: #fff;
+text-align: center;
+line-height: 60px;
+background-color: #444;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+width:300px;
+margin: 0 auto;
+}
+
+</style>
+
+<% if(locals.students) { %>
+
+<div class="gallery">
+
+    <div class="students row">	  
+	  <% if(locals.students.length == 0){ %>
+	     <h1 class="noresults">  No results found </h1>	     
+	  <% }; %>
+	  
+      <% students.forEach( function( student ){ %>
+        <div class="student span4">
+            <img src="/images/<%= student.img %>" alt="">
+            <article>
+                <h2><%= student.username %></h2>
+                <p>
+                </p>
+            </article>
+        </div>	
+      <% }); %>
+	</div>	
+	
+	<div id="load-more-wrapper">
+			<a id="load-more-students-button" class="load-more-link btn grey" href="javascript:;">Load more student</a>
+	</div>
+	
+</div>
+<% } %>

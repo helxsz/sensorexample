@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ACE in Action</title>
+<style type="text/css" media="screen">
+    #epiceditor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+		width: 698px;
+height: 351px;
+    }
+</style>
+</head>
+<body>
+
+<div id="epiceditor"></div>
+<script src="/assets/js/epiceditor/js/epiceditor.min.js"></script>
+<script src="/assets/js/jquery-1.9.1.min.js"></script>
+
+<script>
+
+
+var opts = {
+  container: 'epiceditor',
+  textarea: null,
+  basePath: '/assets/js/epiceditor',
+  clientSideStorage: true,
+  localStorageName: 'epiceditor',
+  useNativeFullsreen: true,
+  parser: marked,
+  file: {
+    name: 'epiceditor',
+    defaultContent: '',
+    autoSave: 100
+  },
+  theme: {
+    base: '/themes/base/epiceditor.css',
+    preview: '/themes/preview/preview-dark.css',
+    editor: '/themes/editor/epic-dark.css'
+  },
+  button: {
+    preview: true,
+    fullscreen: true
+  },
+  focusOnLoad: false,
+  shortcut: {
+    modifier: 18,
+    fullscreen: 70,
+    preview: 80
+  },
+  string: {
+    togglePreview: 'Toggle Preview Mode',
+    toggleEdit: 'Toggle Edit Mode',
+    toggleFullscreen: 'Enter Fullscreen'
+  }
+}
+     var editor = new EpicEditor(opts).load(function () {
+          console.log("Editor loaded.");
+
+     });
+	 editor.importFile('some-file',"#Imported markdown\nFancy, huh?");
+     var content = editor.exportFile();
+	 console.log(content);
+	
+	 content = editor.getElement('editor').body.innerHTML
+	 content = content.replace("&nbsp;", " ");
+	 console.log(content);
+     $('input#content').html(content);	
+
+     editor.preview();	 
+	 /*
+	 		  var theContent = editor.exportFile();
+              saveToServerAjaxCall('/save', {data:theContent}, function () {
+                console.log('Data was saved to the database.');
+          });
+	 */
+</script>
+</body>
+</html>

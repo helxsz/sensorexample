@@ -1,0 +1,182 @@
+<div class="questions ">
+<!--span5
+	<section class="blue-section">
+		<h1>This is a big title, it can go on multiple lines. See for yourself.</h1>
+	</section>
+
+	<ul class="plans">
+		<li class="question highlight">
+			<span class="tag tag-green">0</span>
+			
+			<div class="details">
+				<h1 class="question-description">Free</h1>
+				<p class="question-tip">Not even a cookie</p>
+			</div>
+			
+			<button class="btn select">Select question</button>
+		</li>
+		
+		<li class="question">
+			<span class="tag tag-red">10</span>
+			
+			<div class="details">
+				<h1 class="question-description">Monthly</h1>
+				<p class="question-tip">With candy and stuff</p>
+			</div>
+			
+			<button class="btn select">Select question</button>
+		</li>
+	</ul>
+-->
+
+    <ul>
+	    <% if( locals.ques) {%>
+          <% for(var i=0; i<locals.ques.length; i++) {%>
+            <li class="question" id="<%= locals.ques[i]._id %>">
+			    <span class="tag tag-red" title="<%= locals.ques[i].tags %>"></span>
+				<div class="details">
+				    <div class="question-description" data-content="<%= locals.ques[i].que %>"><%= locals.ques[i].que %></div>
+				    <p class="question-tip"><%= locals.ques[i].tip %></p>
+			    </div>
+		    </li>
+          <% } %>
+		<% } %>  
+		
+    </ul>
+</div>
+
+<style>
+
+.questions ul::-webkit-scrollbar {
+  margin: 0;
+   height: 10px;
+    width: 10px;
+    background-color: white;
+    display: block !important;
+}
+ 
+.questions ul::-webkit-scrollbar-track {
+  margin: 0;
+   height: 10px;
+    width: 10px;
+   background-color: white;
+}
+ 
+.questions ul::-webkit-scrollbar-thumb {
+    margin: 0;
+   height: 10px;
+    width: 10px;
+    background-color: #8a8a8a;
+    opacity: 0.5;
+    border-radius: 5px;
+}
+
+.questions ul {
+margin: 0px 0px 0px 0px;
+min-height: 550px;
+}
+.questions ul:hover {
+    overflow-y: scroll;
+}
+
+.blue-section {
+	background: #358cce;
+	overflow: auto;
+	padding: 20px;
+    box-shadow:5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px  #fff;	
+    margin:2em;
+    max-width:20em;
+}
+
+.questions {
+	color: white;
+	padding-bottom: 50px;
+	list-style: none;
+}
+
+.questions .question {
+		background: white;
+		border-radius: 6px;
+		height: 60px;
+		margin: 10px 0;
+		opacity: 0.8;
+		padding: 4px 25px;
+		width: 400px;
+  box-shadow:5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px  #fff;
+}
+
+.questions .question:hover,.highlight {
+			opacity: 1;
+}
+
+.question .tag {
+			border-radius: 100%;
+			cursor: default;
+			display: block;
+			float: left;
+			height: 46px;
+			line-height: 46px;
+			margin: 8px 10px 0 0;
+			text-align: center;
+			width: 46px;
+
+}
+
+.tag-green {
+				background-color: #e1f1d1;
+				color: #52b327;
+}
+
+.tag-red {
+				background-color: #f1e1d1;
+				color: #b35227;
+}
+
+.questions	.details {
+			color: #222;
+			display: block;
+			float: left;
+			height: 46px;
+			padding: 0px 10px;
+}
+
+
+.questions	.details .question-description {
+				font-size: 17px;
+				font-weight: normal;
+				margin: 2px 0 0;
+				padding: 0;
+				text-transform: uppercase;
+}
+
+.questions	.details .question-tip {
+				color: #666;
+				font-size: 14px;
+				margin: 0;
+				padding: 0;
+}
+
+
+.questions	.select {
+			background: #358cce;
+			border: none;
+			border-radius: 4px;
+			color: white;
+			display: inline-block;
+			float: right;
+			font-size: 14px;
+			margin: 15px 0;
+			padding: 7px 16px;
+
+}
+
+.questions	.select:hover {
+			background-color: #459cde;
+}
+</style>
+
+<!--
+.questions{
+min-height: 450px;
+}
+-->

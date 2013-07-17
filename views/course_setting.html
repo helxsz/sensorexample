@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/typeahead.js"></script>
+
+								   
+  </head>
+<style>
+body {
+font-family: 'proxima-nova',Proxima Nova,'Helvetica Neue',Helvetica,sans-serif;
+margin: 0;
+padding: 0;
+height: 100%;
+background: #F3F5F8;
+
+}
+
+</style>
+
+ <style>
+.content{
+     position: relative;
+	margin-top:50px;	 
+}
+
+ </style>
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">                
+
+            <% include header %>
+			<% if(!locals.course) { %> 
+		        <div class="content">
+                    <% include course/course_form_guide %>				
+			    </div>				
+			<% } %>
+			<% if(locals.course){ %>			
+			    <% if(locals.page=="basic"){ %>
+		            <div class="content">
+                        <% include course/course_form_nav %>
+				        <% include course/course_form_basic %> 
+			        </div>
+				<% } %>
+				
+				<% if(locals.page=="question"){ %>
+		            <div class="content">
+					    <% include course/course_form_nav %>
+				        <% include course/course_form_questions %> 
+			        </div> 
+                <% } %>				
+			<% } %>
+			
+			
+			
+			<!--
+			<script type="text/javascript" src="/assets/js/pagedown/Markdown.Converter.js"></script>
+            <script type="text/javascript" src="/assets/js/pagedown/Markdown.Sanitizer.js"></script>
+            <script type="text/javascript" src="/assets/js/pagedown/Markdown.Editor.js"></script>
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                <textarea class="wmd-input" id="wmd-input">
+                    This is the *first* editor.
+                    ------------------------------
+                </textarea>
+            </div>
+            <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+            <script type="text/javascript">
+               (function () {
+                var converter1 = Markdown.getSanitizingConverter();
+                var editor1 = new Markdown.Editor(converter1);
+                editor1.run();
+               })();
+            </script>
+			-->
+						
+            <% include footer %>			
+			 
+		</div>
+	</div>				
+  </body>
+
+</html>

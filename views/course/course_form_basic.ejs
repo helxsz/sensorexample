@@ -1,0 +1,817 @@
+<style>
+.board {
+padding-bottom: 30px;
+padding-top: 30px;
+background: rgb(219, 224, 213);
+margin-bottom: 40px;
+}
+.board-description{
+margin-left: auto;
+margin-right: auto;
+ width: 460px;;
+}
+.board-title{
+color:rgb(85, 131, 143);
+}
+
+.form_container{
+margin-left: auto;
+margin-right: auto;
+width: 1000px;
+}
+
+
+#basic_form input:not( #tags_tag, #image_tf)  {
+border-radius: 0;
+border: 0;
+padding: .8em 14px;
+box-shadow: none;
+border: 0;
+margin-bottom: 20px;
+width: 383px;
+background: white;
+border: none;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+#basic_form textarea{
+border-radius: 0;
+border: 0;
+padding: .8em 14px;
+box-shadow: none;
+border: 0;
+margin-bottom: 20px;
+width: 383px;
+background: white;
+border: none;
+border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+
+.form-horizontal .control-group {
+margin-bottom: 25px;
+}
+
+.form-horizontal .control-label {
+float: left;
+width: 40px;
+padding-top: 5px;
+text-align: left;
+}
+
+.form-horizontal .controls {
+margin-left: 50px;
+font-size: 15px;
+}
+
+.control-group{
+margin-left: 0px;
+}
+
+.control{
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+-o-border-radius: 6px;
+-ms-border-radius: 6px;
+-khtml-border-radius: 6px;
+border-radius: 6px;
+height: auto;
+margin-bottom: 12px;
+padding: 14px 3px 14px 4px;
+background: rgb(205, 216, 194);
+padding:10px 10px 10px 10px;
+}
+
+
+.tagsinput {
+border: 1px solid #CCC;
+background: #FFF;
+padding: 5px;
+width: 480px;
+height: 100px;
+overflow-y: auto;
+}
+
+
+.filedrag {
+display: inline-block;
+height: 40px;
+line-height: 34px;
+padding: 0 15px;
+background-color: #444;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+-webkit-transition: opacity 0.2s linear;
+-moz-transition: opacity 0.2s linear;
+transition: opacity 0.2s linear;
+position: relative;
+margin-left: 30px;
+margin-right: 30px;
+border-radius: 6px;
+}
+
+.filedrag input{
+opacity: 0.01;
+width: 90px;
+top: 50px;
+height: 100%;
+overflow: hidden;
+font-size: 30px;
+}
+
+.filedrag span{
+display: inline;
+width: 50px;
+position: absolute;
+left: 25px;
+top: 5px;
+font-size: 20px;
+}
+
+.filedrag.hover
+{
+	color: #f00;
+	border-color: #f00;
+	border-style: solid;
+	box-shadow: inset 0 3px 4px #888;
+}
+
+
+.tip {
+position: absolute;
+width: 155px;
+padding: 11px 10px 11px 20px;
+font-family: "MuseoSans_light";
+line-height: 150%;
+color: #fff;
+background-color: #409f89;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+margin-left: 20px;
+margin-top: 5px;
+}
+
+.tip:after {
+content: " ";
+position: absolute;
+right: 100%;
+height: 0;
+width: 0;
+top: 16px;
+border: solid transparent;
+pointer-events: none;
+border-color: transparent;
+border-right-color: #409f89;
+border-width: 8px 12px;
+}
+
+.control-group .tip {
+visibility:hidden;   
+}
+
+.control-group:hover .tip {
+visibility:visible;
+}
+
+.form-actions input[type="submit"] {
+display: block;
+height: 33px;
+line-height: 34px;
+padding: 0 15px;
+background-color: #55bc75;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+
+
+-webkit-transition: background 0.5s ease-out;
+-moz-transition: background 0.5s ease-out;
+-o-transition: background 0.5s ease-out;
+transition: background 0.5s ease-out;
+
+-webkit-border-radius: 40px;
+border-radius: 40px;
+}
+
+
+.form-actions input[type="submit"]:hover{
+background-color: #409f89;
+}
+
+
+input[type="submit"] {
+display: block;
+color: white;
+border: none;
+padding: 10px 20px;
+cursor: pointer;
+font-size: 13px !important;
+line-height: 16px !important;
+font-weight: 600 !important;
+font-family: "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+text-shadow: none;
+background: #222;
+text-transform: uppercase;
+letter-spacing: 1px;
+-webkit-border-radius: 40px;
+border-radius: 40px;
+-webkit-transition: background 0.1s ease-out;
+-moz-transition: background 0.1s ease-out;
+-o-transition: background 0.1s ease-out;
+transition: background 0.1s ease-out;
+}
+
+</style>
+
+<div class="row-fluid">
+
+    <div class="board"> 
+	    <div class="board-description">
+            <h2 class="board-title">Course Detail</h2> 
+            <p>Start by giving it a name, a pic, and other important details </p> 
+        </div>        
+    </div>
+	 
+    <div class="form_container row">
+      <div class="span8" style=" padding-right:30px;border-right: 1px dotted #d0d5cb;">
+	    <form method="post" action="/course/<%= locals.course._id %>/setting/image" class="form-horizontal " enctype="multipart/form-data" >
+                <input type="hidden" name="_csrf" value="<%= token %>"/>
+			    <input type="hidden" name="course_id" value="<%= locals.course._id %>" />
+	            <input type="hidden" name="_method" value="put" />		
+                <div id="image-cg" class="control-group">
+                    <label for="description-tf" class="control-label "><strong>Image</strong></label>
+                    <div class="controls control span9"  tabindex="1">						
+					    <% if(locals.course.img) { %>
+                            <img src="/images/<%= locals.user.img %>" width="54" height="54" alt="User avatar" class="b-userbar__account-avatar">
+					    <% } %>
+					    <% if(!locals.course.img) { %>
+                            <img src="/assets/img/missing_little.png" width="54" height="54" alt="User avatar" class="b-userbar__account-avatar">					
+					    <% } %>
+		
+						<div class="filedrag">
+						    <span> choose    </span>
+							<input id="image-tf" type="file" name="image" value=""  onchange="readURL(this);" > </input>
+						</div>
+						<button type="submit" id="account-form-btn2" class="btn">upload</button>
+					</div>
+                    <span class="tip" >400 kb. max. Recommended size: 250x250px</span>					
+      		    </div>              				
+        </form>
+	
+        <form method="post" action="/course/<%= locals.course._id %>/setting" id="basic_form" class="form-horizontal " enctype="multipart/form-data" >
+            <input type="hidden" name="_csrf" value="<%= token %>"/>
+			<input type="hidden" name="course_id" value="<%= locals.course._id %>" />
+	        <input type="hidden" name="_method" value="put" />  
+
+            <fieldset>
+                <div id="title-cg" class="control-group ">
+                    <label for="title-tf" class="control-label"><strong>Title</strong></label>
+                    <div class="controls control span9"  tabindex="1">
+                        <input id="title-tf" type="text" name="title" value="<%= locals.course.title || '' %>" class="input-xlarge">
+						<span ><span class="character_counter" data-maxlength="60">60</span>/60</span>
+                    </div>
+                    <span class="tip" >Your username</span>										
+                </div>
+
+                <div id="summary-cg" class="control-group ">
+                    <label for="summary-tf" class="control-label"><strong>Summary</strong></label>
+                    <div class="controls control span9"  tabindex="1">
+						<textarea id="summary-tf" type="text" name="summary" value="<%= locals.course.summ || '' %>" class="mdm-input" style="margin-bottom: 5px; height: 108px; width: 400px;"><%= locals.course.summ || '' %> </textarea>
+                        <span ><span class="character_counter" data-maxlength="60">130</span>/130</span>
+					</div>
+                    <span class="tip" >Give a summary for your course in 130 characters</span>														
+      		    </div>
+
+                <div id="description-cg" class="control-group ">
+                    <label for="description-tf" class="control-label"><strong>Description</strong></label>
+                    <div class="controls control span9">
+						<textarea id="description-tf" type="text" name="description" value="<%= locals.course.desc || '' %>" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> <%= locals.course.desc || '' %></textarea>
+                        <span ><span class="character_counter" data-maxlength="60">130</span>/130</span>
+					</div>					
+                    <span class="tip" >Describe Your course in terms of what is about, user cases, how to do it</span>														
+      		    </div>	
+				
+                <div id="category-cg" class="control-group ">
+                    <label for="category-tf" class="control-label"><strong>Category</strong></label>
+                    <div class="controls control span9"  tabindex="1">				
+                        <select class="required select" id="project_category_id" name="category">
+						    <optgroup label="Electronics">
+						        <option name="category" value="0">Robots</option>
+							    <option name="category" value="1">Machine Learning</option>
+							</optgroup>
+							 <optgroup label="Computer Language">
+								<option name="category" value="1">Machine Vision</option>
+							</optgroup>	
+							<optgroup label="Algorithm">
+								<option name="category" value="1">Machine Vision</option>
+							</optgroup>							
+						</select>				
+					</div>
+                    <span class="tip" >Select the category that best describe your course.</span>															
+      		    </div>								
+
+                <div id="city-cg" class="control-group ">
+                    <label for="city-tf" class="control-label"><strong>City</strong></label>
+                    <div class=" controls control span9">						
+						<input id="city-tf" name="city" type="text" value="<%= locals.course.city || '' %>"  style="width:400px" >						
+                    </div>
+                    <span class="tip" >Your username</span>	
+                   		
+                </div>
+				 			
+                <div id="tags-cg" class="control-group ">
+                    <label for="tags-tf" class="control-label"><strong>Tags</strong></label>
+                    <div class="controls control span9"  tabindex="1">         
+						<input name="tags" id="tags" value="<%= locals.course.tags || '' %>" />
+                    </div>
+                    <span class="tip" >Your username</span>															
+                </div>
+				
+                <div class="control-group">
+                    <label for="tags-tf" class="control-label"><strong>Time</strong></label>				
+                    
+                    <div class="controls control span9"  tabindex="1">
+                        <div sytle="margin-left:10px;margin-bottom:10px;" >	
+                            <strong sytle="width:100px;margin-left:10px;">From:</strong>						
+                            <input id="picker_start" name="date_start" type="text" value="<%= locals.course.sdate || '' %>">
+                        </div>
+						
+						<div sytle="margin-left:10px;margin-top:10px" >					
+                            <strong sytle="width:100px;margin-left:10px;">To:</strong>				
+                            <input id="picker_end" name="date_end" type="text" value="<%= locals.course.edate || '' %>">
+                        </div>						
+                    </div>					
+                </div>
+
+                 <div class="form-actions">
+                      <input type="submit" id="btn" value="Send Message">
+                </div>
+             </fieldset>
+         </form>
+		 
+		</div>
+		<div class="span4"   >
+		    <input class="typeahead" name="city" type="text"  style="width:400px" placeholder="Search cities..." >			
+		    <!-- <textarea  type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea> -->
+		</div>
+	</div>	
+</div>
+
+
+
+
+<script type="text/javascript" src="/assets/js/showdown.js"></script>
+<script type="text/javascript" src="/assets/js/a-tools.js"></script>
+<script type="text/javascript" src="/assets/js/mdmagick.js"></script>
+
+<link href="/assets/css/mdmagick.css" rel="stylesheet">
+<link href="/assets/css/icon_font/style.css" rel="stylesheet">
+<script>
+$('#description-tf').bind('keypress', onKey);
+$('#description-tf').bind('paste', onPaste);
+$('#title-tf').bind('keypress', onKey);
+$('#title-tf').bind('paste', onPaste);
+
+function onPaste(e){
+   var value = $(this).val();
+   var length = value.length;
+   if(e.target.id=='description-tf'){
+         $(this).find('.counter').text( 130-length );
+   }else if(e.target.id=='title-tf'){
+         $(this).find('.counter').text( 60-length );
+   }}
+
+function onKey(e){
+
+   var value = $(this).val();
+   var length = value.length;
+   if(e.target.id=='description-tf'){
+         $(this).find('.counter').text( 130-length );
+		 console.log( e.target.id,$(e.target.id).find('.counter').text() ,130-length);
+   }else if(e.target.id=='title-tf'){
+         $(this).find('.counter').text( 60-length );
+		 console.log( e.target.id,$(e.target).find('.counter').text() ,60-length);
+   }  
+}
+
+
+
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+       $('#img_prev').attr('src', e.target.result).width(42).height(42);
+    };
+    reader.readAsDataURL(input.files[0]);
+    }
+}
+
+//http://saravani.wordpress.com/2012/03/14/preview-of-an-image-before-it-is-uploaded/
+//http://tutorialzine.com/2011/09/html5-file-upload-jquery-php/
+//http://blogs.sitepointstatic.com/examples/tech/filedrag/3/index.html   
+</script>	
+
+
+
+<script>
+
+$('#city-tf').typeahead({
+    name: 'countries',
+    prefetch: '/countries.json'
+    ,limit: 10
+});
+
+ $('.typeahead').typeahead({
+   remote:{url:'/city?query=query'
+   ,timeout: 2000
+   ,cache:84000}   
+  });
+</script>
+
+
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'></script>
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/start/jquery-ui.css" />
+<script src="/assets/js/jquery/jquery.tagsinput.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/js/jquery/jquery.tagsinput.css" />
+
+<script>
+$('#tags').tagsInput({    
+  autocomplete_url:'http://myserver.com/api/autocomplete',
+  autocomplete:{selectFirst:true,width:'100px',autoFill:false}
+});
+/*
+https://github.com/xoxco/jQuery-Tags-Input
+$('#tags').addTag('foo');
+$('#tags').removeTag('bar');
+$('#tags').importTags('foo,bar,baz');
+
+$(selector).tagsInput({
+   'autocomplete_url': url_to_autocomplete_api,
+   'autocomplete': { option: value, option: value},
+   'height':'100px',
+   'width':'300px',
+   'interactive':true,
+   'defaultText':'add a tag',
+   'onAddTag':callback_function,
+   'onRemoveTag':callback_function,
+   'onChange' : callback_function,
+   'removeWithBackspace' : true,
+   'minChars' : 0,
+   'maxChars' : 0 //if not provided there is no limit,
+   'placeholderColor' : '#666666'
+});
+
+*/
+</script>
+
+
+
+
+
+
+<style>
+
+.tt-hint {
+width: 396px;
+height: 30px;
+padding: 8px 12px;
+font-size: 24px;
+line-height: 30px;
+border: 2px solid #ccc;
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+outline: none;
+}
+
+.tt-dropdown-menu {
+width: 422px;
+margin-top: 12px;
+padding: 8px 0;
+background-color: #fff;
+border: 1px solid #ccc;
+border: 1px solid rgba(0, 0, 0, 0.2);
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+</style>
+
+
+<script type="text/javascript" src="/assets/js/pickadate.min.js"></script>
+<script type="text/javascript" src="/assets/js/rainbow.js"></script>
+<style>
+.pickadate__input--active {
+    border-color: #0089ec !important;
+}
+
+
+
+/**
+ * The picker holder
+ */
+.pickadate__holder {
+
+    /* The base font-size */
+    font-size: 16px;
+
+    line-height: 1.2;
+    color: #000;
+
+    position: absolute;
+    z-index: 10000;
+
+    width: 100%;
+    height: 0;
+}
+
+
+/**
+ * The frame that bounds the calendar
+ */
+.pickadate__frame {
+    position: relative;
+    max-width: 420px;
+    min-width: 256px;
+    max-height: 0;
+    overflow-y: hidden;
+
+    -webkit-transition: all .15s ease-out;
+       -moz-transition: all .15s ease-out;
+            transition: all .15s ease-out;
+}
+
+
+/**
+ * When the calendar opens
+ */
+.pickadate__holder--opened .pickadate__frame {
+    top: .5em;
+    max-height: 25em;
+
+    -webkit-box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+       -moz-box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+            box-shadow: 0 6px 18px 1px rgba(0,0,0,.12);
+}
+
+
+/**
+ * The calendar itself
+ */
+
+.pickadate__calendar {
+    color: #000;
+    background: #fff;
+
+    padding: 1em;
+    font-size: 1em;
+
+    /* Add the borders */
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 6px;
+       -moz-border-radius: 6px;
+            border-radius: 6px;
+}
+
+
+
+/**
+ * The calendar table of dates
+ */
+.pickadate__table {
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: inherit;
+    width: 100%;
+    margin-top: .75em;
+}
+
+/* Remove browser stylings on a table cell */
+.pickadate__table td {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/**
+ * The header containing the month and year tags/selectors
+ */
+.pickadate__header {
+    text-align: center;
+    position: relative;
+}
+
+.pickadate__nav--prev,
+.pickadate__nav--next {
+    position: absolute;
+    top: -.1em;
+    padding: .5em;
+    margin: -.5em;
+    text-align: center;
+    min-width: 24px;
+    height: 24px;
+    line-height: 26px;
+}
+.pickadate__nav--prev {
+    left: 0;
+}
+.pickadate__nav--next {
+    right: 0;
+}
+
+
+.pickadate__month,
+.pickadate__year {
+    font-weight: 500;
+    display: inline-block;
+}
+.pickadate__year {
+    color: #999;
+    font-size: .8em;
+    font-style: italic;
+    margin-left: .5em;
+}
+
+
+
+.pickadate__select--month,
+.pickadate__select--year {
+    font-size: .8em;
+    border: 1px solid #ccc;
+    height: 2.5em;
+    margin-top: -.5em;
+}
+.pickadate__select--month {
+    width: 35%;
+}
+.pickadate__select--year {
+    width: 22.5%;
+    margin-left: .5em;
+}
+.pickadate__select--month:focus,
+.pickadate__select--year:focus {
+    border-color: #0089ec;
+}
+
+
+
+
+/**
+ * The weekday labels
+ */
+.pickadate__weekday {
+    width: 14.285714286%; /* 100/7 */
+    font-size: .75em;
+    padding-bottom: .5em;
+    color: #999;
+    font-weight: 500;
+}
+
+
+/**
+ * The days on the calendar
+ */
+.pickadate__day {
+    padding: .33em 0 .25em;
+    font-weight: 100;
+    border: 1px solid #fff;
+    margin-bottom: 1px;
+}
+
+/**
+ * The various states of a day
+ */
+.pickadate__day--today {
+    color: #0089ec;
+    position: relative;
+}
+.pickadate__day--today:before {
+    content: " ";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-top: .5em solid #0059bc;
+    border-left: .5em solid transparent;
+}
+.pickadate__day--selected,
+.pickadate__day--selected:hover {
+    border-color: #0089ec;
+}
+.pickadate__day--highlighted {
+    background: #fff;
+}
+.pickadate__day--disabled:before {
+    border-top-color: #aaa;
+}
+.pickadate__day--outfocus {
+    color: #ddd;
+
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+    filter: alpha(opacity=75);
+    -moz-opacity: .75;
+         opacity: .75;
+}
+
+
+
+/**
+ * The footer containing the "today" and "clear" buttons
+ */
+.pickadate__footer {
+    text-align: center;
+    margin: .5em 0 -.5em;
+}
+
+.pickadate__button--today,
+.pickadate__button--clear {
+    border: 1px solid #fff;
+    background: #fff;
+    font-size: .8em;
+    padding: .66em 0;
+    margin: 0 2.5%;
+    font-weight: bold;
+    width: 40%;
+}
+.pickadate__button--today:before,
+.pickadate__button--clear:before {
+    position: relative;
+    display: inline-block;
+    height: 0;
+}
+.pickadate__button--today:before {
+    content: " ";
+    margin-right: .45em;
+    top: -.05em;
+    width: 0;
+    border-top: .66em solid #0059bc;
+    border-left: .66em solid transparent;
+}
+.pickadate__button--clear:before {
+    content: "\D7";
+    margin-right: .35em;
+    top: -.1em;
+    color: #e20;
+    vertical-align: top;
+    font-size: 1.1em;
+}
+.pickadate__button--today:focus,
+.pickadate__button--clear:focus {
+    background: #b1dcfb;
+    border-color: #0089ec;
+    outline: none;
+}
+
+
+
+
+/**
+ * The hover effect on any buttons
+ */
+.pickadate__day--infocus:hover,
+.pickadate__day--outfocus:hover,
+.pickadate__nav--prev:hover,
+.pickadate__nav--next:hover,
+.pickadate__button--today:hover,
+.pickadate__button--clear:hover {
+    cursor: pointer;
+    color: #000;
+    background: #b1dcfb;
+}
+.pickadate__day--disabled,
+.pickadate__day--disabled:hover {
+    background: #f5f5f5;
+    border-color: #f5f5f5;
+    color: #ddd;
+    cursor: default;
+}
+.pickadate__day--highlighted:hover,
+.pickadate__holder--focused .pickadate__day--highlighted {
+    background: #0089ec;
+    color: #fff;
+}
+</style>
+<script>
+$( '#picker_start' ).pickadate({});
+$( '#picker_end' ).pickadate({});
+
+</script>

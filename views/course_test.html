@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Test</title>
+	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+    <link href="/assets/css/animate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/jquery.sidr.dark.css	"> 
+   <script src="/assets/js/jquery-1.8.1.min.js"></script> 
+   
+   <script src="/assets/js/underscore.js"></script>
+   <script src="/assets/js/backbone-min.js"></script>
+  
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>   
+   
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="/assets/ico/favicon.png">		
+
+
+
+<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+   <script src="/assets/js/jquery/jquery.sidr.min.js	"></script>
+   
+  </head>
+<style>
+html {
+<!--
+background-color: #222;
+background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGklEQVQIW2NkYGD4D8SMQAwGcAY2AbBKDBUAVuYCBQPd34sAAAAASUVORK5CYII=);
+background-repeat: repeat;
+-->
+}
+body {
+ <!--  
+  background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
+  background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+ -->
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+  background: -webkit-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -moz-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -o-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+
+}
+
+#editor { 
+width: 698px;
+height: 351px;
+margin-top: 20px;	
+}
+
+.tp-title {
+position: absolute;
+background: #fff;
+line-height: 20px;
+color: #333;
+top: 40%;
+width: 75%;
+padding: 10px;
+font-weight: 700;
+text-align: right;
+left: -100%;
+box-shadow: 1px 1px 1px rgba(0,0,0,0.1), 5px 0 5px -3px rgba(0,0,0,0.4), inset 0 0 5px rgba(0,0,0,0.04);
+}
+.tp-title {
+padding: 10px 35px 10px 10px;
+left: 0px;
+}
+
+.tp-title span:nth-child(2) {
+color: #aaa;
+padding: 0 5px;
+background: #F7F7F7;
+right: 0px;
+height: 100%;
+line-height: 40px;
+top: 0px;
+position: absolute;
+display: block;
+}
+
+
+
+.page-title:after {
+content: 'beta';
+font-size: 0.17em;
+font-weight: 400;
+background: #62c98f;
+letter-spacing: 1px;
+border-radius: 100%;
+width: 44px;
+height: 44px;
+display: inline-block;
+line-height: 47px;
+position: relative;
+top: -45px;
+color:#ffffff;
+}
+
+.content{
+     position: relative;
+	margin-top:50px;	 
+}
+
+.edu-head {
+height: 80px;
+padding: 12px 25px;
+background-color: #f9f9f9;
+background-image: -moz-linear-gradient(top, #fff, #f0f0f0);
+background-image: -ms-linear-gradient(top, #fff, #f0f0f0);
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#f0f0f0));
+background-image: -webkit-linear-gradient(top, #fff, #f0f0f0);
+background-image: -o-linear-gradient(top, #fff, #f0f0f0);
+background-image: linear-gradient(top, #fff, #f0f0f0);
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFFFF', endColorstr='#FFF0F0F0', GradientType=0);
+border-right: 1px solid rgb(238, 230, 230)
+}
+
+.author-avtr {
+
+margin-top: 50px;
+width: 30px;
+height: 30px;
+-webkit-border-radius: 15px;
+-moz-border-radius: 15px;
+border-radius: 15px;
+border: 1px solid #dcdcdc;
+}
+
+
+
+#btn-question {
+display: block;
+height: 33px;
+line-height: 34px;
+padding: 0 15px;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+-webkit-transition: opacity 0.8s linear;
+-moz-transition: opacity 0.8s linear;
+transition: opacity 0.8 linear;
+-webkit-border-radius: 40px;
+border-radius: 40px;
+margin: 0 auto;
+background: rgb(188, 106, 85);
+}
+
+
+</style>
+
+  <body >
+    <div class="wrapper ">
+	    <div class="inner-wrapper">
+            <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
+             <%  include header %>	
+			<div class='content'></div>
+            
+            <div class="alert" style="width:960px;margin:0 auto ;">
+                <a class="close" data-dismiss="alert"><i class="icon-remove"></i></a>
+                <strong>Atenci¨®n!</strong> Curso de Responsive Design con Twitter Bootstrap.
+            </div>
+
+			<!--     http://blog.evantahler.com/blog/production-deployment-with-node-js-clusters.html -->
+            <div>  <a id="simple-menu"  title="first tooltip" href="#sidr">Toogle menu</a>  </div>
+                    			                           
+            <div class='row' style="margin:auto 0">
+			    <div class='span5'> <% include course/question_list %> </div>
+                <div class='span4'>
+				    <div id="selected-question">
+                         
+                    </div>
+                    <div class='span4' id="editor">function foo(items) {
+                       var x = "All this is syntax highlighted";
+                       return x;
+                    }
+                    </div>
+					
+					<form method="POST" class="form-question-submit" href="/course/<%= locals.course_id %>/test" enctype="application/x-www-form-urlencoded"> 
+	                    <input type="hidden" name="content" class="question-content" value=""> 
+			            <input id="btn-question" type="submit" value="Save & Submit">			  
+                    </form>
+					
+				</div>
+            </div>
+			
+			
+			
+ 
+            <div id="sidr" class="sidr left" >
+			    <div class="edu-head">
+                    <img src="http://s3.amazonaws.com/codecademy-production/profile_thumbnail/4fd2c0e23b6fcb0003000209_567678169.jpg" class="author-avtr" data-original-title="&lt;strong&gt;Instructor:&lt;/strong&gt; Leng Lee">
+                </div>
+			
+                <ul>
+                    <li><a href="#">List 1</a></li>
+                    <li class="active"><a href="#">List 2</a></li>
+                    <li><a href="#">List 3</a></li>
+                </ul>
+				<div class="page-title">Developer Center</div>
+                <div class="tp-title"><span>Bryan Moats</span><span>8</span></div>	
+<!-- http://bootsnipp.com/snipps/stats-example  -->
+<div class="span3" >
+	<h4>Goal for Today:</h4>
+	<ul class="unstyled" >
+	    <li>450 Impressions <span class="pull-right strong">45%</span>
+	        <div class="progress progress-important">
+	            <div class="bar" style="width: 45%;"></div>
+	        </div>
+	    </li>
+	    <li>300 Unique Visitors<span class="pull-right strong">30%</span>
+	        <div class="progress progress-success">
+	            <div class="bar" style="width: 30%;"></div>
+	        </div>
+	    </li>
+	</ul>
+</div>
+
+
+				
+            </div>			
+
+			
+		</div>
+	</div>				
+  </body>
+
+
+ 
+<script>
+$(document).ready(function() {
+    $('#simple-menu').sidr();
+	
+	
+    $(".price").tooltip({
+                  'selector': '',
+                  'placement': 'bottom'
+    });
+	
+	$(".question-title").popover({
+                  'selector': '',
+                  'placement': 'top',
+				  'trigger':'hover'				  
+    });
+	
+	
+});
+
+</script>	  
+  
+  
+  
+ <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+	
+    editor.getSession().on('change', function(e) {
+    // e.type, etc
+	    console.log(e.type);
+    });
+	
+	editor.getSession().selection.on('changeSelection', function(e) {
+	
+	    console.log(e);
+    });
+	
+	editor.setReadOnly(false); 
+	editor.getSession().setUseWrapMode(true);
+	editor.session.getLength();
+	editor.insert("Something cool");
+	
+	//editor.setValue("the new text here"); // or session.setValue
+    console.log( editor.getValue() ); // or session.getValue
+
+</script> 
+
+ <script>
+$(".questions ul li ").click(function(event){ 
+$(event.target.id).css('background','#ffeeff')
+       console.log('Clicked '+event.target.id,  $(this).attr('id'));
+	   var des = $(this).find('.question-description').text(),
+	   tip = $(this).find('.question-tip').text(),
+	   tag =$(this).find('.tag').attr('title');
+	   console.log('des',   des );
+	   console.log('tip',   tip  );
+	   console.log('tag',   tag  );
+	   
+	   //$('#selected-question').text(des);
+	   var text = converter.makeHtml(  des );
+	   $('#selected-question').html(  text  );
+       $('#selected-question').attr('qid',event.target.id);	   
+});
+
+
+ 
+ </script> 
+ 
+ <script type="text/javascript" src="/assets/js/showdown.js"></script>
+<script>
+var converter = new Showdown.converter();
+
+$('.form-question-submit').on('submit',function(e){
+    console.log('click',e.target.id,$(this).attr('href'),$('#csrf').val());		
+    e.preventDefault();
+	
+	console.log(',,',editor.getValue());
+	
+	$('.question-content').val( editor.getValue() );
+	
+	$.ajax({
+           type: "POST",
+		   data: $(".form-question-submit").serialize(),
+           url: $(this).attr('href')+'/'+$('#selected-question').attr('qid'),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+			   var msg = $('<div>submit failed</div>');
+			   msg.css('background','#A60000');
+			   msg.css('color','#ffffff')
+           },		   
+           success: function(data)
+           {		        
+                console.log(data);			   
+			   				   
+           }
+    });
+	 
+});
+
+
+
+</script>
+  
+</html>
