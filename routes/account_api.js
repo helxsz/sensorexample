@@ -232,12 +232,30 @@ function loginUser(req, res, next) {
 	var username = req.body.username;
 	var password = req.body.password;
 	if (username && password) {	
-	    //  
-                                
+	    //                                 
 	    userModel.authenticateFromPass(username,password,function(err,data){
 		  if(err){
 		     console.error(err);
-			 res.redirect('/login');
+			 console.log(req.accepted);
+			 
+			 if(req.accepts('text/html')){
+			    console.log('not logined  1111'.red);
+				res.redirect('/login');
+				return;
+			 }
+			 else if(req.accepts('application/json')){	
+                console.log('not logined  2222'.red);			 
+			    res.json({'msg':'user or password not valid'});
+				return;
+			 }
+			 else{
+			    console.log('not logined  3333'.red);
+			    res.redirect('/login');
+				return;
+			 }
+
+			 
+			 
 		  }else{
 		     console.log(data.username,req.body.remember_me,data._id);
 			 //if(req.session) console.log('req session  ');
@@ -275,18 +293,28 @@ function loginUser(req, res, next) {
 		   
              } 	 
 			 
-      // Regenerate session when signing in
-      // to prevent fixation 
-	  /*      */
-      req.session.regenerate(function(){
-        // Store the user's primary key 
-        // in the session store to be retrieved,
-        // or in this case the entire user object
-		console.log('');
-        req.session.uid = data._id;
-        req.session.username = data.username;
-		res.redirect('/');
-      });
+            // Regenerate session when signing in
+            // to prevent fixation 
+	        /*      */
+            req.session.regenerate(function(){
+                 // Store the user's primary key 
+                 // in the session store to be retrieved,
+                 // or in this case the entire user object
+		        console.log('');
+                req.session.uid = data._id;
+                req.session.username = data.username;
+				
+				console.log(req.accepted);
+				if(req.accepts('text/html')){
+				    res.redirect('/');
+				}
+				else if(req.accepts('application/json')){			 
+			        res.json({'uid':data._id,'username':data.username,'token':data._id});
+			    }else{
+			        res.redirect('/');
+			    }				
+		        
+            });
              
 		  }
 		

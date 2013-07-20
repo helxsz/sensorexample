@@ -552,14 +552,15 @@ function getCourseDetail(req,res,next){
 				    loadUserProfileById(req.session.uid,function(err,data){
 				        if(err){return callback(err); }
 				        else{
-						    
-						    locals.user = {username: data.username,email: data.email, img:data.img,id:data._id};
+						    locals.loggedin=true;
+						    locals.user = {username: data.username,email: data.email, img:data.img,id:data._id,isStudent:false};
 							console.log('user',locals.user);
                             callback();							
 					    }
 				    });
 				}
 			}else{
+			    locals.loggedin=false;
                 callback();	
             }
 		},function(callback){
@@ -590,21 +591,28 @@ function getCourseDetail(req,res,next){
                         'isStudent':false,
                         'isTutor':false						
 					};
+					//locals.user.isStudent = false;
 					////////////////////////////////////////////////////////////
-					for(var i=0;i<data.stud.length;i++){				   
+					if(req.session.uid == null){
+
+					}
+					else{
+					 
+					 for(var i=0;i<data.stud.length;i++){				   
 					    console.log(data.stud[i]);
 						if(data.stud[i]==req.session.uid){
 						    console.log('is student   '.green);
 							locals.user.isStudent = true;
 							break;
 						}					   
-					}	
+					 }	
 										
-					if(data.tutor.id._id == req.session.uid) 
-					{				
+					 if(data.tutor.id._id == req.session.uid) 
+					 {				
                         console.log('is tutor   '.green, locals.tutor.name,locals.tutor.id 	);					
 					    locals.user.isTutor = true;
-					}
+					 }
+					} 
                     callback();	
 				}
 			})           			            

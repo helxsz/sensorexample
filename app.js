@@ -113,7 +113,8 @@ app.configure(function(){
 
 	//app.use(express.logger({stream:access_logfile,format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms'}));
 
-    app.use(express.csrf()); 
+    //app.use(express.csrf()); 
+	app.use(conditionalCSRF);
     app.use(function(req, res, next){
       res.locals.token = req.session._csrf;
 	  res.locals.year = new Date().getFullYear();
@@ -200,6 +201,29 @@ app.configure(function(){
         res.type('txt').send('Not found');
     });	
 });
+
+function conditionalCSRF(req, res, next) {
+/**/
+  //compute needCSRF here as appropriate based on req.path or whatever
+ var ua = req.header('user-agent');
+ console.log(ua);
+ if(/mobile/i.test(ua)) {
+     console.log('mobile.html'.green);
+ } else {
+     console.log('desktop.html'.green);
+ }  
+  
+  if (true) {
+    express.csrf();
+	next();
+  } else {
+    next();
+  }
+  
+  //express.csrf();
+  
+}
+
 
 app.configure('development',function(){
 	app.set('db-uri',config.mongodb_development);

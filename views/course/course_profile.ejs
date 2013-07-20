@@ -366,7 +366,7 @@ border: 1px solid #CCC;
   
   
   
-  
+    <% if(locals.loggedin) { %> 	
 		<div class="span3">
 		    <% if(!locals.user.isStudent) { %> 			
                 <form method="post" id="login-form" class="well  " action="/course/<%= locals.course._id %>/join" enctype="application/x-www-form-urlencoded">
@@ -407,7 +407,7 @@ border: 1px solid #CCC;
 	        <% } %>		  
 		  
 		</div>  
-  
+    <% } %>	
   
   
   
