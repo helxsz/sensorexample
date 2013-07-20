@@ -209,13 +209,31 @@ function signupUser(req,res,next){
 		    console.log("signup success".green, data);
 		    req.session.uid = data._id;
             req.session.username = data.username;
-		    res.redirect('/');		   
+			
+			if(req.accepts('text/html')){
+				    res.redirect('/');
+			}
+			else if(req.accepts('application/json')){	
+			
+			        res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
+					         ,'access_token':data._id});
+			}		
 		}
 	});	
 
 }
 
-
+/*
+{
+    "access_token": "fb2e77d.47a0479900504cb3ab4a1f626d174d2d",
+    "user": {
+        "id": "1574083",
+        "username": "snoopdogg",
+        "full_name": "Snoop Dogg",
+        "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_1574083_75sq_1295469061.jpg"
+    }
+}						
+*/	
 
 function loginUser(req, res, next) {
     if (!req.body.username) {
@@ -245,7 +263,7 @@ function loginUser(req, res, next) {
 			 }
 			 else if(req.accepts('application/json')){	
                 console.log('not logined  2222'.red);			 
-			    res.json({'msg':'user or password not valid'});
+			    res.json(404,{'msg':'user or password not valid'});
 				return;
 			 }
 			 else{
@@ -253,8 +271,6 @@ function loginUser(req, res, next) {
 			    res.redirect('/login');
 				return;
 			 }
-
-			 
 			 
 		  }else{
 		     console.log(data.username,req.body.remember_me,data._id);
@@ -308,10 +324,10 @@ function loginUser(req, res, next) {
 				if(req.accepts('text/html')){
 				    res.redirect('/');
 				}
-				else if(req.accepts('application/json')){			 
-			        res.json({'uid':data._id,'username':data.username,'token':data._id});
-			    }else{
-			        res.redirect('/');
+				else if(req.accepts('application/json')){	
+			
+			        res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
+					         ,'access_token':data._id});
 			    }				
 		        
             });
