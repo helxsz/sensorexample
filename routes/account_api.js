@@ -550,4 +550,37 @@ function isGlobalAdmin(req) {
 
 */
 
+app.post('/sessions/pictures/', updateUserImageToFolder);
+function updateUserImageToFolder(req,res,next){
+//http://stackoverflow.com/questions/9844564/render-image-stored-in-mongo-gridfs-with-node-jade-express?rq=1
+//https://github.com/cianclarke/node-gallery/tree/master/views
+//http://stackoverflow.com/questions/3709391/node-js-base64-encode-a-downloaded-image-for-use-in-data-uri 
+//http://pastebin.com/Gt1EWVWr  request iamge icon based64
+//http://stackoverflow.com/questions/8110294/nodejs-base64-image-encoding-decoding-not-quite-working
 
+	console.log('updateUserImageToFolder'.green,req.files.image.path);
+	var tem_path = req.files.image.path;	
+	
+	var target_path = './public/useruploads/'+req.files.image.name;
+	console.log(target_path);	
+	fs.rename(tem_path,target_path,function(err){
+		if(err) { res.send(err); next(err);}	
+		else{	
+			fs.readFile(target_path, "binary", function(error, file) {
+			    if(error) {
+			      res.writeHead(500, {"Content-Type": "text/plain"});
+			      res.write(error + "\n");
+			      res.end();
+			    } else {
+				  var base64data = new Buffer(file).toString('base64');
+				  var imagesrc = util.format("data:%s;base64,%s", 'image/jpg', base64data);
+				  //console.log(imagesrc);
+				  //res.send('<img src="'+imagesrc+'"/>');
+				  				  
+			      res.writeHead(200, {"Content-Type": "image/png"});
+			      res.write(file, "binary");
+			    }
+			})
+		}				
+	})	
+}
