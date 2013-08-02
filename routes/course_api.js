@@ -52,7 +52,40 @@ app.put('/course/:id/setting',authTutor,updateCourseSetting);
 app.put('/course/:id/setting/image',authTutor,updateImageToGridfs);
 app.get('/course/image/:id',authTutor,getImageFromGrids);
 
+app.get('/courses',getCourses);
 
+function getCourses(req,res){
+    var locals = {};	
+    var skip = (req.query["s"])?req.query["s"]:0, limit = (req.query["l"])?req.query["l"]:10, option = {'skip':skip,'limit':limit};
+
+	async.parallel([
+		function(callback) {
+		   courseModel.findCoursesByQuery({},option,function(err,courses){
+		            if(err) {
+			            console.log('course uid not found'.red,err);
+		            }
+			        else{
+			            console.log('find courses'.green,courses.length);			   
+                        locals.courses = courses; 
+                    }
+				    callback();	
+		   })
+		  		
+		}],function(err) {
+	      if (err) {
+		    console.log(err);
+		    next(err);
+			return;
+          }				   
+			if(req.accepts('text/html')){
+				res.redirect('/');
+			}
+			else if(req.accepts('application/json')){
+			    res.json(locals.courses);
+			}
+	});	 
+	
+}
 
 
 function getCourseSettingPage(req,res,next){

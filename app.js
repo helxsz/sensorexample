@@ -206,17 +206,20 @@ function conditionalCSRF(req, res, next) {
 /**/
   //compute needCSRF here as appropriate based on req.path or whatever
  var ua = req.header('user-agent');
- console.log(ua);
+ //console.log(ua);
+ /*
  if(/mobile/i.test(ua)) {
      console.log('mobile.html'.green);
  } else {
      console.log('desktop.html'.green);
- }  
-  
-  if (true) {
+ }
+  */   
+  if (ua.indexOf("android") == -1) {
+    console.log('csrf');
     express.csrf();
 	next();
   } else {
+    console.log('no csrf');
     next();
   }
   

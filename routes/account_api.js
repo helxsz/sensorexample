@@ -320,12 +320,12 @@ function loginUser(req, res, next) {
                 req.session.uid = data._id;
                 req.session.username = data.username;
 				
-				console.log(req.accepted);
+				//console.log(req.accepted);
 				if(req.accepts('text/html')){
 				    res.redirect('/');
 				}
 				else if(req.accepts('application/json')){	
-			
+			        console.log("json");
 			        res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
 					         ,'access_token':data._id});
 			    }				
@@ -584,3 +584,5 @@ function updateUserImageToFolder(req,res,next){
 		}				
 	})	
 }
+
+
