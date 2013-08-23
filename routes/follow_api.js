@@ -31,18 +31,37 @@ var requireLogin = function(role) {
 	}	
   }
 };
-	
-app.get('/follow/:id',getFollowers);
-app.post('/follow/:id',requireLogin(''),followPeople);
-app.del('/follow/:id',requireLogin(''),notFollowPeople);
+/******************
+     USER 'S OPERATION ON follow/unfollow/block/unblock/approve/deny 
 
-function getFollowers(req,res,next){
-   console.log('getFollowers',req.params.id);
-   req.send(200);
+https://api.instagram.com/v1/users/1574083/relationship?access_token=ACCESS-TOKEN
+One of follow/unfollow/block/unblock/approve/deny.
+{
+    "meta": {
+        "code": 200
+    }, 
+    "data": {
+        "outgoing_status": "requested"
+    }
 }
+*****************/
+
+// follow
+app.post('/follow/:user_id',requireLogin(''),followPeople);
+
+// unfollow 
+app.del('/follow/:user_id',requireLogin(''),notFollowPeople);
+app.post('/unfollow/:user_id',requireLogin(''),notFollowPeople);
+
+// approave / deny
+app.post('/approve/:user_id',requireLogin(''),approvePeople);
+app.post('/approve/:user_id',requireLogin(''),denyPeople);
+
 
 function followPeople(req,res,next){
-     console.log('followPeople',req.session.uid,req.params.id,req.body.follow);	 
+     console.log('follow People  by ID:',req.params.user_id,  req.session.uid, req.body.follow);
+
+     var user_id = 	 req.params.user_id;
 	 var follow = sanitize(req.body.follow).toInt(); 	 
 	 try {
          check(follow, 'Please enter a valid integer').notNull().isInt();
@@ -53,7 +72,7 @@ function followPeople(req,res,next){
      {
 	    async.parallel([
 	        function(callback) {
-	            followModel.follow(req.session.uid,req.params.id,function(err,data){
+	            followModel.follow(req.session.uid,user_id,function(err,data){
 	                if(err){console.log('follow err');callback();}
                     else{
 					   console.log('follow success'.green,data);
@@ -62,7 +81,7 @@ function followPeople(req,res,next){
 	            });			
 		    },
 		    function(callback) {
-	            followModel.isfollowedBy(req.params.id,req.session.uid,function(err,data){
+	            followModel.isfollowedBy(user_id,req.session.uid,function(err,data){
 	                if(err){console.log('followed err');callback();}
                     else{
 					   console.log('is followed success'.green,data);
@@ -78,14 +97,14 @@ function followPeople(req,res,next){
 		             next(err);
 			        return;
                 }	
-                res.send(200,{'follow':1});
+                res.send(200,{'follow':1, "meta": { "code": 200}, "data": { "outgoing_status": "requested"  }});
 		  
 	    });		   
 	 }
      else{	 
 	    async.parallel([
 	        function(callback) {
-	            followModel.unfollow(req.session.uid,req.params.id,function(err,data){
+	            followModel.unfollow(req.session.uid,user_id,function(err,data){
 	                if(err){console.log('unfollowerr');callback();}
                     else{
 					   console.log('unfollow success'.green,data);
@@ -94,7 +113,7 @@ function followPeople(req,res,next){
 	            });				
 		    },
 		    function(callback) {
-	            followModel.isUnfollowedBy(req.params.id,req.session.uid,function(err,data){
+	            followModel.isUnfollowedBy(user_id,req.session.uid,function(err,data){
 	                if(err){console.log('isUnfollowedBy err');callback();}
                     else{
 					   console.log('isUnfollowedBy success'.green,data);
@@ -107,18 +126,63 @@ function followPeople(req,res,next){
 		            next(err);
 			        return;
                 }	
-                res.send(200,{'follow':0});		  
+                res.send(200,{'follow':0,"meta": { "code": 200}, "data": { "outgoing_status": "requested"  }});	
+                				
 	    });	
-     }
-
- 
+     } 
 }
 
 function notFollowPeople(req,res,next){
-   console.log('notFollowPeople',req.params.id);
+   console.log('unFollow People by ID:',req.params.user_id);
+   var user_id = 	 req.params.user_id;
+   req.send(200,   { "meta": { "code": 200}, "data": { "outgoing_status": "requested"  } });
+}
+
+function approvePeople(req,res,next){
+   console.log('approve People by ID:',req.params.user_id);
+   var user_id = 	 req.params.user_id;
+   req.send(200,   { "meta": { "code": 200}, "data": { "outgoing_status": "requested"  } });
+}
+
+function denyPeople(req,res,next){
+   console.log('deny People by ID:',req.params.user_id);
+   var user_id = 	 req.params.user_id;
+   req.send(200,   { "meta": { "code": 200}, "data": { "outgoing_status": "requested"  } });
+}
+
+/*******************************************
+{
+    "data": [{
+        "username": "meeker",
+        "first_name": "Tom",
+        "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_6623_75sq.jpg",
+        "id": "6623",
+        "last_name": "Meeker"
+    }]
+}  
+********************************************/
+
+/******************************
+  GET MY FOLLOWER / FOLLOWEDBY
+******************************/
+	
+//app.get('/follow/:id',getFollowers);
+app.get('/self/follower',getMyFollowers);
+app.get('/self/followedBy',getMyFollowedBy);
+
+function getMyFollowers(req,res,next){
+   console.log('getFollowers',req.params.id);
    req.send(200);
 }
 
+function getMyFollowedBy(req,res,next){
+   console.log('getMyFollowedBy',req.params.id);
+   req.send(200);
+}
+
+/**********************************
+  GET USER'S FOLLOWER / FOLLOWEDBY
+**********************************/
 app.get('/profile/:id/follower',getFollower);
 app.get('/profile/:id/following',getFollowing);
 

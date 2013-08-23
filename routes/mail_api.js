@@ -2,7 +2,7 @@ var emailer = require('nodemailer');
 
 var config = {
     user:"helxsz@gmail.com"
-   ,pass:"uranus1027303"
+   ,pass:"Xsz_303uranus1027303"
    ,name:"fablab"
 };
 
@@ -32,8 +32,30 @@ var transport = nodemailer.createTransport("SES", {
 
 exports.sendActiveMail = sendActiveMail;
 exports.sendResetPassMail = sendResetPassMail; 
+exports.sendMail = sendMail;
+exports.sendInvitationMail = sendInvitationMail;
 
-function sendActiveMail(who, token, name) {
+function sendInvitationMail(courseid, token, tutor, description,mail,callback){
+  var from = config.user;
+  var to = mail;
+  var subject = config.name + 'course invitation';
+  //course/:id/invitation/:token/reply
+  var html = '<p>hello£º<p/>' +
+    '<p>we receive ' + config.name + ' the message for registration, please click the link£º</p>' +
+    '<a href="' + SITE_ROOT_URL + '/course/'+courseid+'/invitation/' + token + '/reply">invitation link</a>' +
+    '<p>' + description + '</p>' +
+    '<p>' + tutor + '</p>';
+
+  sendMail({
+    from: from,
+    to: to,
+    subject: subject,
+    html: html
+  },callback);   
+
+}
+
+function sendActiveMail(who, token, name,callback) {
   var from = config.user;
   var to = who;
   var subject = config.name + 'account activation';
@@ -48,10 +70,13 @@ function sendActiveMail(who, token, name) {
     to: to,
     subject: subject,
     html: html
-  });
+  },callback);
 };
 
-function sendResetPassMail(who, token, name) {
+
+
+
+function sendResetPassMail(who, token, name,callback) {
   var from = config.user;
   var to = who;
   var subject = config.name + 'account reset';
@@ -66,20 +91,12 @@ function sendResetPassMail(who, token, name) {
     to: to,
     subject: subject,
     html: html
-  });
+  },callback);
 };
 
-function sendMail(mailOpts){
-
+function sendMail(mailOpts,callback){
     // send mail with defined transport object
-    smtpTransport.sendMail(mailOpts, function(error, response){
-        if(error){
-            console.log(error);
-        }else{
-            console.log("Message sent: " + response.message);
-        }
-        //smtpTransport.close(); 
-    }); 
+    smtpTransport.sendMail(mailOpts, callback); 
 }
 
 /*

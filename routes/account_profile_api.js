@@ -25,7 +25,7 @@ var im = require('imagemagick');
 
 
 //app.get('/',authUser,homePage);
-app.get('/',homePage);
+
 /**
   update the profile
 */
@@ -51,54 +51,7 @@ app.del('/settings/social',permissionAPI.authUser,deleteUserSoical);
 app.get('/settings/notification',permissionAPI.authUser,getNotificationPage);
 app.put('/settings/notification',permissionAPI.authUser,updateUserNotification);
 
-function homePage(req,res){
-    var locals = {};	
-    var skip = (req.query["s"])?req.query["s"]:0, limit = (req.query["l"])?req.query["l"]:10, option = {'skip':skip,'limit':limit};
 
-	async.parallel([
-	    function(callback) {
-	       if (req.session.uid) {
-		        console.log('retrieve homePage'.green, req.session.username,req.session.uid);
-		        userModel.findUserById(req.session.uid,function(err,user){
-		            if(err) {
-			            console.log('user uid not found'.red);
-		            }
-			        else{
-			            console.log('find user uid'.green,user._id);
-                        locals.user = {
-                           username: user.username,
-					       email: user.email,
-						   img: user.img
-                        };					
-                    }
-                    callback();					
-		        })
-	        }else{
-                    callback();	
-            }			
-		},
-		function(callback) {
-		   courseModel.findCoursesByQuery({},option,function(err,courses){
-		            if(err) {
-			            console.log('course uid not found'.red,err);
-		            }
-			        else{
-			            console.log('find courses'.green,courses.length);			   
-                        locals.courses = courses; 
-                    }
-				    callback();	
-		   })
-		  		
-		}],function(err) {
-	      if (err) {
-		    console.log(err);
-		    next(err);
-			return;
-          }				   
-		  res.render('home', locals);
-	});	 
-	
-}
 
 function getDashboardPage(req,res,next){
     var locals = {};	
@@ -287,8 +240,10 @@ function updateUserImageToGridfs(req,res,next){
 				return;
 		    }
 			else{
-			    console.log('find user uid'.green,user._id,user.salt);
-                var	fileHash = crypto.createHash('md5').update(file.path + '' + (new Date()).getTime()).digest('hex');
+			    console.log('find user uid'.green,user._id,user.salt,user.username);
+                //var	fileHash = crypto.createHash('md5').update(file.path + '' + (new Date()).getTime()).digest('hex');
+				
+				var	fileHash = crypto.createHash('md5').update(user.username).digest('hex');
 	            var newFileName = (fileHash + file.type);
 				
 				if(user.img){

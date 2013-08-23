@@ -228,61 +228,31 @@ background-color: #409f89;
     <div class="form_container row">
       <div class="span8" style="border-right: 1px dotted #d0d5cb;">
 	
-        <form method="post" action="/course/<%= locals.course._id %>/questions" id="question_form" class="form-horizontal " enctype="multipart/form-data" >
+        <form method="post" action="/course/<%= locals.course._id %>/students" id="invite_form" class="form-horizontal " enctype="multipart/form-data" >
             <input type="hidden" name="_csrf" value="<%= token %>"/>
 			<input type="hidden" id="course_id" name="course_id" value="<%= locals.course._id %>" />
 
             <fieldset>
                 <div id="description-cg" class="control-group ">
-                    <label for="description-tf" class="control-label"><strong>Description</strong></label>
+                    <label for="description-tf" class="control-label"><strong>Email</strong></label>
                     <div class="controls control span9">
-						<textarea id="description-tf" type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
+						<textarea id="description-tf" type="text" name="email" value=""  style="margin-bottom: 5px; height: 68px; width: 400px;"> </textarea>
                         <span ><span class="character_counter">130</span>/130</span>
 					</div>	
-                    <span class="tip" >Describe your questions in either text or code</span>																			
+                    <span class="tip" >Email</span>																			
       		    </div>
-
-                <div id="tip-cg" class="control-group ">
-                    <label for="tip-tf" class="control-label"><strong>Tip</strong><small>(optional)</small></label>
-                    <div class="controls control span9">
-						<textarea id="tip-tf" type="text" name="tip" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
-					</div>
-                    <span class="tip" >Give your tip in either text or code</span>																								
-      		    </div>
-
-                <div id="solution-cg" class="control-group ">
-                    <label for="solution-tf" class="control-label"><strong>Solution</strong></label>
-                    <div class="controls control span9">
-						<textarea id="solution-tf" type="text" name="solution" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
-					</div>					
-      		    </div>
-								
-                <div id="level-cg" class="control-group ">
-                    <label for="level-tf" class="control-label"><strong>Level</strong></label>
-                    <div class="controls control span9">				
-                        <select class="required select"  name="level">
-                                <option name="level" value="0">Easy</option>
-							    <option name="level" value="1">InterMediate</option>
-								<option name="level" value="2">Tricky</option>
-                                <option name="level" value="3">Hard</option>								
-						</select>				
-					</div>						
-      		    </div>								
-				
-                <div id="tags-cg" class="control-group ">
-                    <label for="tags-tf" class="control-label"><strong>Tags</strong><small>(optional)</small></label>
-                    <div class="controls control span9">         
-						<input name="tags" id="tags" value="" />
-                    </div>
-                </div>
 								
                  <div class="form-actions">
-                      <input type="submit" id="form_btn" value="Add Question"></input>					  
+                      <input type="submit" id="form_btn" value="Send Email"></input>					  
                 </div>
              </fieldset>
          </form>
+		 
+        <% include course_form_invite_list %> 
+
+
+		 
+		 
 		</div>
 		
 		
@@ -293,7 +263,7 @@ background-color: #409f89;
                     <button><i class='icon-search'></i></button>
             </div>
 			
-			<% include question_list %>
+			
 		</div>
 	</div>	
 </div>
@@ -367,12 +337,12 @@ function onKey(e){
 
 
 
-$("#question_form").on('submit',function(e){
+$("#invite_form").on('submit',function(e){
     console.log('click');		
     e.preventDefault();
     $.ajax({
            type: "POST",
-           url: "/course/"+   $('#course_id').val() +"/questions",
+           url: "/course/"+   $('#course_id').val() +"/setting/invite",
            data: $(this).serialize(), 
            success: function(data)
            {

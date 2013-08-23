@@ -23,6 +23,7 @@ var CourseSchema = mongoose.Schema({
 		 cate:String,
 		 acti:{type:Boolean, "default":false},
 		 lang:{type:String, "default":'en'},
+		 
 	     /////////////////////////////////////
 		 cdate: Date,  // created date
          mdate: Date,  // updated date
@@ -30,13 +31,22 @@ var CourseSchema = mongoose.Schema({
 		 stud:[{ type: ObjectId, ref: 'User' }], // student
 		 ques:[{ type: ObjectId, ref: 'Question' }],       // question
 		 post:[{ type: ObjectId, ref: 'Post'}],
+		 
+		 
 		 com:[Comment],
 		 stat:{
 		    s_count:{type:Number,default:0},  //count on students
 			c_count:{type:Number,default:0},  //count on comments
 			p_count:{type:Number,default:0},   // count on posts
 			q_count:{type:Number,default:0}   // count on questions
-		 } 
+		 },
+          
+         classes:[ CourseClassSchema ],		  
+         ////////////////////////////////////////////////////////////////
+		 setting: { pri:{type:Boolean,default:true}, mode: {type:Number,default:0}},  // mode enum : 1 public, 0 private,
+		 
+		 invitations: [{ type: ObjectId, ref: 'Invitation' }]  
+           
 });
 //http://stackoverflow.com/questions/11304739/how-to-store-threaded-comments-using-mongodb-and-mongoose-for-node-js
 //http://blog.mongodb.org/post/29140593886/designing-mongodb-schemas-with-embedded-non-embedded
@@ -48,6 +58,18 @@ var Comment = mongoose.Schema({
   , text  :  String 
   , slug  :  {type:String, index:true}
 });
+
+var CourseClassSchema = mongoose.Schema({
+	ref_id:{type:ObjectId},
+	type:{type:Number,default:0},  // { post:1, question:2, }
+	
+	title:{type:String},
+	req:[String],
+    status:{type:Number,default:0},
+    score:{type:Number,default:0},	
+	duration:{type:Number,default:0}
+});
+
 
 var CourseModel = mongoose.model('Course',CourseSchema);
 exports.CourseModel = CourseModel;
@@ -208,15 +230,14 @@ function findCoursePostsById(id,callback){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// should record when the student join in the course
 function joinCourse(cid,uid,callback){
     try {
          uid = mongoose.Types.ObjectId(uid);
     } catch(e) {
         return callback(e, null);
     }	
-	
-	
+		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}},options,function(err,ref){
@@ -268,7 +289,7 @@ function findCourseStudentsById(id,callback){
 
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////          Qeustions           //////////////////////////////////////
 
 
 function findCourseQuestionsById(id,callback){
@@ -332,7 +353,7 @@ function removeQuestion(cid,qid,callback){
 	})  
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////    Comments      /////////////////////////////////////
 
 function findCourseCommentsById(id,option,callback){
 
@@ -397,6 +418,183 @@ function removeComment(cid,mid,callback){
 }
 
 
+/****************************************  add classes 
+var CourseClassSchema = mongoose.Schema({
+	ref_id:{type:ObjectId},
+	type:{type:String},
+	req:{type:String},
+	title:{type:String},
+	
+    status:{type:Number,default:0},
+    score:{type:Number,default:0},	
+	duration:{type:Number,default:0}
+});
+
+add class and send notification
+or 
+just add class
+ ***************************************/
+function addClass(uid, title,type,requirements,duration,scores,status, callback){
+
+    try {
+         uid = mongoose.Types.ObjectId(uid);
+    } catch(e) {
+        return callback(e, null);
+    }		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'type':type,'title':title,'req':requirements,'duration':duration,'scores':scores,'status':status}}
+	                             ,'$inc':{'stat.p_count':1}},options,function(err,ref){
+		if(err) {
+			console.log('update joinCourse'.red,err);
+			callback(err, null);
+		}else{
+			console.log('update joinCourse  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+}
+
+function disableClassShown(cid,classId, callback){
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':0}}
+	                             ,'$inc':{'stat.p_count':1}},options,function(err,ref){
+		if(err) {
+			console.log('update joinCourse'.red,err);
+			callback(err, null);
+		}else{
+			console.log('update joinCourse  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+}
+
+function enableClassShown(cid, classId, callback){
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':1}}
+	                             ,'$inc':{'stat.p_count':1}},options,function(err,ref){
+		if(err) {
+			console.log('update joinCourse'.red,err);
+			callback(err, null);
+		}else{
+			console.log('update joinCourse  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+}
+
+function removeClass(cid,classId,callback){
+
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':1}}
+	                             ,'$inc':{'stat.p_count':1}},options,function(err,ref){
+		if(err) {
+			console.log('update joinCourse'.red,err);
+			callback(err, null);
+		}else{
+			console.log('update joinCourse  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+}
+
+
+
+/************************************  invitation ********************************/
+
+function addInvitationToList(cid,invitation_id,callback){
+
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }
+	
+		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'invitations':invitation_id}},options,function(err,ref){
+		if(err) {
+			//console.log('update addInvitationToList'.red,err);
+			callback(err, null);
+		}else{
+			//console.log('update addInvitationToList  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+	
+}
+
+function removeInvitationFromList(cid,invitation_id,callback){
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }
+	
+	
+ 	var options = { new: false ,select:'_id'};	
+	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'invitations':invitation_id}},options,function(err,ref){
+		if(err) {
+			//console.log('update removeInvitationFromList'.red,err);
+			callback(err, null);
+		}else{
+			//console.log('update removeInvitationFromList'.green+ref);				  
+		    callback(null,ref);
+		}
+	}) 
+}
+
+function findCourseInvitationById(id,callback){
+
+    try {
+         id = mongoose.Types.ObjectId(id);
+    } catch(e) {
+        return callback(e, null);
+    }
+
+	
+	CourseModel.findById(id).populate('invitations','name email time status reply valid').exec(function(err, invis) { 
+		if(err){callback(err, null);}
+		else{
+		    console.log('findCourseInvitationById',invis,invis.invitations.length);
+			callback(null, invis.invitations);
+		}	   
+	})
+	
+/*	
+	CourseModel.findById(id,'invitations',function(err, invis){
+		if(err){callback(err, null);}
+		else{
+		    console.log('findCourseInvitationById',invis,invis.length);
+			callback(null, invis);
+		}	
+	});
+*/
+}
+
+exports.addInvitationToList = addInvitationToList;
+exports.removeInvitationFromList = removeInvitationFromList;
+exports.findCourseInvitationById = findCourseInvitationById;
+/*************************************************************************************/
 
 exports.createNewCourse = createNewCourse;
 
@@ -405,7 +603,6 @@ exports.updateCourseSetting = updateCourseSetting;
 exports.findCoursesAdmin =findCoursesAdmin;
 
 exports.findCoursesByQuery = findCoursesByQuery;
-
 exports.findCourseById = findCourseById;
 
 exports.findCourseAndTutorById = findCourseAndTutorById;
@@ -424,3 +621,9 @@ exports.removeQuestion = removeQuestion;
 
 exports.addComment = addComment;
 exports.removeComment = removeComment;
+
+
+exports.addClass = addClass;
+exports.removeClass = removeClass;
+exports.disableClassShown;
+exports.enableClassShown;

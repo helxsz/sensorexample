@@ -19,6 +19,7 @@ var followModel = require('../model/follow_model');
 var util = require("util");//, mime = require("mime");
 var im = require('imagemagick');
 
+var mail_api = require('./mail_api');
 var permissionAPI = require('./permission_api');
 // session
 
@@ -42,6 +43,62 @@ app.del('/sessions', logoutUser);
 app.post('/users/validate/username/', validateName);
 app.post('/users/validate/email/', validateEmail);
 
+/**
+       login and register with email invitation
+**/
+
+app.post('/signup/invitation/email',sendSignupInvitationEmail);
+function sendSignupInvitationEmail(){
+    var locals = {};
+    var cid = req.params.id; 
+    if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
+    console.log(" inviteStudents".green,req.body.email);
+	
+	var email = req.body.email;
+	/*
+    try {      
+       check(email).isEmail();
+    } catch (e) {
+	   console.log("email  is wrong");
+       res.statusCode = 400;
+       res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
+       return;
+    }
+	*/	
+	var email_status = 0;
+    mail_api.sendInvitationMail(cid, token , locals.course.title, locals.course.summ ,email, function(error, response){
+                        if(error){
+                            console.log("inviteStudents Message sent error ".red,error); // get error message
+					        email_status = 1;
+                            res.json(200,"email sent error");
+                            return;							
+                        }else{
+                            console.log("inviteStudents  Message sent: ".green ,response.message);
+					        email_status = 2;
+                            res.json(200,"email sent successfully");
+                            return;							
+                        }
+				        
+    });	
+}
+
+app.get('/signup/invitation/:token',signupWithInvitation);
+
+function signupWithInvitation(req,res,next){
+   var token = req.params.token;
+   // how to verify the token
+   if(true){
+        // go to welcome register page  , then receive the course notification
+   }else{
+        // go to thank you page   
+   }
+}
+
+
+/****
+       username and email validation
+
+*****/
 
 function validateName(req, res,next){
     result = '';
@@ -215,7 +272,7 @@ function signupUser(req,res,next){
 			}
 			else if(req.accepts('application/json')){	
 			
-			        res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
+			    res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
 					         ,'access_token':data._id});
 			}		
 		}

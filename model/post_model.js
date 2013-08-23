@@ -5,7 +5,8 @@ var postSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     username: String,
     data: String,
-    cdate:{ type: Date, default: Date.now }
+    cdate:{ type: Date, default: Date.now },
+	com:[Comment]
 });
  
 var PostModel = mongoose.model('Post',postSchema);

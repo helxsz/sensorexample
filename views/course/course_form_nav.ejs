@@ -72,16 +72,27 @@ position: relative;
                             </a>
                         </li>
                     </ol>
-
-
                 </li>
+				
+                <li class="questions">
+                    <a class="tab"  href="/course/<%= locals.course._id %>/setting">
+                        <span class="icon-preview"></span>
+                      Main Setting Page
+                    </a>
+                </li>
+				
                 <li class="questions">
                     <a class="tab"  href="/course/<%= locals.course._id %>/setting/questions">
                         <span class="icon-preview"></span>
                       Questions Page
                     </a>
                 </li>
-				
+                <li class="student">
+                    <a class="tab"  href="/course/<%= locals.course._id %>/setting/invitation">
+                        <span class="icon-preview"></span>
+                      Invitation Page
+                    </a>
+                </li>				
 				<li class="delete">
 				    <form method="post" action="/course/<%= locals.course._id %>" id="account-form" class="form-horizontalspan6" >
                        <input type="hidden" name="_csrf" value="<%= token %>"/>

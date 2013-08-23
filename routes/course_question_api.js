@@ -19,10 +19,6 @@ var ObjectId = mongoose.Schema.ObjectId;
 var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
 
-
-
-
-
 /******************************************************************
 
                     question model
@@ -43,31 +39,22 @@ function getCourseDetailOnQuestions(req,res,next){
 	    function(callback) {
             courseModel.findCourseQuestionsById(req.params.id,function(err,data){
 			    if(err) { next(err); callback();	}
-	            else{
-				    				    
-					locals.student = false;
-					locals.tutor = false;
-					if(data.stud){
-					//console.log(data.stud.length);
-					 for(var i=0;i<data.stud.length;i++){				   
-					    console.log(data.stud[i].username,data.stud[i].email,data.stud[i]._id);
-						if(data.stud[i]._id==req.session.uid){
-							locals.student = true;
-							break;
-						}					   
-					 } 
-					  locals.students = data.stud;
-					}
-					
-					//if(req.session.uid == data.tutor.id) locals.tutor = true;
-					
+	            else{				    				    
+                    locals.questions = data.ques;	
+                    console.log(data.ques);					
                     callback();	
 				}
 			})           
 		}],function(err){
-	      if (err) return next(err);
+	        if (err) return next(err);
 		  
-		  
+			if(req.accepts('text/html')){
+				locals.page = 'posts';					
+                res.render('course/course_page_questions.ejs', locals.questions);
+			}
+			else if(req.accepts('application/json')){				
+			    res.json(200,locals.questions);
+			}		  
 		  
           /*		  
 	      res.format({
@@ -108,21 +95,21 @@ function postNewQuestion(req,res,next){
 	                                    'que':description
 	                                   ,'tip':tip
 									   ,'sol':solution
-	                                   ,'ans':2
-									   ,'lev':level
+	                                   //,'ans':2
+									   //,'lev':level
 									   ,'uid': mongoose.Types.ObjectId(req.session.uid)
-									   ,'tags':tags.split(',')
+									   //,'tags':tags.split(',')
 									 },	
-	function(err,data){
-	    console.log('referer',req.referer);
+	function(err,question_data){
+	    //console.log('referer',req.referer);
 	    //if(req.referer) res.redirect(req.referer);
 		if(err){ next(err); return res.send(500,{"msg":"question added failed"}); }
 		else{
-		      console.log(data._id,'...................');
-		      courseModel.addQuestion(req.params.id,data._id.toString(),function(err,data){
+		      console.log(question_data._id,'...................',question_data);
+		      courseModel.addQuestion(req.params.id,question_data._id.toString(),function(err,data){
 			      if(err) { next(err); return res.send(500,{"error":"question added failed"}); }
 			      else{
-				       res.send(200,{'msg':'update success'});
+				       res.send(200,{'msg':'update success','question_id':question_data._id});
 				  }			   
 			   });
             			   
