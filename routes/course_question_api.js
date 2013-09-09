@@ -40,22 +40,25 @@ function getCourseDetailOnQuestions(req,res,next){
             courseModel.findCourseQuestionsById(req.params.id,function(err,data){
 			    if(err) { next(err); callback();	}
 	            else{				    				    
-                    locals.questions = data.ques;	
-                    console.log(data.ques);					
+                    locals.questions = data;	
+                    console.log(data);					
                     callback();	
 				}
 			})           
 		}],function(err){
 	        if (err) return next(err);
-		  
-			if(req.accepts('text/html')){
+		    console.log(req.accepted);
+			
+			if(req.accepts('application/json')){	
+                console.log("'application/json'");			
+			    res.json(200,locals.questions);
+			}
+			else if(req.accepts('text/html')){
+			    console.log("accepts('text/html')");
 				locals.page = 'posts';					
                 res.render('course/course_page_questions.ejs', locals.questions);
 			}
-			else if(req.accepts('application/json')){				
-			    res.json(200,locals.questions);
-			}		  
-		  
+             		  
           /*		  
 	      res.format({
                     html: function(){

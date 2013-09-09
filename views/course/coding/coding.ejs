@@ -1,0 +1,220 @@
+<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/js/skulpt.js" type="text/javascript"></script> 
+<script src="/assets/js/builtin.js" type="text/javascript"></script> 
+
+<script src="/assets/js/ace/mode-python.js" type="text/javascript"></script>
+
+
+    <div class="span6 ">
+		<div class="question_description">
+			    description
+		</div>
+		<div class="question_tip">
+			   tip
+		</div>
+        <div class=" "id="editor">
+import turtle
+t = turtle.Turtle()
+t.forward(100)
+print "Hello World" 
+        </div>
+		<form class="span2" id=".form-question-submit" method="post" action="/workplan/5218b3cbd830bb640c000002/milestone/efg/questions/520db60a8932d7700f000004"  class="form-horizontal " enctype="multipart/form-data" >
+            <input type="hidden" name="_csrf" value="<%= token %>"/>
+			<input type="hidden" name="answer" id="answer_input">
+            <div class="button  offset1" type="submit" onclick="runit()" ><a href="#"><i class="ss-icon">sync</i>Update</a></div>			
+        </form>		
+	</div>	
+   
+
+
+<style>
+#editor { 
+
+height: 351px;	
+}
+
+#editor .button {
+border-radius: 2px;
+border-bottom: 3px solid rgba(0,0,0,0.2);
+background: #22c6b8;
+display: inline-block;
+text-align: center;
+text-transform: uppercase;
+margin: 0 5px 0 0;
+position: relative;
+}
+
+#editor .button:before {
+position: absolute;
+width: auto;
+background: rgba(0,0,0,0.15);
+top: 0;
+left: 0;
+right: 170px;
+bottom: -3px;
+content: " ";
+animation: slide 4s linear infinite;
+z-index: 2;
+animation-delay: 2s;
+border-radius: 2px 0 0 2px;
+}
+
+#output {
+height: 140px;
+width: 380px;
+margin-top: 10px;
+}
+
+#mycanvas {
+background-color: #f5f5f5;
+border: 1px solid #ccc;
+border: 1px solid rgba(0, 0, 0, 0.15);
+-webkit-border-radius: 1px;
+-moz-border-radius: 4px;
+border-radius: 1px;
+
+width: 400px;
+margin-top: 10px;
+height: 351px;
+}
+
+
+.question_description {
+background: white;
+border-radius: 6px;
+height: 60px;
+margin: 10px 0;
+opacity: 0.8;
+padding: 4px 25px;
+width: 400px;
+box-shadow: 5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px #fff;
+}
+
+.question_tip {
+background: white;
+border-radius: 6px;
+height: 60px;
+margin: 10px 0;
+opacity: 0.8;
+padding: 4px 25px;
+width: 400px;
+box-shadow: 5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px #fff;
+}
+</style>
+
+ <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    //editor.getSession().setMode("ace/mode/javascript");
+	var PythonMode = require("ace/mode/python").Mode;
+    editor.getSession().setMode(new PythonMode());
+	
+    editor.getSession().on('change', function(e) {
+    // e.type, etc
+	    console.log(e.type);
+    });
+	
+	editor.getSession().selection.on('changeSelection', function(e) {	
+	    console.log(e);
+    });	
+	editor.setReadOnly(false); 
+	editor.getSession().setUseWrapMode(true);
+	editor.session.getLength();
+	//editor.insert("Something cool");	
+	//editor.setValue("the new text here"); // or session.setValue
+    console.log( editor.getValue() ); // or session.getValue
+	
+	
+function outf(text) { 
+    var mypre = document.getElementById("output"); 
+    mypre.innerHTML = mypre.innerHTML + text; 
+} 
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+
+function runit() { 
+   var prog = editor.getValue(); 
+   var mypre = document.getElementById("output"); 
+   mypre.innerHTML = ''; 
+   Sk.canvas = "mycanvas";
+   Sk.pre = "output";
+   Sk.configure({output:outf, read:builtinRead}); 
+   eval(Sk.importMainWithBody("<stdin>",false,prog)); 
+   
+   /*
+   editor.getSession().on("changeAnnotation", function(){
+    var annot = editor.getSession().getAnnotations();
+    });
+   */
+    editor.session.addMarker(
+       new Range(1, 0, 15, 0), "ace_active-line", "fullLine"
+    );   
+   
+   $('#answer_input').val("11111");
+	$.ajax({
+           type: "POST",
+		   data: $(".form-question-submit").serialize(),
+           url: "/workplan/5218b3cbd830bb640c000002/milestone/abc/questions/520db60a8932d7700f000004",
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+
+           },		   
+           success: function(data)
+           {		        
+                console.log(data);			   
+			   				   
+           }
+    });	   
+} 
+
+/*
+http://www.ptone.com/dablog/2013/04/asmjs-and-python-in-the-browser/
+http://0xdabbad00.com/2013/01/29/things-ive-learned-using-skulpt-for-in-browser-python-code/
+http://www.rfk.id.au/blog/entry/pypy-js-first-steps/
+
+cacheBreaker = "?"+new Date().getTime();
+$.get("./test.py"+cacheBreaker, function(response) {
+    runSkulpt(response);
+});
+
+for i in range(5):
+    print i
+	
+print [x*x for x in range(20) if x % 2 == 0]
+
+print "%s:%r:%d:%x\n%#-+37.34o" % (
+        "dog",
+        "cat",
+        23456,
+        999999999999L,
+        0123456702345670123456701234567L)	
+
+import time
+start = time.time()
+d = {}
+for i in range(100000):
+    d[i] = 'f'
+print time.time() - start
+
+
+import turtle
+
+t = turtle.Turtle()
+
+for c in ['red', 'green', 'yellow', 'blue']:
+    t.color(c)
+    t.forward(75)
+    t.left(90)
+
+
+*/
+
+
+
+
+
+</script>

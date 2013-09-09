@@ -86,12 +86,16 @@ app.get('/signup/invitation/:token',signupWithInvitation);
 
 function signupWithInvitation(req,res,next){
    var token = req.params.token;
+   var locals = {};
+   locals.title = "Invitation Sign up";
    // how to verify the token
    if(true){
         // go to welcome register page  , then receive the course notification
    }else{
         // go to thank you page   
    }
+   
+   res.render('first_invitation.html',locals);
 }
 
 
@@ -219,7 +223,6 @@ var followModel = require('../model/follow_model');
 function signupUser(req,res,next){
 
     console.log('post  /signup  ',req.body.username,req.body.email,req.body.password);	
-	
 	var errors = [];
     if (!req.body.username) errors.push("username specified")
     if (!req.body.email) errors.push("Missing email")
@@ -277,7 +280,6 @@ function signupUser(req,res,next){
 			}		
 		}
 	});	
-
 }
 
 /*
@@ -615,27 +617,35 @@ function updateUserImageToFolder(req,res,next){
 //http://pastebin.com/Gt1EWVWr  request iamge icon based64
 //http://stackoverflow.com/questions/8110294/nodejs-base64-image-encoding-decoding-not-quite-working
 
-	console.log('updateUserImageToFolder'.green,req.files.image.path);
-	var tem_path = req.files.image.path;	
+	//console.log('updateUserImageToFolder'.green,req.files.image.path,req.files.qqfile.name);
+	var tem_path,tem_name;
+	if(req.files.image!=null)
+	{ tem_path = req.files.image.path; tem_name = 	req.files.image.name; }
+	else
+	{ tem_path = req.files.qqfile.path; tem_name = 	req.files.qqfile.name; }
+	console.log('updateUserImageToFolder'.green,tem_path);
 	
-	var target_path = './public/useruploads/'+req.files.image.name;
+	var target_path = './public/useruploads/'+tem_name;
 	console.log(target_path);	
 	fs.rename(tem_path,target_path,function(err){
 		if(err) { res.send(err); next(err);}	
 		else{	
 			fs.readFile(target_path, "binary", function(error, file) {
 			    if(error) {
+				  /*
 			      res.writeHead(500, {"Content-Type": "text/plain"});
 			      res.write(error + "\n");
 			      res.end();
+				  */
+				  res.send(JSON.stringify({success: false, error: err}), {'Content-Type': 'application/json'}, 200);
 			    } else {
+				  /*
 				  var base64data = new Buffer(file).toString('base64');
-				  var imagesrc = util.format("data:%s;base64,%s", 'image/jpg', base64data);
-				  //console.log(imagesrc);
-				  //res.send('<img src="'+imagesrc+'"/>');
-				  				  
+				  var imagesrc = util.format("data:%s;base64,%s", 'image/jpg', base64data);				  				  
 			      res.writeHead(200, {"Content-Type": "image/png"});
 			      res.write(file, "binary");
+				  */
+				  res.send({"success": true}, {'Content-Type': 'application/json'}, 200);
 			    }
 			})
 		}				

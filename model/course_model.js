@@ -45,7 +45,9 @@ var CourseSchema = mongoose.Schema({
          ////////////////////////////////////////////////////////////////
 		 setting: { pri:{type:Boolean,default:true}, mode: {type:Number,default:0}},  // mode enum : 1 public, 0 private,
 		 
-		 invitations: [{ type: ObjectId, ref: 'Invitation' }]  
+		 invitations: [{ type: ObjectId, ref: 'Invitation' }],
+
+         plans:[ {type:ObjectId, ref: 'StudentPlan'}]		 
            
 });
 //http://stackoverflow.com/questions/11304739/how-to-store-threaded-comments-using-mongodb-and-mongoose-for-node-js
@@ -304,7 +306,7 @@ function findCourseQuestionsById(id,callback){
 	CourseModel.findById(id).populate('ques').exec(function(err, course) { 
 		if(err){callback(err, null);}
 		else{
-			console.log("findCourseQuestionsById".green,course.ques.length,course.ques);
+			//console.log("findCourseQuestionsById".green,course.ques.length,course.ques);
 			callback(null, course.ques);
 		}	   
 	})
@@ -516,7 +518,68 @@ function removeClass(cid,classId,callback){
 	})
 }
 
+/************************************  plan  *************************************/
+function addPlanToList(cid,plan_id,callback){
 
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }
+		
+	var options = { new: false , select:'_id'};		
+	/*	$ne:self._id */
+	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'plans':plan_id}},options,function(err,ref){
+		if(err) {
+			//console.log('update addInvitationToList'.red,err);
+			callback(err, null);
+		}else{
+			//console.log('update addInvitationToList  '.green+ref);				  
+		    callback(null,ref);
+		}
+	})
+	
+}
+
+function removePlanFromList(cid,plan_id,callback){
+    try {
+         cid = mongoose.Types.ObjectId(cid);
+    } catch(e) {
+        return callback(e, null);
+    }
+	
+ 	var options = { new: false ,select:'_id'};	
+	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'plans':plan_id}},options,function(err,ref){
+		if(err) {
+			//console.log('update removeInvitationFromList'.red,err);
+			callback(err, null);
+		}else{
+			//console.log('update removeInvitationFromList'.green+ref);				  
+		    callback(null,ref);
+		}
+	}) 
+}
+
+function findCoursePlansById(id,callback){
+
+    try {
+         id = mongoose.Types.ObjectId(id);
+    } catch(e) {
+        return callback(e, null);
+    }
+	
+	CourseModel.findById(id).populate('plans','cid sid plan count').exec(function(err, plans) { 
+		if(err){callback(err, null);}
+		else{
+		    console.log('findCourseInvitationById'.green,plans);
+			callback(null, plans);
+		}	   
+	})
+
+}
+exports.addPlanToList =addPlanToList;
+exports.removePlanFromList =removePlanFromList;
+exports.findCoursePlansById = findCoursePlansById;
 
 /************************************  invitation ********************************/
 

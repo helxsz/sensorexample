@@ -215,11 +215,11 @@ function conditionalCSRF(req, res, next) {
  }
   */   
   if (ua.indexOf("android") == -1) {
-    console.log('csrf');
+    //console.log('csrf');
     express.csrf();
 	next();
   } else {
-    console.log('no csrf');
+    //console.log('no csrf');
     next();
   }
   
@@ -281,10 +281,10 @@ var options = {
  
 };
 
-
+var https_server; 
 if (!module.parent) {
     if(app){
-	  /**/var out = app.listen(config.port, '0.0.0.0',function(){
+	  var out = app.listen(config.port, '0.0.0.0',function(){
 	     console.log('Express started on port',config.port);	  
 	  });
 	  
@@ -293,7 +293,7 @@ if (!module.parent) {
           console.log("server listening on port: ".red + out.address().port);
         }
       });
-      https.createServer(options,app).listen(443, function(){
+      https_server = https.createServer(options,app).listen(443, function(){
             console.log("Express server listening on port " + 433);
       });
     }else{
@@ -302,7 +302,7 @@ if (!module.parent) {
     }
 }
 
-
+exports.https_server = https_server;
 
 /******************************************************
             cluster2 

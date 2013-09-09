@@ -32,7 +32,7 @@ var im = require('imagemagick');
 // personal home page
 app.get('/profile/:username',permissionAPI.authUser,getDashboardPage);
 // dashboard
-app.get('/settings/dashboard',permissionAPI.authUser,getDashboardPage);
+//app.get('/settings/dashboard',permissionAPI.authUser,getDashboardPage);
 // profile page
 app.get('/settings/profile',permissionAPI.authUser,getProfileSettingPage);
 app.put('/settings/profile',permissionAPI.authUser,updateUserProfile);

@@ -300,42 +300,7 @@ box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
 </style>
 
-
-<script type="text/javascript" src="/assets/js/showdown.js"></script>
-<script type="text/javascript" src="/assets/js/a-tools.js"></script>
-<script type="text/javascript" src="/assets/js/mdmagick.js"></script>
-
-<link href="/assets/css/mdmagick.css" rel="stylesheet">
-<link href="/assets/css/icon_font/style.css" rel="stylesheet">
 <script>
-$('#description-tf').bind('keypress', onKey);
-$('#description-tf').bind('paste', onPaste);
-$('#title-tf').bind('keypress', onKey);
-$('#title-tf').bind('paste', onPaste);
-
-function onPaste(e){
-   var value = $(this).val();
-   var length = value.length;
-   if(e.target.id=='description-tf'){
-         $(this).find('.counter').text( 130-length );
-   }else if(e.target.id=='title-tf'){
-         $(this).find('.counter').text( 60-length );
-}}
-
-function onKey(e){
-
-   var value = $(this).val();
-   var length = value.length;
-   if(e.target.id=='description-tf'){
-         $(this).find('.counter').text( 130-length );
-		 console.log( e.target.id,$(e.target.id).find('.counter').text() ,130-length);
-   }else if(e.target.id=='title-tf'){
-         $(this).find('.counter').text( 60-length );
-		 console.log( e.target.id,$(e.target).find('.counter').text() ,60-length);
-   }  
-}
-
-
 
 $("#invite_form").on('submit',function(e){
     console.log('click');		
@@ -351,43 +316,7 @@ $("#invite_form").on('submit',function(e){
          });	
 });
 
-
-
 </script>	
-
-
 
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'></script>
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/start/jquery-ui.css" />
-<script src="/assets/js/jquery/jquery.tagsinput.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/js/jquery/jquery.tagsinput.css" />
-
-<script>
-$('#tags').tagsInput({    
-  //autocomplete_url:'http://myserver.com/api/autocomplete',
-  //autocomplete:{selectFirst:true,width:'100px',autoFill:false}
-});
-/*
-https://github.com/xoxco/jQuery-Tags-Input
-$('#tags').addTag('foo');
-$('#tags').removeTag('bar');
-$('#tags').importTags('foo,bar,baz');
-
-$(selector).tagsInput({
-   'autocomplete_url': url_to_autocomplete_api,
-   'autocomplete': { option: value, option: value},
-   'height':'100px',
-   'width':'300px',
-   'interactive':true,
-   'defaultText':'add a tag',
-   'onAddTag':callback_function,
-   'onRemoveTag':callback_function,
-   'onChange' : callback_function,
-   'removeWithBackspace' : true,
-   'minChars' : 0,
-   'maxChars' : 0 //if not provided there is no limit,
-   'placeholderColor' : '#666666'
-});
-
-*/
-</script>

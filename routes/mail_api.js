@@ -1,3 +1,13 @@
+/***
+
+   still to do
+   
+   Embedded images in HTML
+   Different transport methods -  Amazon SES
+   the problem of behind of proxy -- https://github.com/andris9/Nodemailer/issues/176
+****/
+
+
 var emailer = require('nodemailer');
 
 var config = {
@@ -35,14 +45,14 @@ exports.sendResetPassMail = sendResetPassMail;
 exports.sendMail = sendMail;
 exports.sendInvitationMail = sendInvitationMail;
 
-function sendInvitationMail(courseid, token, tutor, description,mail,callback){
+function sendInvitationMail(url, description,tutor,mail,callback){
   var from = config.user;
   var to = mail;
   var subject = config.name + 'course invitation';
   //course/:id/invitation/:token/reply
   var html = '<p>hello£º<p/>' +
     '<p>we receive ' + config.name + ' the message for registration, please click the link£º</p>' +
-    '<a href="' + SITE_ROOT_URL + '/course/'+courseid+'/invitation/' + token + '/reply">invitation link</a>' +
+    '<a href="' + SITE_ROOT_URL + url +'">invitation link</a>' +
     '<p>' + description + '</p>' +
     '<p>' + tutor + '</p>';
 

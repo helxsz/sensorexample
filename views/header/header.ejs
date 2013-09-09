@@ -1,4 +1,11 @@
 <style>
+
+.dropdown-menu > li > a {
+
+    white-space: nowrap;
+
+}
+
 @font-face {
   font-family: 'Poiret One';
   font-style: normal;
@@ -37,11 +44,7 @@
 margin-bottom: 0px;
 border-top: #5bb8ce 1px solid;
 display: block;
-
-}
-
-.navbar-inner{
-z-index: 101;
+z-index: 9999999;
 }
 
 .navbar .brand {
@@ -66,33 +69,33 @@ margin: 0 auto;
 padding: 15px 15px 10px;
 }
 
-.b-userbar__account {
+.userbar__account {
   padding: 0 36px 0 22px;
   position: relative;
 
 }
 
-.b-userbar__account:hover {
+.userbar__account:hover {
   color: #9F9F9F;
 }
 
-.b-userbar__account:hover .b-arrow {
+.userbar__account:hover .b-arrow {
   opacity: .75;
 }
 
-.b-userbar__account-avatar {
+.userbar__account-avatar {
   border-radius: 2px;
   margin-right: 10px;
   position: relative;
   top: 1px;
 }
 
-.b-userbar__account-name {
+.userbar__account-name {
   font-weight: bold;
 }
 
-.b-userbar__icons-item,
-.b-userbar__account {
+.userbar__icons-item,
+.userbar__account {
   height: 25px;
   padding-top: 21px;
   padding-bottom: 21px;
@@ -102,7 +105,7 @@ padding: 15px 15px 10px;
   cursor: pointer;
 }
 
-.b-userbar__icons-item-notify {
+.userbar-notify {
   background: #D8232A;
   font-size: 10px;
   line-height: 13px;
@@ -116,21 +119,46 @@ padding: 15px 15px 10px;
 }
 
 
-.navbar ul li a
-{
-   color:#afafaf;
-   transition: color .3s ease;  
-   font-size:11px;
-   text-shadow:0px 1px 2px rgba(0,0,0,0.3);
+.navbar ul li a {
+color: rgb(60, 68, 63);
+transition: color .3s ease;
+font-size: 11px;
+text-align: center;
 }
+
 .navbar ul li a:hover{
-  color:#222;  
+  color:#222; 
+  background:rgb(200, 216, 206);  
 }
 
 .navbar ul li a.active{
   color: #777;
   font-weight:bold;
   cursor: default;
+}
+
+#btn-logout{
+display: block;
+height: 33px;
+line-height: 34px;
+padding: 0 15px;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+-webkit-transition: opacity 0.8s linear;
+-moz-transition: opacity 0.8s linear;
+transition: opacity 0.8 linear;
+-webkit-border-radius: 40px;
+border-radius: 40px;
+margin: 0 auto;
+background:rgb(188, 106, 85);
+}
+
+#btn-logout:hover{
+background:rgb(204, 110, 87);
 }
 
 
@@ -161,7 +189,7 @@ h4.logo span:nth-of-type(6){
 }
 
 </style>
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top ">
   <div class="navbar-inner">
     <div class="container-fluid">
       <ul id="global-nav" class="nav pull-left">
@@ -182,10 +210,6 @@ h4.logo span:nth-of-type(6){
 		    <h4 class='logo'>Google</h4>
         </li>
 		-->
-		<li class='search'>
-                <input type="text" />              
-        </li>
-		
 	  </ul>
 
 	 <!--
@@ -198,20 +222,28 @@ h4.logo span:nth-of-type(6){
 	  
        <ul class="nav pull-right row">
 	    <li>
-	        <a href="/profile/<%= locals.user.username %>" class="b-userbar__icons-item"> 
-                <img src="http://commondatastorage.googleapis.com/johnius/anchor.png" width="25" height="25" alt="Userbar icon"> 
-                <span class="b-userbar__icons-item-notify">5</span> 
+	        <a href="/profile/<%= locals.user.username %>" class="userbar__icons-item"> 
+                <img src="http://commondatastorage.googleapis.com/johnius/anchor.png" width="25" height="25" alt="Userbar icon">
             </a>
-		</li>	
-	    <li>
-	     <a href="#" class="b-userbar__account ">
+		</li>
+        <li> 
+		    <% if(locals.user.notification) { %>				
+                <span class="userbar-notify" data-id="<%= locals.user.id %>" ><%= locals.user.notification%></span> 
+		    <% } %>
+        </li>		
+	    <li class="dropdown" >
+	        <a href="#" class="userbar__account dropdown-toggle"  data-toggle="dropdown">
 		            <% if(locals.user.img) { %>
-                        <img src="/images/<%= locals.user.img %>" width="21" height="21" alt="User avatar" class="b-userbar__account-avatar">
+                        <img  src="/images/<%= locals.user.img %>" width="21" height="21" alt="User avatar" class="userbar__account-avatar">
 					<% } %>
 					<% if(!locals.user.img) { %>
-                        <img src="/default_user.jpeg" width="21" height="21" alt="User avatar" class="b-userbar__account-avatar">					
+                        <img  src="/default_user.jpeg" width="21" height="21" alt="User avatar" class="userbar__account-avatar">					
 					<% } %>
-         </a>
+            </a>
+			<input type="hidden" value="<%= locals.user.img %>" name="img" id="user_img"/>
+			<ul class="dropdown-menu" id='notify_menu'>
+
+			</ul>
 		</li> 
         <li class="dropdown ">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= locals.user.username %></a>
@@ -224,110 +256,46 @@ h4.logo span:nth-of-type(6){
 		      <form method="POST" class="form-inline" action="/sessions" enctype="application/x-www-form-urlencoded">
 	             <input type="hidden" name="_csrf" value="<%= token %>"/>
 			     <input type="hidden" name="_method" value="delete" />			 
-			     <button id="btn-logout" class="btn btn-primary"><i class="icon-lock icon-white"></i>Sign Out</button>			 
+			     <input id="btn-logout" type="submit" value="Sign Out"></input>			 
               </form>
 		    </li>						
           </ul>
         </li>
        </ul>	 
 	  <% } %>
-
+	  <% if(!locals.user) { %>
+	    <ul class="nav pull-right row">
+            <li><a href="/login">Login</a></li>			
+            <li><a href="/signup">Signup</a></li>
+        </ul>
+	  <% } %>
     </div>
-  </div> 
-
-<div class="ha-header-bottom">
-	<nav>
-							<a>Dalliance</a>
-							<a>Inglenook</a>
-							<a>Lagniappe</a>
-							<a>Mellifluous</a>
-							<a>Erstwhile</a>
-							<a>Wafture</a>
-							<a>Serendipity</a>
-							<a>Love</a>
-	</nav>
+  </div>
 </div>
-  
-</div>
-
-
-
-
-<style>
-.ha-header-bottom {
-background: #ddd;
--webkit-transform-origin: 50% 0%;
--moz-transform-origin: 50% 0%;
-transform-origin: 50% 0%;
-
--webkit-transform: rotateX(-90deg);
--moz-transform: rotateX(-90deg);
-transform: rotateX(-90deg);
--webkit-transition: top 0.5s;
--moz-transition: top 0.5s;
-transition: top 0.5s;
-position: absolute;
-top: 0;
-
-}
-
-
-
-.ha-header-show{
-	opacity: 0;
-	-webkit-transition: top 0.5s, opacity 0s 0.5s;
-	-moz-transition: top 0.5s, opacity 0s 0.5s;
-	transition: top 0.5s, opacity 0s 0.5s;
-	-webkit-transform: rotateX(0deg);
-	-moz-transform: rotateX(0deg);
-	transform: rotateX(0deg);
-	top: 0%;
-
-}
-
-.ha-header-subshow {
--webkit-transition: top 0.5s;
--moz-transition: top 0.5s;
-transition: top 0.5s;
--webkit-transform: rotateX(0deg);
--moz-transform: rotateX(0deg);
-transform: rotateX(0deg);
-top: 100%;
-
-}
-
-
-
-.search{
-  width:400px;
-  margin:0px auto;
-margin-top: 10px;
-}
-.search input[type="text"] {
-border: 1px solid #e5e5e5;
-font-size: 20px;
-width: 300px;
-display: block;
-padding: 5px 5px;
-font-family: 'Open Sans Light', sans;
-color: #333;
-outline: 0;
-box-shadow: 0px 1px 0px #fff;
-}
-.search input[type="text"]:focus{
-  border:1px solid #539fb5;
-}
-
-.search input[type="text"]:focus ~ button{
-  color:#777;
-}
-
-</style>
 
 <script>
-/*
-setInterval(function() {
-  $('.ha-header-bottom').toggleClass('ha-header-subshow');
-}, 1500);
-*/
+	
+$(".userbar__account-avatar").click(function() {
+    console.log("Handler for .click() called.",$('.userbar-notify').attr('data-id'));
+	$.ajax({
+           type: "GET",
+           url: '/user/'+$(".userbar-notify").attr('data-id')+'/notify',
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#crsf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data.notifications.length,data.notifications);
+				var data = data.notifications;
+				$('#notify_menu').html(' ');
+				for(var i=0;i<data.length;i++)
+                { 
+				   console.log(data[i]);
+				   var msg = JSON.parse(data[i]);
+				   $('#notify_menu').append('<li>'+ msg.u +'  '+ msg.v +'   '+ msg.m +' </li>');
+                } 				   
+           }
+    });	
+});
 </script>

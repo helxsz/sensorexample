@@ -3,7 +3,7 @@ var ObjectId = mongoose.Schema.ObjectId;
 
 var likeSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-    like: [{ type: ObjectId, ref: 'User' }],
+    like: [{ type: ObjectId, ref: 'User' }]
 });
  
 var CourseLikeModel = mongoose.model('CourseLike',likeSchema);

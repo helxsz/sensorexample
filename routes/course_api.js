@@ -154,7 +154,6 @@ function getCourseDetailOnStudents(req,res,next){
     var skip = (req.query["s"])?req.query["s"]:0, limit = (req.query["l"])?req.query["l"]:50, option = {'skip':skip,'limit':limit};
 	
     var locals = {};
-
 	async.parallel([
 	    function(callback) {
             courseModel.findCourseStudentsById(req.params.id,function(err,data){

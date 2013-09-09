@@ -1,37 +1,56 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= locals.title %></title>
-    <link rel="stylesheet" href="/assets/css/loading.css">
-    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <title> Test</title>
+	
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
-	
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> -->
-    <script src="/assets/js/jquery/jquery-1.8.1.min.js"></script> 
-	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
-    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
-    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
-    <script src="/assets/js/typeahead.js"></script>
+    <link href="/assets/css/animate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/jquery.sidr.dark.css	">
+<link rel="stylesheet" href="/assets/css/loading.css	"> 
+   <script src="/assets/js/jquery-1.8.1.min.js"></script> 
+   
+   <script src="/assets/js/underscore.js"></script>
+   <script src="/assets/js/backbone-min.js"></script>
+  
 <script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
-<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
-	
-   <!-- http://www.9lessons.info/2013/04/play-notification-sound-using-jquery.html
-http://demos.9lessons.info/googledrag/index.html
-http://www.developerscode.com/2011/09/jquery-drag-and-drop-google-circle.html
-   -->
-	
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>   
+   
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="/assets/ico/favicon.png">		
+
+
+
+<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+   <script src="/assets/js/jquery/jquery.sidr.min.js	"></script>
+   
   </head>
 <style>
-body,html {
- <!--  http://tympanus.net/Development/ModalWindowEffects/
+html {
+<!--
+background-color: #222;
+background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGklEQVQIW2NkYGD4D8SMQAwGcAY2AbBKDBUAVuYCBQPd34sAAAAASUVORK5CYII=);
+background-repeat: repeat;
+-->
+}
+body {
+ <!--  
   background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
   background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
  -->
   font-family:'Open Sans', sans;
   background:#f1f1f1;
-    height: 100%; 
-  position: relative;
+  background: -webkit-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -moz-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -o-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+
 }
 
 ::-webkit-scrollbar {
@@ -47,14 +66,245 @@ body,html {
   border-radius: 0;
   background: rgba(0,0,0,0.2);
 }
-</style>
 
- <style>
+
 .board {
 padding-bottom: 30px;
-padding-top: 10px;
+padding-top: 30px;
 background: rgb(219, 224, 213);
+margin-bottom: 40px;
 }
+.board-description{
+margin-left: auto;
+margin-right: auto;
+ width: 460px;;
+}
+.board-title{
+color:rgb(85, 131, 143);
+}
+</style>
+
+<style>
+
+
+
+
+
+
+#editor { 
+width: 698px;
+height: 351px;
+margin-top: 20px;	
+}
+
+.tp-title {
+position: absolute;
+background: #fff;
+line-height: 20px;
+color: #333;
+top: 40%;
+width: 75%;
+padding: 10px;
+font-weight: 700;
+text-align: right;
+left: -100%;
+box-shadow: 1px 1px 1px rgba(0,0,0,0.1), 5px 0 5px -3px rgba(0,0,0,0.4), inset 0 0 5px rgba(0,0,0,0.04);
+}
+.tp-title {
+padding: 10px 35px 10px 10px;
+left: 0px;
+}
+
+.tp-title span:nth-child(2) {
+color: #aaa;
+padding: 0 5px;
+background: #F7F7F7;
+right: 0px;
+height: 100%;
+line-height: 40px;
+top: 0px;
+position: absolute;
+display: block;
+}
+
+
+
+.page-title:after {
+content: 'beta';
+font-size: 0.17em;
+font-weight: 400;
+background: #62c98f;
+letter-spacing: 1px;
+border-radius: 100%;
+width: 44px;
+height: 44px;
+display: inline-block;
+line-height: 47px;
+position: relative;
+top: -45px;
+color:#ffffff;
+}
+
+
+
+.edu-head {
+height: 80px;
+padding: 12px 25px;
+background-color: #f9f9f9;
+background-image: -moz-linear-gradient(top, #fff, #f0f0f0);
+background-image: -ms-linear-gradient(top, #fff, #f0f0f0);
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#f0f0f0));
+background-image: -webkit-linear-gradient(top, #fff, #f0f0f0);
+background-image: -o-linear-gradient(top, #fff, #f0f0f0);
+background-image: linear-gradient(top, #fff, #f0f0f0);
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFFFF', endColorstr='#FFF0F0F0', GradientType=0);
+border-right: 1px solid rgb(238, 230, 230)
+}
+
+.author-avtr {
+
+margin-top: 50px;
+width: 30px;
+height: 30px;
+-webkit-border-radius: 15px;
+-moz-border-radius: 15px;
+border-radius: 15px;
+border: 1px solid #dcdcdc;
+}
+
+
+
+#btn-question {
+display: block;
+height: 33px;
+line-height: 34px;
+padding: 0 15px;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+-webkit-transition: opacity 0.8s linear;
+-moz-transition: opacity 0.8s linear;
+transition: opacity 0.8 linear;
+-webkit-border-radius: 40px;
+border-radius: 40px;
+margin: 0 auto;
+background: rgb(188, 106, 85);
+}
+
+
+
+.tasks-list {
+
+  z-index: 1000;
+  margin: 0;
+  padding: 12px 12px 16px 12px;
+  width: 300px;
+  height:100px;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  outline: 3px solid rgba(0,0,0,0.05);
+  background: #c0392b;
+}
+
+.tasks-lists {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: -11px;
+  padding: 10px 4px;
+  width: 19px;
+  height: 3px;
+  font: 0/0 serif;
+  text-shadow: none;
+  color: transparent;
+}
+.tasks-lists:before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: #8c959d;
+  border-radius: 1px;
+  -webkit-box-shadow: 0 6px #8c959d, 0 -6px #8c959d;
+  box-shadow: 0 6px #8c959d, 0 -6px #8c959d;
+}
+
+.tasks-list-item {
+  display: block;
+  line-height: 24px;
+  padding: 12px 15px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.tasks-list-item + .tasks-list-item {
+  border-top: 1px solid #f0f2f3;
+}
+
+.tasks-list-cb {
+  display: none;
+}
+
+.tasks-list-mark {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #c4cbd2;
+  border-radius: 12px;
+}
+.tasks-list-mark:before {
+  content: '';
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -5px 0 0 -6px;
+  height: 4px;
+  width: 8px;
+  border: solid #39ca74;
+  border-width: 0 0 4px 4px;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.tasks-list-cb:checked ~ .tasks-list-mark {
+  border-color: #39ca74;
+}
+.tasks-list-cb:checked ~ .tasks-list-mark:before {
+  display: block;
+}
+
+.tasks-list-desc {
+  font-weight: bold;
+  color: #8a9a9b;
+}
+.tasks-list-cb:checked ~ .tasks-list-desc {
+  color: #34bf6e;
+  text-decoration: line-through;
+}
+
+
+</style>
+
+
+
+<style>
+
+
 .user-info {
 	height: 48px;
 	padding: 10px;
@@ -77,6 +327,7 @@ background: rgb(219, 224, 213);
 .user-info img {
 	float: left;
 }
+
 </style>
 
 <style>
@@ -89,12 +340,12 @@ ul {
 a { text-decoration: none; }
 
 .status-progress {
-background: #ccc;
-border-radius: 3px;
-height: 6px;
-margin: 9px 0;
-position: relative;
-margin-top: 30px;
+	background: #ccc;
+	border-radius: 3px;
+	height: 6px;
+	margin: 9px 0;
+	position: relative;
+	width: 100%;
 }
 
 .status-progress ul {
@@ -104,12 +355,24 @@ margin-top: 30px;
 
 .status-progress li {
 	float: left;
+	margin: 0 72px;
 }
 
 .status-progress li:first-child { margin-left: 0; }
 .status-progress li:last-child { margin-right: 0; }
 
-
+.status-progress a {
+	background: #439ec4;
+	border-radius: 100%;
+	border: 2px solid #eee;
+	color: #fff;
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	position: relative;
+	text-align: center;
+	width: 24px;
+}
 
 .status-progress .current { background: #43c47a; }
 
@@ -141,19 +404,6 @@ margin-top: 30px;
 	-o-transform: rotate(45deg);
 	transform: rotate(45deg);
 	width: 8px;
-}
-
-.status-progress a {
-	background: #439ec4;
-	border-radius: 100%;
-	border: 2px solid #eee;
-	color: #fff;
-	display: inline-block;
-	height: 24px;
-	line-height: 24px;
-	position: relative;
-	text-align: center;
-	width: 24px;
 }
 
 </style>
@@ -268,287 +518,142 @@ display: block;
 .card.open .front {
     -webkit-transform: rotateX(145deg);
 }
-
-
-.pen_data {
-padding: 8px 12px;
-font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
-font-size: 12px;
-line-height: 18px;
-font-weight: 100;
-letter-spacing: 1px;
-color: rgba(255,255,255,0.7);
-text-shadow: 0 2px 0 rgba(0,0,0,0.02);
-background: #2c3e50;
-
-bottom: 0px;
-position: absolute;
-right: 0px;
-}
-
-.pen_data a, .pen_data a:visited {
-  color: rgba(255,255,255,0.7);
-  text-decoration: none;
-  border-bottom: 1px dotted #999999;
-}
-
-.pen_data a:hover {
-  color: rgba(255,255,255,0.9);
-  border-bottom: 1px dotted #cccccc;
-}
 </style>
+<!---->
 
-  <body>
-<div class="section intro">
-
-<p>Introduction</p>
-
-<div class="loader">
-  <span class="bar">
-    <i class="animate"></i>
-  </span>
-  <span class="tick animate">&#10004;</span>
-</div>
-
-</div>
- 
-<style>
-.section {
-  width: 100%;
-  height: 100%; 
-  position: relative; 
-}
-.section p {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  font: 40px/60px Arial;
-  color: #fff;
-  height: 60px;
-  top: 50%;
-  margin-top: -30px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-.intro   { background: #ccc }
-.content { background: #e74c3c }
-
-.loader {
-  position: relative;
-  display: block;
-  margin: 0 auto;
-  width: 150px;
-  top: 65%;
-}
-.loader .bar {
-  display: block;
-  background: #bbb;
-  height: 10px;
-  border-radius: 5px;
-  box-shadow: inset 1px 1px 0px #999, 1px 1px 0 #ddd;
-  overflow: hidden;
-}
-.loader .bar i {
-  display: block;
-  background: #e74c3c;
-  height: 10px;
-  width: 0px;
-  box-shadow: inset 1px 1px 0 #c0392b;
-  border-radius: 5px;
-  transition: width 1s linear;
-  transition-delay: 1s;
-}
-.loader .tick {
-  display: block;
-  position: absolute;
-  left: 100%;
-  top: 15px;
-  margin: -7px 0 0 7px;
-  text-align: center;
-  font-size: 20px;
-  color: #e74c3c;
-  opacity: 0;
-  transition: opacity 0.25s, top 0.25s;
-  transition-delay: 2s;
-}
-
-.bar i.run {
-  width: 100%;
-}
-.tick.run { 
-  top: 0;
-  opacity: 1; 
-}
-</style>
-
-<script language="javascript" type="text/javascript">
-<!--
-function fakeLoad(){
-	  // http://stackoverflow.com/questions/9872128/get-bottom-and-right-position-of-an-element
-	  var animate  = $(".animate").addClass("run");
-	  var distance = $(".sub").offset().top;    
-	  var timer    = setTimeout(function(){
-	    $(".loader").fadeOut(250);	
-	    $('html,body').animate({
-	      scrollTop: distance},
-          500,
-		  function(){ $(".intro").remove(); }
-	    );		
-	  }, 3000);
-	  
-	}
-
-	$(document).ready(function(){
-
-	  fakeLoad();
-
-	});
--->
-</script>  
-  
-  
-    <div class="wrapper">
-	    <div class="inner-wrapper">                
-		    <span id="loading" class="folding">Loading...</span> 
-            <% include header/header_student %>
-			
-			<div class="row sub" style="height:90px;background:#e74c3c;position: relative;">  
-			    <div class="pen_data span2 pull-right">
-                    A pen by <a href="http://www.google.com">Ajit jaokar</a>
-                </div>
-			</div>
-            <div class="board row"> 			
-                <div class="alert" style="width:960px;margin:0 auto;" style="hidden">
-                    <a class="close" data-dismiss="alert"><i class="icon-remove"></i></a>
-                    <strong>Atenci¨®n!</strong> Curso de Responsive Design con Twitter Bootstrap.
-                </div>						
-                <div class="span12">			
-			        <div class="user-info span2">
+  <body >
+    <div class="wrapper ">
+	    <div class="inner-wrapper">
+            <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
+			<!--              <%  include header2 %>	
+            
+            <div class="board row">    	       
+			    <div class="user-info span2">
                         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjI0NDIwNUYzOTQ5OTExRTI5QzgzRDA2OUYzMzMzMEY3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjI0NDIwNUY0OTQ5OTExRTI5QzgzRDA2OUYzMzMzMEY3Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjQ0MjA1RjE5NDk5MTFFMjlDODNEMDY5RjMzMzMwRjciIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjQ0MjA1RjI5NDk5MTFFMjlDODNEMDY5RjMzMzMwRjciLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4W7vVCAAAPpElEQVR42lxay5UjuRFE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" alt="avatar" />			
 					    <p>Sizhe xi</p>
 					    <span>Liverpool, UK</span>
-			        </div>			        	
-                    <div class="status-progress span8">				
-				        <ul >
-					    <!-- <li><a href="#" class="current">1<span class="progress-info">Upload profile picture!</span></a></li>  -->
-				        </ul>
-			        </div> 				
-                </div>
+			    </div>			        	
+                <div class="status-progress span6">				
+				    <ul >
+					   
+				    </ul>
+			    </div>         			
             </div>
-						
-            <div class="question_board row">
-                <div class="span3">
-                    <div class="questions">          
-                    </div>
-                    <textarea name="chatter_message" placeholder="Type your message here..." class="chatter_field chatter_message"></textarea>
-                </div>
-                
-				<div class="span10">
- 					<% include course/coding/coding %>
-				</div>
-				
-            </div>	
-			
-			
-	
-
 		
+            <div class="alert" style="width:960px;margin:0 auto ;">
+                <a class="close" data-dismiss="alert"><i class="icon-remove"></i></a>
+                <strong>Atenci¨®n!</strong> Curso de Responsive Design con Twitter Bootstrap.
+            </div>		
+		    <span id="loading" class="folding">Loading...</span> 
+    http://blog.evantahler.com/blog/production-deployment-with-node-js-clusters.html   include course/question_list %>
+            <div>  <a id="simple-menu"  title="first tooltip" href="#sidr">Toogle menu</a>  </div>	 -->
+
 			
-<style>
-.question_board {
-  left: 40px;
-  bottom: 0px;
-  z-index: 1000;
-  margin: 0;
-  padding: 12px 12px 16px 12px;
-  font-family: "Helvetica Neue", "Helvetica", sans-serif;
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  outline: 3px solid rgba(0,0,0,0.05);
-  background: #1F251F;
-}
+			  
+            <div class='row' >
+			   <!--
+			    <div class='span5'> 
+                    <div class="card">
+                        <div class="flip">
+                           <div class="tile front">  
+                               <div class="tile outside"></div>
+                               <div class="tile inside"></div>
+                           </div>
+                           <div class="tile in-bottom">
+                               <p>Project Name</p>
+                               <a href="#">View on Behance</a>  
+                            </div>
+                        </div>
+                    </div>				     
+				    <div class="tasks-list">
 
-.question_board .chatter_field {
-  position: relative;
-  margin: 0 0 8px 0;
-  padding: 11px 12px 9px 12px;
-  width: 276px;
-  font-family: "Helvetica Neue", "Helvetica", sans-serif;
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: 400;
-  color: #4b4b4b;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  border: none;
-  outline: none;
-  background: #ffffff;
-}
+                    </div>				
+				</div>
+				-->
+                <div class='span4'>
+				    <div id="selected-question">
+                         
+                    </div>
+                    <div class='span4' id="editor">function foo(items) {
+                       var x = "All this is syntax highlighted";
+                       return x;
+                    }
+                    </div>
+					
+					<form method="POST" class="form-question-submit" href="/course/<%= locals.course_id %>/test" enctype="application/x-www-form-urlencoded"> 
+	                    <input type="hidden" name="content" class="question-content" value=""> 
+			            
+                        <div  type="submit" class="button"><a href="#"><i class="ss-icon">sync</i>Update</a></div>						
+                    </form>
+					
+					
+				</div>
+            </div>
+ <!---->			
+ <!-- <input id="btn-question"  value="Save & Submit">	-->			
+			
+<!-- 
+            <div id="sidr" class="sidr left" >
+			    <div class="edu-head">
+                    <img src="http://s3.amazonaws.com/codecademy-production/profile_thumbnail/4fd2c0e23b6fcb0003000209_567678169.jpg" class="author-avtr" data-original-title="&lt;strong&gt;Instructor:&lt;/strong&gt; Leng Lee">
+                </div>
+			
+                <ul>
+                    <li><a href="#">List 1</a></li>
+                    <li class="active"><a href="#">List 2</a></li>
+                    <li><a href="#">List 3</a></li>
+                </ul>
+				<div class="page-title">Developer Center</div>
+                <div class="tp-title"><span>Bryan Moats</span><span>8</span></div>	
+ http://bootsnipp.com/snipps/stats-example 
+<div class="span3" >
+	<h4>Goal for Today:</h4>
+	<ul class="unstyled" >
+	    <li>450 Impressions <span class="pull-right strong">45%</span>
+	        <div class="progress progress-important">
+	            <div class="bar" style="width: 45%;"></div>
+	        </div>
+	    </li>
+	    <li>300 Unique Visitors<span class="pull-right strong">30%</span>
+	        <div class="progress progress-success">
+	            <div class="bar" style="width: 30%;"></div>
+	        </div>
+	    </li>
+	</ul>
+</div>
+ -->
 
-.question_board .questions {
-  position: relative;
-  margin: 0 -6px 12px -6px;
-  padding: 0 6px;
-  height: 366px;
-  font-size: 14px;
-  line-height: 18px;
-  color: #ffffff;
-  overflow-y: auto;
-}
+				
+            </div>			
 
-.question_board .questions .question_item {
-  position: relative;
-  margin: 5px 0 8px 0;
-  padding: 8px 10px;
-  max-width: 100%;
-  display: block;
-  background: rgba(255,255,255,0.26);
-}
-
-.question_board .question_mark {
-position: relative;
-display: inline-block;
-vertical-align: top;
-margin-right: 12px;
-width: 20px;
-height: 20px;
-border: 2px solid #c4cbd2;
-border-radius: 12px;
-}
-
-.question_mark:before {
-content: '';
-position: absolute;
-top: 50%;
-left: 50%;
-margin: -5px 0 0 -6px;
-height: 4px;
-width: 8px;
-border: solid #39ca74;
-border-width: 0 0 4px 4px;
--webkit-transform: rotate(-45deg);
--moz-transform: rotate(-45deg);
--ms-transform: rotate(-45deg);
--o-transform: rotate(-45deg);
-transform: rotate(-45deg);
-}
-
-.question_board .question_right{
-border-color: #39ca74;
-}
-
-.question_board .question_wrong{
-border-color: #39ca74;
-}
-</style>						
-			 
+			
 		</div>
 	</div>				
   </body>
 
+
+ <!--
+<script>
+$(document).ready(function() {
+    $('#simple-menu').sidr();
+	
+	
+    $(".price").tooltip({
+                  'selector': '',
+                  'placement': 'bottom'
+    });
+	
+	$(".question-title").popover({
+                  'selector': '',
+                  'placement': 'top',
+				  'trigger':'hover'				  
+    });
+	
+	
+});
+</script>	  
+  
+  
   
 
 
@@ -565,13 +670,6 @@ $('#loading')
         $(this).hide();
     })
 ;
-
-$(window).keypress(function(event) {
-    if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
-    alert("Ctrl-S pressed");
-    event.preventDefault();
-    return false;
-});
 
 setInterval(function() {
   $('.card').toggleClass('open');
@@ -613,20 +711,16 @@ function getQuestionOfCourse(course_id){
 		   contentType:"application/json; charset=utf-8",
            dataType:"json",
            success: function(data){
-               //console.log(data.length,data);
+               console.log(data.length,data);
 			   data.forEach(function(entry) {
                     console.log(entry.que,entry.sol,entry._id);				    
-					var item = $(
-					        '<div class="question_item" data-id="'+entry._id+'">'
-							    +'<span class="question_mark question_right"></span>'
-                                +'<span class="question_desc">'+entry.que+'</span>'
-                            +'</div>'					
-					);
-                    item.appendTo($(".questions"));
-                    item.click(function(){
-					   console.log($(this).attr('data-id'));
-					
-					})					
+					$(".tasks-list").append(
+					        '<label class="tasks-list-item" data-id="'+entry._id+'">'
+                                +'<input type="checkbox" name="task_1" value="0" class="tasks-list-cb" checked>'
+                                +'<span class="tasks-list-mark"></span>'
+                                +'<span class="tasks-list-desc">'+entry.que+'</span>'
+                            +'</label>'					
+					);				   
                });
            }
     });
@@ -669,37 +763,27 @@ function getCoursePlanMilestones(plan_id){
     }); 
 }
 
+</script>
 
-function getQuestionsOfMilestone(plan_id,index){
-    // get all the question of a milestone
-    $.ajax({
-           type: "GET",
-           url: "/workplan/"+plan_id+"/milestone/"+ index +"/questions",
-		   contentType:"application/json; charset=utf-8",
-           dataType:"json",		   
-           success: function(data)
-           {
-		       $(".questions").html('');
-               console.log(data.data.goal,data.data.ques.length,data.data);
-			   var entries = data.data.ques;
-			   			   
-			   entries.forEach(function(entry) {
-                    console.log(entry.que,entry.sol,entry);				    
-					var item = $(
-					        '<div class="question_item" data-id="'+entry+'">'
-							    +'<span class="question_mark question_right"></span>'
-                                +'<span class="question_desc">'+entry+'</span>'
-                            +'</div>'					
-					);
-                    item.appendTo($(".questions"));
-                    item.click(function(){
-					   console.log($(this).attr('data-id'));					
-					})					
-               });			   
-           }
+-->
+ <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+	
+    editor.getSession().on('change', function(e) {
+    // e.type, etc
+	    console.log(e.type);
     });
-}
-
+	
+	editor.getSession().selection.on('changeSelection', function(e) {	
+	    console.log(e);
+    });	
+	editor.setReadOnly(false); 
+	editor.getSession().setUseWrapMode(true);
+	editor.session.getLength();
+	editor.insert("Something cool");	
+	//editor.setValue("the new text here"); // or session.setValue
+    console.log( editor.getValue() ); // or session.getValue
 </script>  
-  
 </html>

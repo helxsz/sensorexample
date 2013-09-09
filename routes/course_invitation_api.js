@@ -50,6 +50,7 @@ function updateInvitationsOfCourse(cid,invitation_id,callback){
 
 // student replies to the invitation
 app.get('course/:id/invitation/:token/reply',replyToCourseInvitation);
+app.get('invitation/token/:token',getRegisterInvitationPage);
 
 function getCourseInvitationPage(req,res,next){
 
@@ -86,8 +87,7 @@ function getCourseInvitationPage(req,res,next){
 				callback();
             })
 		},
-		function(callback){	
-           		
+		function(callback){	           		
             courseModel.findCourseInvitationById(cid,function(err,data){
 		        if(err) next(err);
 	            else{
@@ -154,7 +154,9 @@ function inviteStudents(req,res,next){
     
             async.series([ 			
 			    function(callback){
-                    mail_api.sendInvitationMail(cid, token , locals.course.title, locals.course.summ ,email, function(error, response){
+				    var reply_link = "/invitation/token/"+token;
+					var sign_link = "/signup/invitation/"+token;
+                    mail_api.sendInvitationMail(sign_link, locals.course.title, locals.course.summ ,email, function(error, response){
                         if(error){
                             console.log("inviteStudents Message sent error ".red,error); // get error message
 					        email_status = 1;			        
@@ -225,6 +227,13 @@ function replyToCourseInvitation(req,res,next){
 		})	
 	}
 }
+
+function getRegisterInvitationPage(req,res,next){
+    var locals = {};
+	var token = req.params.token;
+    res.render('first_invitation',locals);
+}
+
 /********************************************/
 
 function authTutor(req,res,next){
