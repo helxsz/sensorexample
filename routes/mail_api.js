@@ -13,7 +13,7 @@ var emailer = require('nodemailer');
 var config = {
     user:"helxsz@gmail.com"
    ,pass:"Xsz_303uranus1027303"
-   ,name:"fablab"
+   ,name:"Feynlabs"
 };
 
 var SITE_ROOT_URL = "http:localhost:8080"
@@ -45,22 +45,69 @@ exports.sendResetPassMail = sendResetPassMail;
 exports.sendMail = sendMail;
 exports.sendInvitationMail = sendInvitationMail;
 
+// email template  http://net.tutsplus.com/tutorials/html-css-techniques/the-state-of-css3-in-email-templates/
+// http://htmlemailboilerplate.com
 function sendInvitationMail(url, description,tutor,mail,callback){
   var from = config.user;
   var to = mail;
-  var subject = config.name + 'course invitation';
+  var subject = config.name + ' course invitation';
   //course/:id/invitation/:token/reply
-  var html = '<p>hello£º<p/>' +
-    '<p>we receive ' + config.name + ' the message for registration, please click the link£º</p>' +
-    '<a href="' + SITE_ROOT_URL + url +'">invitation link</a>' +
-    '<p>' + description + '</p>' +
-    '<p>' + tutor + '</p>';
+  var html = 
+              '<p style="text-shadow: 2px 2px 2px #000;">   Welcome to the Feynlabs </p> '   
+            + '<p style="border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; border: 3px solid #000; background-color: #ccc; padding: 5px;">   View it in a web browser.  </p> '   
+            + '<div id="airmail-line" style="overflow: hidden; margin: 0 -40px; text-indent: -20px; white-space: nowrap; min-height: 15px; padding: 0; font: italic bold 260px/15px Helvetica, sans-serif; height: 15px; max-height: 15px; -webkit-border-top-right-radius: 10px; -moz-border-radius: 10px; -webkit-border-top-left-radius: 10px; letter-spacing: -44px;">  <b style="color: #f5290a;">/</b> <i style="color: #006699;">/</i> <b style="color: #f5290a;">/</b> <i style="color: #006699;">/</i> <b style="color: #f5290a;">/</b> <i style="color: #006699;">/</i>      <b style="color: #f5290a;">/</b>      <i style="color: #006699;">/</i> </div> '
+  
+            + '<p>hello:<p/>'
+            + '<p>we receive ' + config.name + ' the message for registration, please click the link£º</p>'
+            + '<a href="' + SITE_ROOT_URL + url +'">invitation link</a>'
+			+ '<a href="http://htmlemailboilerplate.com" target ="_blank" title="Styling Links" style="color: orange; text-decoration: none;">Coloring Links appropriately</a>'
+            + '<p>' + description + '</p>'
+            + '<p>' + tutor + '</p>';
 
+			
+			
+    html = 
+	       '<table cellpadding="0" cellspacing="0" style="width:600px;color: #f5290a;">'
+            +'<tbody style="font-size:16px;color:#333333">'
+			    +'<tr><td style="font-size:16px;color:#333333;line-height:1.0"><img src="https://www.feynlabs.com/wp-content/themes/globex/feynlabs/images/headerimage.jpg" alt="Blog Post"></td></tr>'
+                +'<tr><td style="font-size:16px;color:#333333;line-height:1.0"> '                  
+                       +'Hi,'
+                        +'<br><br> We are happy to see you are signing up <span style="font-size:20px;color:#33ccff;"> <a href="https://Feynlabs.com" style="font-size:24px;font-weight:bold;color:#33ccff;text-decoration:none" target="_blank">   Feynlabs  </a></span> . To ensure your Recipes remain active, please confirm your account:<br><br><br><br>'
+                        +'<a href="' + SITE_ROOT_URL + url +'" style="text-decoration:none;padding:18px 48px 18px 48px;font-size:24px;font-weight:bold;color:#ffffff;background-color:#33ccff;border-radius:34px" target="_blank">Confirm your account</a>'
+                        +'<br><br><br><br>'
+				        +'The <span class="il">Feynlabs</span> Team'				    
+				+'</td></tr>'
+                +'<tr> <td style="border-bottom:1px solid #ebebeb"><br><br><br></td></tr> <tr> <td style="font-size:16px"> <br> </td> </tr>'                 
+                +'<tr> <td>'
+                        +'<table cellpadding="0" cellspacing="0" style="width:600px">  <tbody style="font-size:16px;font-family:"Helvetica Neue,Arial,Helvetica,sans-serif";color:#333333">'                      
+                           +'<tr><td style="font-size:18px;font-weight:normal;color:#333333;line-height:1.6" width="270px">'
+                                +'<a href="https://feynlabs.com" style="font-size:24px;font-weight:bold;color:#333333;text-decoration:none" target="_blank"> <img src="http://www.feynlabs.com/wp-content/uploads/2012/11/logo.png" alt="Blog Post"> </a>'
+                                +'<br> Concepts of programming lanuage for kids.'                                          
+                            +'</td>'                                             
+                            +'<td align="right" style="font-size:16px;color:#333333;padding-top:5px"></td>'
+                           +'</tr>'
+                        +'</tbody> </table>'                       
+                  +'</td> </tr> </tbody> </table>'
+			
   sendMail({
     from: from,
     to: to,
     subject: subject,
     html: html
+	/*,
+	attachments:[
+        {
+            filename: "notes.txt",
+            contents: "Some notes about this e-mail"
+        },
+        {
+            filename: "image.png",
+            contents: new Buffer("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD/"+
+                                 "//+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4U"+
+                                 "g9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC", "base64"),
+            cid: "abc"
+        }
+	]*/
   },callback);   
 
 }

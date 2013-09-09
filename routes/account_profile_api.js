@@ -282,13 +282,15 @@ function updateUserImageToGridfs(req,res,next){
                         console.log('successfully deleted'.green,file.path);
                     });
 					
-					if(err) return next(err1);
+					if(err) return next(err1);					
+					console.log('save image into gridid'.green,result._id,result.fileId,newFileName);
+					// result is a large json document contains the image info as well as database information
+					user.img =result.fileId;     // fileId is used since 2013.9.1
+					//user.img = result._id;     // no longer used in the past
 					
-					console.log('save image into gridid'.green,result._id,newFileName);
-					user.img = result._id;
 					user.save(function (err2) {
                             if (err) return next(err2); 
-							else console.log('save user image',user.password,user.salt);
+							else console.log('save user image',user.password,user.salt,user.img);
 			                res.redirect("/settings/profile");
                     });
 				})

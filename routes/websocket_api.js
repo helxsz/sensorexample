@@ -289,6 +289,9 @@ function init(){
 		
 		function clientSendMsg(data){
 		    console.log('receive help request from ',socket.uid,socket.id);
+			io.sockets.in("help").emit('msg', {
+			    'uid':socket.uid
+			});			
 		  /*
 			var msg = JSON.parse(data);
 			var reply = JSON.stringify({action: 'message', user: msg.user, msg: msg.msg });

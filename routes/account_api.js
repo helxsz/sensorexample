@@ -359,12 +359,12 @@ function loginUser(req, res, next) {
 			   var signed_uid = permissionAPI.cipherSessionParameter(data._id,config.sessionSecret);
 			   var signed_auth = permissionAPI.cipherSessionParameter(username+','+password,config.sessionSecret);
 			   
-               res.cookie('usernanme', data.username, { expires: new Date(Date.now() + 900000), httpOnly: true });
-               res.cookie('ip',req.ip, { expires: new Date(Date.now() + 900000), httpOnly: true });
-               res.cookie('last_login',new Date().getTime(), { expires: new Date(Date.now() + 900000), httpOnly: true });			   
-               res.cookie('auth',signed_auth, { expires: new Date(Date.now() + 900000), httpOnly: true });
-               res.cookie('uid', signed_uid, { expires: new Date(Date.now() + 900000), httpOnly: true });
-			   res.cookie('rememberme', 'yes', { expires: new Date(Date.now() + 900000), httpOnly: true });
+               res.cookie('usernanme', data.username, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('ip',req.ip, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('last_login',new Date().getTime(), { expires: new Date(Date.now() + 9000001), httpOnly: true });			   
+               res.cookie('auth',signed_auth, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('uid', signed_uid, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+			   res.cookie('rememberme', 'yes', { expires: new Date(Date.now() + 9000001), httpOnly: true });
 		   
              } 	 
 			 
@@ -432,10 +432,9 @@ function logoutUser(req, res){
 
 /****************************************************
                        password
-
 *******************************************************/
 app.get('/forgot-password', function(req, res, next){
-    res.render('users/forgot-password', {
+    res.render('user/forgot-password', {
       title: 'Forgot Password',
       passwordSent: req.query.passwordSent,
       password: '',
@@ -489,7 +488,7 @@ app.get('/reset-password',  function(req, res, next){
               res.redirect('/forgot-password/?error=CouldNotReset');
             }
             else {
-              res.render('users/forgot-password', {
+              res.render('user/forgot-password', {
                 title: 'Password Reset',
                 passwordSent: '',
                 password: result,
