@@ -419,8 +419,15 @@ function joinCourse(req,res,next){
 		if(err) {
 		         console.log('course uid not found'.red,err);
 		         next(err);
+		}else if(!course || course ==0){
+			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			res.redirect("/course/"+req.params.id);		
 		}else{
-			console.log('find courses'.green,course);
+			console.log('join courses successfully'.green,course);
+			if(req.xhr) {
+                console.log('req.xhr  ',req.xhr);			
+			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			}else
 			res.redirect("/course/"+req.params.id);
         }    
    })
@@ -446,8 +453,15 @@ function disJoinCourse(req,res,next){
 		if(err) {
 		         console.log('course uid not found'.red,err);
 		         next(err);
+		}else if(!course || course ==0){
+			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			res.redirect("/course/"+req.params.id);		
 		}else{
-			console.log('find courses'.green,course);
+			console.log('disjoin courses succesfully'.green,course);
+			if(req.xhr) {
+                console.log('send ajax sucess to user');			
+			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			}
 			res.redirect("/course/"+req.params.id);
         }    
    })
@@ -524,11 +538,9 @@ function authTutor(req,res,next){
 }
 
 function authAdmin(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
+		console.log('authAdmin'.green, req.session.username,req.session.uid);
+	 		     
+ 		courseModel.findCoursesByQuery({'tutor.id':req.session.uid,'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
 		      if(err) {
 			     console.log('Courses  not admined'.red);
 		      }
@@ -536,25 +548,7 @@ function authAdmin(req,res,next){
 			     console.log('find course uid'.green,course._id);
 			     next();
               }			
-		    })
-		}
-	} 
+		}) 
 }
 
-function authStudents(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	} 
-}
+

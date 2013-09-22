@@ -53,7 +53,8 @@ function getMilestonePage(req,res,next){
                   });
 	    });	 
 }
-	
+
+/*	
 app.get('/course/:course_id/plan',getAllPlans);	
 function getAllPlans(req,res,next){
    
@@ -67,15 +68,17 @@ function getAllPlans(req,res,next){
 	   }
    })
 }
+*/
 
 	
 app.post('/course/:course_id/plan/:student_id',createPlanForStudent);
-app.get('/course/:course_id/plan/:student_id',getPlanForStudent);
-app.del('/course/:course_id/plan/:student_id',deletePlanForStudent);
+app.get('/course/:course_id/plan',getPlanForStudent);
+app.del('/course/:course_id/plan',deletePlanForStudent);
 
 function createPlanForStudent(req,res,next){
    var course_id = req.params.course_id, student_id = req.params.student_id;
-   console.log('createPlanForStudent',course_id,student_id);
+   var uid = req.session.uid;
+   console.log('createPlanForStudent','cid:',course_id,'uid',student_id);
    studentPlanModel.createStudentPlan(course_id,student_id,function(err,plan){
         if(err) next(err);
         else {
@@ -92,20 +95,49 @@ function createPlanForStudent(req,res,next){
 }
 
 function getPlanForStudent(req,res,next){
-   var course_id = req.params.course_id, student_id = req.params.student_id;
-   console.log('getPlanForStudent',course_id,student_id);
-   studentPlanModel.getOneStudentPlan(course_id,student_id,function(err,data){
+   	   
+   var uid = req.session.uid, cid = req.params.course_id;
+   console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
+   if(uid == null || cid == null)
+   return res.send(400,{'meta':400,"status":"error"});
+
+  
+   studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
         if(err) next(err);
         else{
-		    console.log(data);
-		    res.send(200,data);
+		    console.log('getPlanForStudent2'.green, data);
+			res.send(200,data); 
+			if(data == null){
+			    var plan;
+
+	            async.parallel([
+		            function(callback) {
+				        studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
+				            console.log('getPlanForStudent  getMilestones'.green, data);
+				            callback();
+				        })				                       		    
+		            }],function(err) {
+	                    if (err) return next(err); 
+                        res.send(200,data1); 
+	            });				
+				/*
+			    studentPlanModel.copyPlan(cid,sid,plan,function(err,data){
+			        if(err) next(err)	
+				    else res.send(200,data);				
+				})
+                */				
+			}		    
 		}
    })
 }
 
 function deletePlanForStudent(req,res,next){
-   var course_id = req.params.course_id, student_id = req.params.student_id;
-   console.log('deletePlanForStudent',course_id,student_id);
+   var uid = req.session.uid, cid = req.params.courseid;
+   console.log('deletePlanForStudent',cid,uid);
+   if(uid == null || question_id ==null || cid == null)
+   return res.send(400,{'meta':400,"status":"error"});
+   else if(answer == null || debug == null)
+   return res.send(400,{'meta':400,"status":"error"});
 
 }
 
@@ -147,7 +179,10 @@ function getMilestones(req,res,next){
    studentPlanModel.getMilestones(plan_id,function(err,data){
         if(err) next(err);
         else{
-		    console.log(data);
+		    console.log('getMilestones'.green,data);
+			console.log(data.plan[0].goal, data.plan[0].ques.length);
+			for(var i=0;i<data.plan[0].ques.length;i++)
+			console.log(data.plan[0].ques[i]);
 		    res.send(200,data);
 		}     
    })
@@ -180,11 +215,12 @@ function getQuestionsOfMilestone(req,res,next){
    studentPlanModel.getQuestionsByNumber(plan_id,milestone_index,function(err,data){
         if(err) next(err);
         else{
-		    console.log(data.plan,data.plan.length);
+		    console.log(data.plan[0],data.plan.length,data.plan[0].goal);
+			/*
 			console.log(data.plan[0].goal,data.plan[0].ques.length);
 			for(var i=0;i<data.plan[0].ques.length;i++)
 			console.log(data.plan[0].ques[i]);
-			
+			*/
 		    res.send(200,{"meta":{'code':200},"data":data.plan[0] });
 			//res.send(200,{"meta":{'code':404} });
 		}    
@@ -204,7 +240,3 @@ function removeQuestionFromMilestone(req,res,next){
 		}     
    })
 }
-
-
-
-

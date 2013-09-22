@@ -121,8 +121,8 @@ function postNewQuestion(req,res,next){
 }
 
 function editQuestionById(req,res,next){
-
-    questionModel.updateQuestionById(req.params.id,{},function(err,data){
+    var qid = req.params.id;
+    questionModel.updateQuestionById(qid,{},function(err,data){
 	    if(err) return next(err);
 		else{
 		
@@ -133,13 +133,13 @@ function editQuestionById(req,res,next){
 }
 
 function getQuestionById(req,res,next){
-
-    questionModel.updateQuestionById(req.params.id,{},function(err,data){
+    var cid = req.params.id, qid = req.params.qid;
+    console.log('getQuestionById  ',qid);
+    questionModel.findQuestionById(qid,{},function(err,data){
 	    if(err) return next(err);
 		else{
-		
-		     res.send(200);
-		
+		     console.log('getQuestionById  ',data);
+		     res.send(200,data);		
 		}
 	})
    

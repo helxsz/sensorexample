@@ -23,7 +23,9 @@ var courseModel = require('../model/course_model');
 var studentPlanModel = require('../model/student_plan_model');
 
 app.get('/course/:id/tracking',getCourseTrackingPage);
-
+app.get('/course/:id/planAllocation',getPlanAllocation);
+app.get('/course/:id/planAllocation2',getPlanAllocation2);
+app.get('/course/:id/planAllocation3',getPlanAllocation3);
 function getCourseTrackingPage(req,res,next){
     var locals = {};
     var id = req.params.id;
@@ -43,4 +45,68 @@ function getCourseTrackingPage(req,res,next){
                     }
                   });
 	});	    
+}
+
+
+function getPlanAllocation(req,res,next){
+    var locals = {};
+    var id = req.params.id;
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Course Allocation';
+                         res.render('course_plan_allocation',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});
+}
+
+function getPlanAllocation2(req,res,next){
+    var locals = {};
+    var id = req.params.id;
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Course Allocation';
+                         res.render('course_plan_allocation2',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});
+}
+
+function getPlanAllocation3(req,res,next){
+    var locals = {};
+    var id = req.params.id;
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Course Allocation';
+                         res.render('course_plan_allocation3',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});
 }

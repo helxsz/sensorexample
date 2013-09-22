@@ -63,7 +63,9 @@ function getDashboardPage(req,res,next){
 		        userModel.findUserById(req.session.uid,function(err,user){
 		            if(err) {
 			            console.log('user uid not found'.red);
-		            }
+		            }else if(user == null){
+					    return res.redirect('/login');
+					}
 			        else{
 			            console.log('find user uid'.green,user._id);
                         locals.user = {
@@ -138,7 +140,7 @@ function getDashboardPage(req,res,next){
 *********************************************************/
 function getProfileSettingPage(req,res,next){
     var locals = {};
-	 if (req.session.uid) {
+
 		 console.log('retrieve getProfileSettingPage '.green, req.session.username,req.session.uid);
 		 userModel.findUserById(req.session.uid,function(err,user){
 		    if(err) {
@@ -160,9 +162,7 @@ function getProfileSettingPage(req,res,next){
 			   res.render('setting_profile',locals);
             }			
 		 })
-	}else{	
-	    res.redirect('/login');
-	}
+
 }
 
 function updateUserProfile(req,res,next){
@@ -181,17 +181,21 @@ function updateUserProfile(req,res,next){
    if(req.body.location)   {   update.loc = sanitize(req.body.location).trim(), update.loc = sanitize(update.loc).xss();  }
    if(req.body.fullname)  {   update.fullname = sanitize(req.body.fullname).trim(), update.fullname = sanitize(update.fullname).xss();  }
    if(req.body.about)   {   update.about = sanitize(req.body.about).trim(), update.about = sanitize(update.about).xss();  }
-   update = JSON.stringify(update);
-      
-   userModel.updateUser({'_id':req.session.uid},{'$set':{'email':req.body.email,'loc':req.body.location,'fullname':req.body.fullname
-                                                         ,'about':req.body.about}},function(err,data){
-      if(err) next(err);
+   console.log(update);  
+   // {'email':req.body.email,'loc':req.body.location,'fullname':req.body.fullname,'about':req.body.about}
+   userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){                                                        
+      if(err) {
+	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    next(err);
+	  }else if( !data || data==0){
+	      return res.send({'meta':204,'data':null},204);
+	  }
 	  else{
 	    console.log('update success'.green, data,req.url);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect(req.url);
 	  }	  
    })
-
 }
 
 function updateUserImageToFolder(req,res,next){
@@ -232,7 +236,7 @@ function updateUserImageToGridfs(req,res,next){
 	var file = req.files.image;
 	console.log('updateUserImageToMongo'.green,file.path,file.type,file.size);
 	
-	if (req.session.uid) {
+
 		 userModel.findUserById(req.session.uid,function(err,user){
 		    if(err) {
 			    console.log('user uid not found'.red);
@@ -291,12 +295,13 @@ function updateUserImageToGridfs(req,res,next){
 					user.save(function (err2) {
                             if (err) return next(err2); 
 							else console.log('save user image',user.password,user.salt,user.img);
+							if(req.xhr) return res.send({'meta':200,'data':{'img':user.img}},200);
 			                res.redirect("/settings/profile");
                     });
 				})
             }			
 		 })
-	}	
+	
 }
 
 function getUserImageFromGrids(req,res,next){
@@ -375,7 +380,9 @@ function getAccountSettingPage(req,res,next){
 		    if(err) {
 			    console.log('user uid not found'.red);
 			    res.render('signin');
-		    }
+		    }else if(!user){
+			    res.redirect('/login');
+			}
 			else{
 			   console.log('find user uid'.green,user._id);
                locals.user = {
@@ -406,25 +413,34 @@ function updateUserAccount(req,res,next){
                    return;
             }	   
    }   
-   
-   
-   update = JSON.stringify(update);
-   
-   userModel.updateUser({'_id':req.session.uid},{'$set':{'email':req.body.email}},function(err,data){
-      if(err) return next(err);
+      
+   //{'email':req.body.email}
+   userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
+      if(err){
+	     if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	     return next(err);
+	  }else if( !data || data==0){
+	      return res.send({'meta':204,'data':null},204);
+	  }	 
 	  else{
 	    console.log('update success'.green, data);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect('/');
 	  }	  
    })
 }
 
 function deleteUserAccount(req,res,next){
-   console.log('delete user account');
+   console.log('delete user account   ',req.url, req.xhr);
    userModel.deleteUserById( req.session.uid ,function(err,data){
-      if(err) return next(err);
+      console.log('delete user account data'.green,data);
+      if(err){ 
+	     if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	     return next(err);
+	  }	 
 	  else{
-	    console.log('delete success'.green);
+	    console.log('delete success'.green,data);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect('/');
 	  }	  
    })
@@ -438,7 +454,7 @@ function deleteUserAccount(req,res,next){
 
 function getSoicalSettingPage(req,res,next){
      var locals = {};
-	 if (req.session.uid) {
+
 		 console.log('retrieve getSoicalSettingPage '.green, req.session.username,req.session.uid);
 		 userModel.findUserById(req.session.uid,function(err,user){
 		    if(err) {
@@ -456,17 +472,19 @@ function getSoicalSettingPage(req,res,next){
 			   res.render('setting_social',locals);
             }			
 		 })
-	 }else{	
-	    res.redirect('/login');
-	}
+
 }
 
 function deleteUserSoical(req,res,next){
    console.log('delete user account');
    userModel.deleteUserById( mongoose.Types.ObjectId(req.session.uid) ,function(err,data){
-      if(err) next(err);
+      if(err) {
+	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    next(err);
+	  }
 	  else{
 	    console.log('delete success'.green);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect('/');
 	  }	  
    })
@@ -478,13 +496,18 @@ function deleteUserSoical(req,res,next){
 function updateUserSoical(req,res,next){
    var update = new Object();
    if(req.body.email)  update.email=req.body.email;
-   update = JSON.stringify(update);
    
-   console.log(req.body.email,req.body.old_password,req.body.new_password);
-   userModel.updateUser({'_id':req.session.uid},{'$set':{'email':req.body.email}},function(err,data){
-      if(err) next(err);
+   console.log(req.body.email);
+   userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
+      if(err) {
+	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    next(err);
+	  }else if( !data || data==0){
+	      return res.send({'meta':204,'data':null},204);
+	  }	
 	  else{
 	    console.log('update success'.green, data);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect('/');
 	  }	  
    })  
@@ -497,7 +520,7 @@ function updateUserSoical(req,res,next){
 *********************************************************/
 function getNotificationPage(req,res,next){
      var locals = {};
-	 if (req.session.uid) {
+
 		 console.log('NotificationPage,found session '.green, req.session.username,req.session.uid);
 		 userModel.findUserById(req.session.uid,function(err,user){
 		    if(err) {
@@ -515,9 +538,7 @@ function getNotificationPage(req,res,next){
 			   res.render('setting_notification',locals);
             }			
 		 })
-	}else{	
-	    res.redirect('/login');
-	}
+
 }
 /***************************************************************************************************
                                     missing
@@ -525,13 +546,18 @@ function getNotificationPage(req,res,next){
 function updateUserNotification(req,res,next){
    var update = new Object();
    if(req.body.email)  update.email=req.body.email;
-   update = JSON.stringify(update);
    
-   console.log(req.body.email,req.body.old_password,req.body.new_password);
-   userModel.updateUser({'_id':req.session.uid},{'$set':{'email':req.body.email}},function(err,data){
-      if(err) next(err);
+   console.log(req.body.email);
+   userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
+      if(err) {
+	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    next(err);
+	  }else if( !data || data==0){
+	      return res.send({'meta':204,'data':null},204);
+	  }	
 	  else{
 	    console.log('update success'.green, data);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect('/');
 	  }	  
    })  

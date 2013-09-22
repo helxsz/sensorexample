@@ -6,12 +6,165 @@
 
 
     <div class="span6 ">
+	    
+
+		
+<script>
+// basic paging logic to demo the buttons
+var pr = document.querySelector( '.paginate.left' );
+var pl = document.querySelector( '.paginate.right' );
+
+pr.onclick = slide.bind( this, -1 );
+pl.onclick = slide.bind( this, 1 );
+
+var index = 0, total = 5;
+
+function slide(offset) {
+  index = Math.min( Math.max( index + offset, 0 ), total - 1 );
+
+  document.querySelector( '.counter' ).innerHTML = ( index + 1 ) + ' / ' + total;
+
+  pr.setAttribute( 'data-state', index === 0 ? 'disabled' : '' );
+  pl.setAttribute( 'data-state', index === total - 1 ? 'disabled' : '' );
+}
+
+slide(0);
+</script>
+<style>
+
+
+button {
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+}
+
+.paginate {
+  margin: 10px;
+
+  cursor: pointer;
+  -webkit-transform: translate3d(0, 0, 0);
+
+  -webkit-filter: drop-shadow(0 2px 0px rgba(0, 0, 0, 0.2));
+}
+.paginate i {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  width: 50px;
+  height: 5px;
+  border-radius: 2.5px;
+  background: #BEB4B4;
+  transition: all 0.15s ease;
+}
+.paginate.left {
+  right: 58%;
+}
+.paginate.left i {
+  -webkit-transform-origin: 0% 50%;
+}
+.paginate.left i:first-child {
+  -webkit-transform: translate(0, -1px) rotate(40deg);
+}
+.paginate.left i:last-child {
+  -webkit-transform: translate(0, 1px) rotate(-40deg);
+}
+.paginate.left:hover i:first-child {
+  -webkit-transform: translate(0, -1px) rotate(30deg);
+}
+.paginate.left:hover i:last-child {
+  -webkit-transform: translate(0, 1px) rotate(-30deg);
+}
+.paginate.left:active i:first-child {
+  -webkit-transform: translate(1px, -1px) rotate(25deg);
+}
+.paginate.left:active i:last-child {
+  -webkit-transform: translate(1px, 1px) rotate(-25deg);
+}
+.paginate.left[data-state=disabled] i:first-child {
+  -webkit-transform: translate(-5px, 0) rotate(0deg);
+}
+.paginate.left[data-state=disabled] i:last-child {
+  -webkit-transform: translate(-5px, 0) rotate(0deg);
+}
+.paginate.left[data-state=disabled]:hover i:first-child {
+  -webkit-transform: translate(-5px, 0) rotate(0deg);
+}
+.paginate.left[data-state=disabled]:hover i:last-child {
+  -webkit-transform: translate(-5px, 0) rotate(0deg);
+}
+.paginate.right {
+  <!-- left: 58%; -->
+}
+.paginate.right i {
+  -webkit-transform-origin: 100% 50%;
+}
+.paginate.right i:first-child {
+  -webkit-transform: translate(0, 1px) rotate(40deg);
+}
+.paginate.right i:last-child {
+  -webkit-transform: translate(0, -1px) rotate(-40deg);
+}
+.paginate.right:hover i:first-child {
+  -webkit-transform: translate(0, 1px) rotate(30deg);
+}
+.paginate.right:hover i:last-child {
+  -webkit-transform: translate(0, -1px) rotate(-30deg);
+}
+.paginate.right:active i:first-child {
+  -webkit-transform: translate(1px, 1px) rotate(25deg);
+}
+.paginate.right:active i:last-child {
+  -webkit-transform: translate(1px, -1px) rotate(-25deg);
+}
+.paginate.right[data-state=disabled] i:first-child {
+  -webkit-transform: translate(5px, 0) rotate(0deg);
+}
+.paginate.right[data-state=disabled] i:last-child {
+  -webkit-transform: translate(5px, 0) rotate(0deg);
+}
+.paginate.right[data-state=disabled]:hover i:first-child {
+  -webkit-transform: translate(5px, 0) rotate(0deg);
+}
+.paginate.right[data-state=disabled]:hover i:last-child {
+  -webkit-transform: translate(5px, 0) rotate(0deg);
+}
+.paginate[data-state=disabled] {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.counter {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  margin-top: -15px;
+  font-size: 30px;
+  font-family: Helvetica, sans-serif;
+  text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+
+
+</style>		
+
+			<!-- 
+			<div class="counter"></div>
+            <button class="paginate left"><i></i><i></i></button>
+			-->
+            
+		
 		<div class="question_description">
-			    description
+		    <div class="question_content"> </div> 
+            <button class="paginate right next_question_btn"><i></i><i></i></button>
+			<a href="#" class="help question_tip" data-original-title="" title="">?<span class="help-info">Help Information</span></a>
 		</div>
-		<div class="question_tip">
-			   tip
-		</div>
+
+
+		
+		
         <div class=" "id="editor">
 import turtle
 t = turtle.Turtle()
@@ -19,10 +172,13 @@ t.forward(100)
 print "Hello World" 
         </div>
 		<form class="span2" id=".form-question-submit" method="post" action="/workplan/5218b3cbd830bb640c000002/milestone/efg/questions/520db60a8932d7700f000004"  class="form-horizontal " enctype="multipart/form-data" >
-            <input type="hidden" name="_csrf" value="<%= token %>"/>
+            <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
 			<input type="hidden" name="answer" id="answer_input">
             <div class="button  offset1" type="submit" onclick="runit()" ><a href="#"><i class="ss-icon">sync</i>Update</a></div>			
-        </form>		
+        </form>	
+
+
+		
 	</div>	
    
 
@@ -80,29 +236,62 @@ height: 351px;
 
 
 .question_description {
-background: white;
-border-radius: 6px;
-height: 60px;
+position: relative;
+color: white;
+border-radius: 2px;
+height: 150px;
 margin: 10px 0;
 opacity: 0.8;
 padding: 4px 25px;
-width: 400px;
-box-shadow: 5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px #fff;
+
+border: 1px solid #14161C;
+background-color: #3b3f4d;
+border-radius: 4px;
+
+
+list-style: none;
+-webkit-box-shadow: inset 0px 2px 3px 0px rgba(0,0,0,0.4),0px 1px 2px 0px rgba(255,255,255,0.2);
+box-shadow: inset 0px 2px 3px 0px rgba(0,0,0,0.4),0px 1px 2px 0px rgba(255,255,255,0.2);
 }
 
-.question_tip {
-background: white;
-border-radius: 6px;
-height: 60px;
-margin: 10px 0;
-opacity: 0.8;
-padding: 4px 25px;
-width: 400px;
-box-shadow: 5px 5px 15px rgba(0,0,0,0.4),inset -1px -1px 1px #fff;
+.question_tip{
+background: #ccc;
+border-radius: 4px;
+border: 1px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 24px;
+line-height: 24px;
+text-align: center;
+width: 24px;
+position: absolute;
+bottom: 10px;
+right: 30px;
+
+
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-weight: 700;
+-webkit-box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5),inset 0px 1px 2px 0px rgba(255,255,255,0.2);
+box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5),inset 0px 1px 2px 0px rgba(255,255,255,0.2);
+text-decoration:none;
+}
+
+.next_question_btn{
+position: absolute;
+top: 40%;
+right: 50px;
+}
+
+.question_content{
+position: absolute;
+top:10px;
+bottom:10px;
+left:10px;
+width:480px;
 }
 </style>
 
- <script>
+<script>
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     //editor.getSession().setMode("ace/mode/javascript");
@@ -148,28 +337,217 @@ function runit() {
    editor.getSession().on("changeAnnotation", function(){
     var annot = editor.getSession().getAnnotations();
     });
-   */
+   
     editor.session.addMarker(
        new Range(1, 0, 15, 0), "ace_active-line", "fullLine"
     );   
+   */
    
    $('#answer_input').val("11111");
+   submitAnswer( current_qid ,prog,prog);   
+}
+
+function submitAnswer(qid, answer, debug){
+    console.log('submit answers',$('#csrf').val(), current_question_index,current_milestone_index, plans[current_milestone_index].length-1);
+    var notify = 0;
+	var array = new Array();	
+	if(current_question_index == plans[current_milestone_index].length-1){
+	    array = plans[current_milestone_index];
+	    console.log('submit answer  and send notification   ',current_question_index,current_milestone_index);
+		console.log('sumbit these questions as well', JSON.stringify(array));	
+        notify = 1;		
+	} 
 	$.ajax({
            type: "POST",
-		   data: $(".form-question-submit").serialize(),
-           url: "/workplan/5218b3cbd830bb640c000002/milestone/abc/questions/520db60a8932d7700f000004",
+		   data: "answer="+ answer +"&debug=" +debug +"&extra="+JSON.stringify(array), 
+           //url: "/workplan/5218b3cbd830bb640c000002/milestone/abc/questions/520db60a8932d7700f000004",
+		   url: "/course/"+courseid+"/answers/"+qid+"?notify="+notify,
            beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
 		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-
-           },		   
+               console.error('error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           },           		   
            success: function(data)
-           {		        
-                console.log(data);			   
-			   				   
+           {
+                successLoad();		   
+                console.log('update success ...',data);	
+                nextQuestionGo = true;				
            }
-    });	   
-} 
+    });   
+}
+
+
+var plans = new Array();
+var current_milestone_index = 0;
+var current_question_index = 0;
+var total_num = 0;
+var current_qid;
+
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+
+getCoursePlanMilestones(courseid);
+
+var nextQuestionGo = true;
+//getCoursePlanMilestones("5218b3cbd830bb640c000002");  on plan
+// get all the milestones of a plan
+// 5218b3cbd830bb640c000002
+
+
+function getCoursePlanMilestones(course_id){ 
+    console.log('getCoursePlanMilestones    .........',course_id);   
+    $.ajax({
+           type: "GET",
+           //url: "/workplan/"+plan_id+"/milestones",
+		   url:"/course/"+course_id+"/plan",	   
+           success: function(data)
+           {
+		        successLoad();
+				console.log('getCoursePlanMilestones    .........',data);
+                console.log('getCoursePlanMilestones    .........',data._id, data.plan.length);
+			   
+			    for(var i=0;i<data.plan.length;i++){
+					console.log('goal',data.plan[i].goal);
+					var s = $('<li data-id="'+data._id+'" data-index="'+  i +'" ><a class="status-unfinished" href="#" title="' + data.plan[i].goal +  '" data-toggle="' + data.plan[i].goal +  '"      >'+(i+1) +'</a></li>');     // <span class="progress-info">Upload profile picture!</span>
+					var ul = $('<ul> </ul>');
+					
+					var plan = new Array();
+					
+					for(var j=0;j<data.plan[i].ques.length;j++){
+					    console.log('.....'+data.plan[i].ques[j]);
+						ul.append('<div data-id="'+data.plan[i].ques[j]+ '">question '+ j + '</div>' );
+                        plan.push(data.plan[i].ques[j]);						
+					}
+					plans.push(plan);
+					total_num += plan.length;
+                    				
+					s.appendTo( $('.status-progress ul') );
+					s.popover({ title: data.plan[i].goal, content:ul.html() , html:true, placement:'bottom' });		
+										
+					s.click(function(){
+					    console.log(  $(this).attr('data-id'),$(this).attr('data-index') );
+						var index = $(this).attr('data-index');
+						var plan_id = $(this).attr('data-id');
+						getQuestionsOfMilestone(plan_id,index);
+					})			
+			   }
+			   var wid = $('.status-progress').width()/data.plan.length;
+			   console.log('wid', $('.status-progress ul').width(), wid);
+			   $('.status-progress li').css( "margin-right", wid/3+"px"  );
+			   $('.status-progress li a').tooltip({placement:'top'});  //make tip downwards
+               for(var i=0;i<plans.length;i++)
+               {
+			       for(var j=0;j<plans[i].length;j++)
+			       console.log('plans ... ',plans[i][j]);
+			   }		
+               console.log('total questions ....',total_num);
+               showFirstQuestion();			   
+           },
+		   error: function(jqXHR, textStatus, errorThrown){
+                console.error('getCoursePlanMilestones  error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    }); 
+}
+
+//getAnswersOfQuestion("520db60a8932d7700f000004");
+
+function getAnswersOfQuestion(qid){
+    // get all the question of a milestone
+	console.log('getAnswersOfQuestion');
+    $.ajax({
+           type: "GET",
+           url: "/course/"+courseid+"/answers/"+qid,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        successLoad();
+		        console.log('getAnswersOfQuestion',data);
+		        $(".questions").html('');
+               console.log(data.debug.length,data.anw.length);
+			   			   
+			   for(var i=0;i<data.anw.length;i++) {
+					var item = $(
+					        '<div data-id="'+data._id+'">'
+							    +'<span ></span>'
+                                +'<span >'+data.anw[i]+'</span>'
+                            +'</div>'					
+					);
+                    item.appendTo($(".questions"));
+                    item.click(function(){
+					   console.log($(this).attr('data-id'));					
+					})					
+               }
+           }
+    });
+}
+
+$('.next_question_btn').click(function(e){    
+    //removeQuestionAnswer("520db60a8932d7700f000004",0);
+	if(!nextQuestionGo) {console.log('not next question');return; }
+	if(current_milestone_index < plans.length){ 
+	    console.log('next question  ', plans[0][0], current_milestone_index,current_question_index, plans[current_milestone_index][current_question_index]);
+        if( (current_question_index+1) < plans[current_milestone_index].length)
+	    current_question_index ++; 
+        else
+	    { 
+		  current_question_index = 0; 
+		  //$('.status-progress li:nth-child('+ current_milestone_index +') a').addClass( ".status-finished");
+		  $('.status-progress li:lt('+(current_milestone_index+1)+') a').removeClass( "status-unfinished");
+		  $('.status-progress li:lt('+(current_milestone_index+1)+') a').addClass( "status-finished");
+		  current_milestone_index++;
+		  console.log('send notification of finish the module');
+		}
+		current_qid = plans[current_milestone_index][current_question_index];		
+        $.ajax({
+           type: "GET",
+           url: "/course/"+courseid+"/questions/"+current_qid,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data){
+		        successLoad();
+		        console.log(' question data loaded',data.que,data.tip,data._id);
+			    $('.question_description .question_content').text(data.que);
+		        $('.question_description .question_tip .help-info').text(data.tip);
+				nextQuestionGo = false;
+           }
+        });		
+	}
+})
+
+function showFirstQuestion(){
+		current_qid = plans[0][0];		
+        $.ajax({
+           type: "GET",
+           url: "/course/"+courseid+"/questions/"+current_qid,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data){
+		        successLoad();
+		        console.log(' question data loaded',data.que,data.tip,data._id);
+			    $('.question_description .question_content').text(data.que);
+		        $('.question_description .question_tip .help-info').text(data.tip);
+				nextQuestionGo = false;
+           }
+        });
+
+}
+
+function removeQuestionAnswer(qid,index){
+    console.log("removeQuestionAnswer",qid,index);
+    $.ajax({
+           type: "DELETE",
+           url: "course/"+courseid+"/answers/"+qid+"/"+index,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        successLoad();
+		        console.log('removeQuestionAnswer',data);			   
+           }
+    });
+}
 
 /*
 http://www.ptone.com/dablog/2013/04/asmjs-and-python-in-the-browser/
@@ -212,9 +590,5 @@ for c in ['red', 'green', 'yellow', 'blue']:
 
 
 */
-
-
-
-
 
 </script>

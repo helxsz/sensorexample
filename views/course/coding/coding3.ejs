@@ -1,0 +1,178 @@
+<div class='wrap'>
+  <div class='header'>
+    <ul class='menu'>
+      <li class='close'></li>
+      <li class='resize'></li>
+      <li class='minimize'></li>
+    </ul>
+    <div class='url'>
+      <span>codepen.io/davidhc/full/JetGw</span>
+    </div>
+  </div>
+  <div class='content'>
+    <h2>Dude, Love Codepen!</h2>
+    <div class='codepen'></div>
+  </div>
+  <div class='footer'>
+    <span>Edit this pen</span><span>Report Abuse</span>
+  </div>
+</div>
+
+<div class='taskbar'>
+  Codepen.io
+</div>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:300,700' rel='stylesheet' type='text/css'>
+
+<style>
+.wrap {
+  max-width: 600px;
+  margin: 20px auto;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0,0,0,.1);
+}
+.header {
+  background: #ecf0f1;
+  padding: 10px;
+  border-radius: 5px 5px 0 0;
+  padding-top: 0;
+}
+.header > * {display:inline-block}
+.url { 
+  border-radius: 3px;
+  background: #fff;
+  font-size: 13px;
+  width: 100%;
+  color: #bdc3c7;
+  padding: 8px;
+  cursor: text;
+}
+.url:after {
+  content: '';
+  position: absolute;
+}
+.shadow{ 
+  box-shadow: inset 0 -1px 3px rgba(0,0,0,.1)
+}
+ul.menu {
+  padding: 5px 0;
+}
+ul.menu li {
+  list-style: none;
+  display: inline-block;
+}
+li.close,li.resize,li.minimize {
+  width: 12px;
+  height: 12px;
+  background: #dee3e5;
+  border-radius: 10px;
+  cursor: pointer;
+}
+li.close:hover {
+  background: #e76d6b;
+}
+li.resize:hover {
+  background: #dfbc43
+}
+li.minimize:hover { 
+  background: #36d488
+}
+.taskbar {
+  position: absolute!important;
+  height: 35px;
+  border-radius: 5px 5px 0 0;
+  background: #ecf0f1;
+  bottom: 0;
+  right: 20px;
+  line-height:35px;
+  font-size:14px;
+  padding: 0 20px;
+  cursor: pointer;
+  color: #aaa;
+  display: none;
+}
+.content {
+  border: 0;
+  height: 300px;
+  background: #fff; 
+  padding: 20px 0;
+}
+.url span:before { 
+  content: 'http://www.';
+}
+::-webkit-scrollbar {height:12px;background: #fff;width:9px}
+::-webkit-scrollbar-thumb {background-color: rgba(0,0,0,.06);-moz-border-radius: 10px;border-radius: 10px;} 
+.footer {
+  background: #ecf0f1;
+  border-radius: 0 0 3px 3px;
+  padding: 8px;
+  font-size:12px;
+}
+.footer span:first-child {
+  margin-right: 10px;
+}
+.footer span {
+  color: #bdc3c7;
+  cursor: pointer;
+}
+
+
+.codepen {
+  font-size: 0.15em;
+  vertical-align: 6em;
+  margin: 0 5em 0 5em;
+  width: 1.5em;
+  position: absolute;
+  text-indent: -9999em;
+  transform: translate(0,-40px);
+}
+.codepen:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  color: #ecf0f1;
+  background: #ecf0f1;
+  height: 0.8em;
+  width: 0.8em;
+  line-height: 0.8em;
+  overflow: visible;
+  outline: 1px solid transparent;
+  -webkit-border-radius: 0.35em;
+  -moz-border-radius: 0.35em;
+  -ms-border-radius: 0.35em;
+  -o-border-radius: 0.35em;
+  border-radius: 0.35em;
+  -webkit-transform: rotate(42.5deg) skew(-15deg, -10deg);
+  -moz-transform: rotate(42.5deg) skew(-15deg, -10deg);
+  -ms-transform: rotate(42.5deg) skew(-15deg, -10deg);
+  -o-transform: rotate(42.5deg) skew(-15deg, -10deg);
+  transform: rotate(42.5deg) skew(-15deg, -10deg);
+  box-shadow: 0.3em 0 0, 0.6em 0 0, 0.9em 0 0, 1.2em 0 0, 1.5em 0 0, 1.8em 0 0, 2.1em 0 0, 2.4em 0 0, 2.7em 0 0, 3em 0 0, 3.3em 0 0, 3.6em 0 0, 3.9em 0 0, 4.2em 0 0, 4.5em 0 0, 4.6em 0 0, 4.95em 0 0, 4.95em 0.4em 0, 4.95em 0.6em 0, 4.95em 0.9em 0, 4.95em 1.2em 0, 4.95em 1.5em 0, 4.95em 1.8em 0, 4.95em 2.1em 0, 4.95em 2.4em 0, 4.95em 2.7em 0, 4.95em 3em 0, 4.95em 3.3em 0, 4.95em 3.6em 0, 4.95em 3.9em 0, 4.95em 4.2em 0, 4.95em 4.5em 0, 4.95em 4.8em 0, 0 0.3em 0, 0 0.6em 0, 0 0.9em 0, 0 1.2em 0, 0 1.5em 0, 0 1.8em 0, 0 2.1em 0, 0 2.4em 0, 0 2.7em 0, 0 3em 0, 0 3.3em 0, 0 3.6em 0, 0 3.9em 0, 0 4.2em 0, 0 4.5em 0, 0em 4.85em 0, 0.4em 4.9em 0, 0.6em 4.9em 0, 0.9em 4.9em 0, 1.2em 4.9em 0, 1.5em 4.9em 0, 1.8em 4.9em 0, 2.1em 4.9em 0, 2.4em 4.9em 0, 3em 4.9em 0, 3.3em 4.9em 0, 3.6em 4.9em 0, 3.9em 4.9em 0, 4.2em 4.9em 0, 4.5em 4.9em 0, 4.8em 4.9em 0, 4.9em 4.9em 0, 2.6em 2.5em 0, 2.9em 2.5em 0, 3.1em 2.5em 0, 3.4em 2.5em 0, 3.7em 2.5em 0, 4em 2.5em 0, 4.3em 2.5em 0, 4.6em 2.5em 0, 4.9em 2.5em 0, 5.1em 2.5em 0, 5.4em 2.5em 0, 5.7em 2.5em 0, 6em 2.5em 0, 6.3em 2.5em 0, 6.5em 2.5em 0, 6.8em 2.5em 0, 7.1em 2.56em 0, 7.2em 2.56em 0, 7.45em 2.5em 0, 7.45em 2.8em 0, 7.45em 2.9em 0, 7.45em 3.2em 0, 7.45em 3.5em 0, 7.45em 3.8em 0, 7.45em 4.1em 0, 7.45em 4.4em 0, 7.45em 4.7em 0, 7.45em 5em 0, 7.45em 5.3em 0, 7.45em 5.6em 0, 7.45em 5.9em 0, 7.45em 6.2em 0, 7.45em 6.5em 0, 7.45em 6.8em 0, 7.45em 7.1em 0, 2.6em 2.9em 0, 2.6em 3.2em 0, 2.6em 3.5em 0, 2.6em 3.8em 0, 2.6em 4.1em 0, 2.6em 4.4em 0, 2.6em 4.7em 0, 2.6em 5em 0, 2.6em 5.3em 0, 2.6em 5.6em 0, 2.6em 5.9em 0, 2.6em 6.2em 0, 2.6em 6.5em 0, 2.6em 6.8em 0, 2.6em 7em 0, 2.6em 7.35em 0, 2.9em 7.35em 0, 3.1em 7.35em 0, 3.4em 7.35em 0, 3.7em 7.35em 0, 4em 7.35em 0, 4.3em 7.35em 0, 4.6em 7.35em 0, 4.9em 7.35em 0, 5.2em 7.35em 0, 5.5em 7.35em 0, 5.8em 7.35em 0, 6.1em 7.35em 0, 6.4em 7.35em 0, 6.7em 7.35em 0, 7em 7.35em 0, 7.3em 7.35em 0, 7.45em 7.35em 0;
+  -webkit-filter: blur(0px);
+  -moz-filter: blur(0px);
+  filter: blur(0px);
+}
+.codepen:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0.3em;
+  left: 0.35em;
+  margin-left: -0.4em;
+  height: 3.15em;
+  width: 0.8em;
+  color: #ecf0f1;
+  background: #ecf0f1;
+  outline: 1px solid transparent;
+  -webkit-border-radius: 0.4em;
+  -moz-border-radius: 0.4em;
+  -ms-border-radius: 0.4em;
+  -o-border-radius: 0.4em;
+  border-radius: 0.4em;
+  box-shadow: 4.5em 2.6em 0, -0.05em 5.4em 0, -4.45em 2.65em 0;
+}
+h2 {
+  font-weight: 700;
+  text-align: center;
+  color: #bdc3c7;
+}
+</style>

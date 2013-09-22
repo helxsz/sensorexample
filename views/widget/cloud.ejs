@@ -1,0 +1,158 @@
+<style>
+@import "//netdna.bootstrapcdn.com/font-awesome/3.0/css/font-awesome.css";
+
+.cloud {
+width: 200px;
+height: 50px;
+border-radius: 100px;
+-webkit-border-radius: 100px;
+-moz-border-radius: 100px;
+position: relative;
+margin: 120px 260px 70px -250px;
+left: 50%;
+float: left;
+}
+
+.cloud:after, .cloud:before {
+	content: '';
+	position: absolute;
+	background: #2ecc71;
+	z-index: -1;
+}
+
+.cloud:after {
+width: 80px;
+height: 80px;
+top: -40px;
+left: 30px;
+border-radius: 100px;
+-webkit-border-radius: 100px;
+-moz-border-radius: 100px;
+}
+
+.cloud:before {
+width: 100px;
+height: 100px;
+top: -60px;
+right: 20px;
+border-radius: 200px;
+-webkit-border-radius: 200px;
+-moz-border-radius: 200px;
+}
+
+.status_ok:before{
+    position:absolute;
+    left:38%;
+    content: "\f00c";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-size:4em;
+    text-decoration: inherit;
+    color: #fff;
+    z-index:5;
+}
+.cloud_ok, .cloud_ok:after, .cloud_ok:before {
+	background: #2ecc71;
+}
+
+.status_ok{ 
+-webkit-animation: pulse 3s ease-out;
+-moz-animation: pulse 3s ease-out;
+-ms-animation: pulse 3s ease-out;
+-o-animation: pulse 3s ease-out;
+animation: pulse 3s ease-out;
+-webkit-animation-iteration-count: infinite;
+-moz-animation-iteration-count: infinite;
+-ms-animation-iteration-count: infinite;
+-o-animation-iteration-count: infinite;
+animation-iteration-count: infinite;} 
+
+@keyframes "pulse" {
+ 0% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   	filter: alpha(opacity=0);
+   	opacity: 0;
+ }
+ 50% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   	filter: alpha(opacity=100);
+   	opacity: 1;
+ }
+ 100% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   	filter: alpha(opacity=0);
+   	opacity: 0;
+ }
+
+}
+
+@-moz-keyframes pulse {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-webkit-keyframes "pulse" {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-ms-keyframes "pulse" {
+ 0% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-o-keyframes "pulse" {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+</style>
+	
+<div class="cloud cloud_ok"><span class="status_ok"></span></div>

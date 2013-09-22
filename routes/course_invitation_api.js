@@ -49,8 +49,8 @@ function updateInvitationsOfCourse(cid,invitation_id,callback){
 }
 
 // student replies to the invitation
-app.get('course/:id/invitation/:token/reply',replyToCourseInvitation);
-app.get('invitation/token/:token',getRegisterInvitationPage);
+app.post('/course/:id/invitation/:token/reply',replyToCourseInvitation);
+app.get('/invitation/token/:token',getRegisterInvitationPage);
 
 function getCourseInvitationPage(req,res,next){
 
@@ -87,6 +87,7 @@ function getCourseInvitationPage(req,res,next){
 				callback();
             })
 		},
+		/*
 		function(callback){	           		
             courseModel.findCourseInvitationById(cid,function(err,data){
 		        if(err) next(err);
@@ -97,7 +98,18 @@ function getCourseInvitationPage(req,res,next){
                 callback();				
 	        })
 		
-		}],function(err) {
+		}*/
+		function(callback){	 
+	        courseModel.findCourseInvitation(cid,function(err,data){
+		        if(err) next(err);
+	            else{
+			        //console.log("getInvitationsFromCourse ",data);
+		            locals.invitations = data.invitations;
+	            }
+                callback();				
+	        })		
+		}
+		],function(err) {
 	      if (err) return next(err); 
 	      res.format({
                     html: function(){
@@ -166,7 +178,8 @@ function inviteStudents(req,res,next){
                         }
 				        callback();
                     });								
-				},			
+				},
+                /*				
 		        function(callback){
 		            invitationModel.createInvitation({'email':email,'_id':token,'status':email_status}, function(err,data){			
 			            if(err) next(err);
@@ -185,10 +198,20 @@ function inviteStudents(req,res,next){
 	                    }
 				        callback();					
 					})
-		        }],function(err) {
-				    if(!email_status) res.json(200,"email sent error");
-					else  res.json(200,"email sent successfully");				
-				})			
+		        }*/
+		        function(callback){
+		            courseModel.addInvitation(cid,email,token,email_status,function(err,data){
+			            if(err) next(err);
+	                    else{
+				            console.log("addInvitation  success update".green);		    
+	                    }
+				        callback();					
+					})
+		        }				
+				],function(err) {
+				    if(!email_status) res.json(504,{"meta":504});
+					else  res.json(200,{"meta":200});				
+				})               				
 	    });		
 	
 }
@@ -197,7 +220,16 @@ function getInvitationsFromCourse(req,res,next){
 
     var cid = req.params.id; 
     if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
+	/*
     courseModel.findCourseInvitationById(cid,function(err,data){
+		if(err) next(err);
+	    else{
+			console.log("getInvitationsFromCourse ",data);
+		    res.json(200,data);
+	    }	    	
+	})
+	*/
+	courseModel.findCourseInvitation(cid,function(err,data){
 		if(err) next(err);
 	    else{
 			console.log("getInvitationsFromCourse ",data);
@@ -206,14 +238,23 @@ function getInvitationsFromCourse(req,res,next){
 	})
 }
 
+// http://diogogmt.wordpress.com/2012/03/23/update-elementmatch-and-the-positional-operator-on-mongodbmongoose/
+// http://stackoverflow.com/questions/15496071/finding-embedded-documents-in-mongoose-odm
 // 'course/:id/invitation/:token/reply?action=accept&extra=afad'
 function replyToCourseInvitation(req,res,next){
     var locals = {};
     var id = req.params.id;
 	var token = req.params.token;
-    if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});	    
+	var uid = req.session.uid;
+    if( req.session.uid.length < 12) res.send(400,{'msg':'course id is not valid'});	    
     var action = req.query["action"],extra = req.query["extra"];
-	
+	console.log('replyToCourseInvitation',id,token,uid);
+	courseModel.addStudentByInvitation(id,token,uid,function(err,data){
+		    if(err) next(err);
+			else if(!data || data==0) res.json(404,{'meta':204,'data':null});	
+		    else res.json(200,{'meta':'200'});	 	
+	})
+	/*
 	if(action=="accept"){
 	    invitationModel.acceptInvitation(token,extra,function(err,data){
 		    if(err) next(err);
@@ -226,6 +267,8 @@ function replyToCourseInvitation(req,res,next){
 		    else res.json(200,{'invitation_action':'refuse'});
 		})	
 	}
+	*/
+	
 }
 
 function getRegisterInvitationPage(req,res,next){

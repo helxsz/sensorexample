@@ -294,7 +294,8 @@ function authenticateFromPass(username,password,callback){
 
 function updateUser(condition,update,callback){
 	var options = { new: false };	
-	UserModel.findOneAndUpdate(condition,update,options,function(err,ref){
+	//UserModel.findOneAndUpdate(condition,update,options,function(err,ref){
+	UserModel.update(condition,update,options,function(err,ref){
 		if(err) {
 			console.log('err  on updateUser',err);
 			callback(err, null);

@@ -1,0 +1,78 @@
+Flippers (currently Webkit, Firefox, & IE10 only):
+
+flip flipInX flipOutX flipInY flipOutY
+
+Fading entrances:
+
+fadeIn fadeInUp fadeInDown fadeInLeft fadeInRight fadeInUpBig fadeInDownBig fadeInLeftBig fadeInRightBig
+
+Fading exits:
+
+fadeOut fadeOutUp fadeOutDown fadeOutLeft fadeOutRight fadeOutUpBig fadeOutDownBig fadeOutLeftBig fadeOutRightBig
+
+Bouncing entrances:
+
+bounceIn bounceInDown bounceInUp bounceInLeft bounceInRight
+
+Bouncing exits:
+
+bounceOut bounceOutDown bounceOutUp bounceOutLeft bounceOutRight
+
+Rotating entrances:
+
+rotateIn rotateInDownLeft rotateInDownRight rotateInUpLeft rotateInUpRight
+
+Rotating exits:
+
+rotateOut rotateOutDownLeft rotateOutDownRight rotateOutUpLeft rotateOutUpRight
+
+Lightspeed:
+
+lightSpeedIn lightSpeedOut
+
+Specials:
+
+hinge rollIn rollOut
+
+
+
+	$.ajax({
+           type: "POST",
+		   data: $(".form-question-submit").serialize(),
+           url: $(this).attr('href')+'/'+$('#selected-question').attr('qid'),
+	   contentType:"application/json; charset=utf-8",
+           dataType:"json",	
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+			   var msg = $('<div>submit failed</div>');
+			   msg.css('background','#A60000');
+			   msg.css('color','#ffffff')
+           },		   
+           success: function(data)
+           {		        
+                console.log(data);			   
+			   				   
+           }
+    });
+
+
+
+
+// drop the database 
+// mongoose.connection.db.executeDbCommand({dropDatabase:1});
+// slaveok
+// Model.find(conditions).slaveOk().run(callback); 
+
+
+
+
+	var errors = [];
+    if (!req.body.username) errors.push("username specified")
+    if (!req.body.email) errors.push("Missing email")
+    if (!req.body.password) errors.push("Missing password")
+    if (errors.length){
+        res.statusCode = 400;
+        res.end(JSON.stringify({status:"error", errors:errors}));      
+        return;    
+	}

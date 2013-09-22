@@ -3,7 +3,7 @@ module.exports = {
 	sessionSecret: '076ee61d63aa10a125ea872411e433b9',
 	port: 8080,
 	uri: 'http://localhost:8080', // Without trailing /
-	host: 'localhost',
+	host: '54.212.249.167',
     redis: {
         host: 'localhost',
         port: 6379
@@ -48,7 +48,7 @@ module.exports = {
          user:"feynlabs.uk@gmail.com"
         ,pass:"newstartup"
         ,name:"Feynlabs"	
-	}	
+	} 
 };
 
 if (module.exports.environment == 'production') {

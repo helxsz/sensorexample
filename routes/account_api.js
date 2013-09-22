@@ -23,9 +23,6 @@ var mail_api = require('./mail_api');
 var permissionAPI = require('./permission_api');
 // session
 
-// drop the database 
-// mongoose.connection.db.executeDbCommand({dropDatabase:1});
-
 
 
 /** 
@@ -51,7 +48,7 @@ app.post('/signup/invitation/email',sendSignupInvitationEmail);
 function sendSignupInvitationEmail(){
     var locals = {};
     var cid = req.params.id; 
-    if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
+    if( req.session.uid.length < 12) return res.send(404,{'msg':'course id is not valid'});
     console.log(" inviteStudents".green,req.body.email);
 	
 	var email = req.body.email;
@@ -70,12 +67,12 @@ function sendSignupInvitationEmail(){
                         if(error){
                             console.log("inviteStudents Message sent error ".red,error); // get error message
 					        email_status = 1;
-                            res.json(200,"email sent error");
+                            res.json(503,{'meta':503,'data':null,'error':error});
                             return;							
                         }else{
                             console.log("inviteStudents  Message sent: ".green ,response.message);
 					        email_status = 2;
-                            res.json(200,"email sent successfully");
+                            res.json(200,{'meta':200,'data':null});
                             return;							
                         }
 				        
@@ -89,6 +86,7 @@ function signupWithInvitation(req,res,next){
    var locals = {};
    locals.title = "Invitation Sign up";
    // how to verify the token
+   console.log('signupWithInvitation request');
    if(true){
         // go to welcome register page  , then receive the course notification
    }else{
@@ -138,7 +136,7 @@ function validateEmail(req, res){
        check(new_email).isEmail();
     } catch (e) {
        res.statusCode = 400;
-       res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
+       return res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
        return;
     }	
 	
@@ -239,20 +237,22 @@ function signupUser(req,res,next){
        return;
     }
 	
-    if(req.body.email)  {      
-       var email = sanitize(req.body.email).trim(), email = sanitize(email).xss();  
-	        try {
+	var email, username, password;        
+    email = sanitize(req.body.email).trim(), email = sanitize(email).xss();  
+	try {
                check(email).isEmail();
               } catch (e) {
                    res.statusCode = 400;
                    res.end(JSON.stringify({status:"error", errors:[{"message":"email is invalid"}]}));      
                    return;
-            }	   
-    }	
+     }	     
+    username = sanitize(req.body.username).trim(), username = sanitize(username).xss();  	   
+    password = sanitize(req.body.password).trim(), password = sanitize(password).xss();
 		
-    userModel.createNewUser({'username':req.body.username,'email':req.body.email,'password':req.body.password},function(err,data){
+    userModel.createNewUser({'username':username,'email':email,'password':password},function(err,data){
 	    if(err) {
-		    console.log('err',err);
+		    //console.log('err',err);
+			if(err.code==11000) return res.send(409, { detail: err.err, reason:"database key duplicate" });
 			return next(err);
 	    }
 	    else
@@ -265,19 +265,28 @@ function signupUser(req,res,next){
 					
 				}					
 	        });
-            */			
+            */
+            // send a registration email to the user, could put in a queue			
+			mail_api.sendRegistraionMail(username,email,function(error,response){
+                if(error){
+                    console.log("RegistraionMail sent error ".red,error); // get error message
+                }else{
+                    console.log("RegistraionMail sent: ".green ,response.message);
+                }			
+			});
+			
 		    console.log("signup success".green, data);
 		    req.session.uid = data._id;
             req.session.username = data.username;
+			if(req.xhr && req.accepts('application/json')){	
 			
-			if(req.accepts('text/html')){
+			    res.json(201,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
+					         ,'access_token':data._id});
+			}			
+			else if(req.accepts('text/html')){
 				    res.redirect('/');
 			}
-			else if(req.accepts('application/json')){	
-			
-			    res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
-					         ,'access_token':data._id});
-			}		
+		
 		}
 	});	
 }
@@ -309,7 +318,6 @@ function loginUser(req, res, next) {
 	var username = req.body.username;
 	var password = req.body.password;
 	if (username && password) {	
-	    //                                 
 	    userModel.authenticateFromPass(username,password,function(err,data){
 		  if(err){
 		     console.error(err);
@@ -322,7 +330,7 @@ function loginUser(req, res, next) {
 			 }
 			 else if(req.accepts('application/json')){	
                 console.log('not logined  2222'.red);			 
-			    res.json(404,{'msg':'user or password not valid'});
+			    res.json(401,{'msg':'user or password not valid'});
 				return;
 			 }
 			 else{
@@ -608,7 +616,7 @@ function isGlobalAdmin(req) {
 
 */
 
-app.post('/sessions/pictures/', updateUserImageToFolder);
+app.post('/sessions/pictures/',permissionAPI.authUser1, updateUserImageToFolder);
 function updateUserImageToFolder(req,res,next){
 //http://stackoverflow.com/questions/9844564/render-image-stored-in-mongo-gridfs-with-node-jade-express?rq=1
 //https://github.com/cianclarke/node-gallery/tree/master/views
@@ -617,38 +625,77 @@ function updateUserImageToFolder(req,res,next){
 //http://stackoverflow.com/questions/8110294/nodejs-base64-image-encoding-decoding-not-quite-working
 
 	//console.log('updateUserImageToFolder'.green,req.files.image.path,req.files.qqfile.name);
-	var tem_path,tem_name;
-	if(req.files.image!=null)
-	{ tem_path = req.files.image.path; tem_name = 	req.files.image.name; }
-	else
-	{ tem_path = req.files.qqfile.path; tem_name = 	req.files.qqfile.name; }
-	console.log('updateUserImageToFolder'.green,tem_path);
-	
-	var target_path = './public/useruploads/'+tem_name;
+	console.log("next okok".green,req.user);
+	var user = req.user;
+	var file;
+	var img_path,img_name,img_type, img_size;
+	if(req.files.image!=null) file = req.files.image; 
+	else file = req.files.qqfile;
+	img_path = file.path; img_name = file.name; img_type = file.type; img_size = file.size;
+
+	console.log('updateUserImageToFolder'.green,img_path);
+	/*
+	var target_path = './public/useruploads/'+img_name;
 	console.log(target_path);	
-	fs.rename(tem_path,target_path,function(err){
-		if(err) { res.send(err); next(err);}	
+	fs.rename(img_path,target_path,function(err){
+		if(err) {  next(err);}	
 		else{	
 			fs.readFile(target_path, "binary", function(error, file) {
 			    if(error) {
-				  /*
-			      res.writeHead(500, {"Content-Type": "text/plain"});
-			      res.write(error + "\n");
-			      res.end();
-				  */
 				  res.send(JSON.stringify({success: false, error: err}), {'Content-Type': 'application/json'}, 200);
 			    } else {
+                  console.log('updateUserImageToFolder success111');
+				  res.send({"success": true}, {'Content-Type': 'application/json'}, 200);
+			    }
+			})
+		}				
+	})*/
+
+			    console.log('find user uid'.green,user._id,user.salt,user.username);				
+				var	fileHash = crypto.createHash('md5').update(user.username).digest('hex');
+	            var newFileName = (fileHash + img_type);
+				
+				if(user.img){
+				    console.log('old image is ',user.img);
+				    gridfs.deleteByID(user.img,function(err,result){					
+					    if(err) next(err)
+						else console.log('delete the old image'.green,user.img);
+					})
+				}
+				
+				gridfs.putFileWithID(img_path, newFileName, newFileName, {'content_type':img_type,'chunk_size':img_size,metadata: { "id": user._id}}, function(err1, result) {
+                    
+				    fs.unlink(img_path,function (err) {
+                        if (err) throw err;
+                        console.log('successfully deleted'.green,img_path);
+                    });
+					
+					if(err1) return next(err1);					
+					console.log('save image into gridid'.green,result._id,result.fileId,newFileName);
+					// result is a large json document contains the image info as well as database information
+					user.img =result.fileId;     // fileId is used since 2013.9.1
+					//user.img = result._id;     // no longer used in the past
+					
+					user.save(function (err2) {
+                            if (err2) //return next(err2); 
+							{ 
+							   console.log('user save the image path error '.red, err2);
+							   res.send(JSON.stringify({success: false, error: err}), {'Content-Type': 'application/json'}, 200);
+							} 
+							else {
+							    console.log('save user image',user.password,user.salt,user.img);
+			                    //res.redirect("/settings/profile");
+							    res.send({"success": true,img:user.img}, {'Content-Type': 'application/json'}, 200);
+							}
+                    });
+				})	
+}
+
 				  /*
 				  var base64data = new Buffer(file).toString('base64');
 				  var imagesrc = util.format("data:%s;base64,%s", 'image/jpg', base64data);				  				  
 			      res.writeHead(200, {"Content-Type": "image/png"});
 			      res.write(file, "binary");
 				  */
-				  res.send({"success": true}, {'Content-Type': 'application/json'}, 200);
-			    }
-			})
-		}				
-	})	
-}
 
 

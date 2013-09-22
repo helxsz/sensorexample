@@ -68,18 +68,12 @@ function findQuestions(condition,option,callback){
 	});
 }
 
-function findQuestionById(qid,callback){
+function findQuestionById(qid,option,callback){
     var qid;
-    try {
-         qid = mongoose.Types.ObjectId(qid);
-    } catch(e) {
-        return callback(err, null);
-    }
-
 	QuestionModel.findById(qid,'que tip tags lev opt',function(err, doc){
 		if(err){callback(err, null);}
 		else{
-			console.log("findOneCourse".green);
+			console.log("findOneCourse".green,qid);
 			callback(null, doc);
 		}
 	})	

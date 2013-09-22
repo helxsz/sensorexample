@@ -361,8 +361,8 @@ function updateImageToGridfs(req,res,next){
 					
 					if(err) return next(err1);
 					
-					console.log('save image into gridid'.green,result._id,newFileName);
-					course.img = result._id;
+					console.log('save image into gridid'.green,result.fileId,newFileName);
+					course.img = result.fileId;
 					course.save(function (err2) {
                             if (err) return next(err2); 
 							else console.log('save course image');

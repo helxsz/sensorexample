@@ -203,7 +203,7 @@ app.configure(function(){
 });
 
 function conditionalCSRF(req, res, next) {
-/**/
+/*https://github.com/balderdashy/sails/blob/master/lib/hooks/csrf/index.js */
   //compute needCSRF here as appropriate based on req.path or whatever
  var ua = req.header('user-agent');
  //console.log(ua);
@@ -215,7 +215,7 @@ function conditionalCSRF(req, res, next) {
  }
   */   
   if (ua.indexOf("android") == -1) {
-    //console.log('csrf');
+    console.log('in csrf');
     express.csrf();
 	next();
   } else {
@@ -258,6 +258,30 @@ function logErrors(err, req, res, next) {
 
 function clientErrorHandler(err, req, res, next) {
   if (req.xhr) {
+    console.log('send error to the client in json'.red,err);
+	/*
+	if(err.name =='MongoError'){  // http://www.mongodb.org/about/contributors/error-codes/
+	    switch(err.code){
+		    case 11000:
+			console.log('duplicate error  '.red,err.err);
+			res.send(409, { detail: err.err, reason:"database key duplicate" });
+		    break;
+            case 11001:
+			console.log('duplicate key on update '.red,err.err);
+			res.send(409, { detail: err.err, reason:"duplicate key on update" });
+		    break;
+            case 12000:
+			console.log('idxNo fails '.red,err.err);
+			res.send(500, { detail: err.err, reason:"idxNo fails" });
+		    break;
+            case 13440:
+			console.log('bad offset accessing a datafile'.red,err.err);
+			res.send(500, { detail: err.err, reason:"bad offset accessing a datafile" });
+		    break;			
+			// other mongodb error 
+		}	
+	}else
+	*/
     res.send(500, { error: 'Something blew up!' });
   } else {
     next(err);
@@ -284,15 +308,18 @@ var options = {
 var https_server; 
 if (!module.parent) {
     if(app){
+	/*
 	  var out = app.listen(config.port, '0.0.0.0',function(){
-	     console.log('Express started on port',config.port);	  
+	     console.log('Express started on port',config.port, out.address, out.address().port);	  
 	  });
+	  console.log( out.address);	
 	  
 	  process.nextTick(function () {
         if (out && out.address && out.address().port !== config.port) {
           console.log("server listening on port: ".red + out.address().port);
         }
       });
+	  */
       https_server = https.createServer(options,app).listen(443, function(){
             console.log("Express server listening on port " + 433);
       });

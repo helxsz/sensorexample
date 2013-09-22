@@ -37,6 +37,20 @@ function createStudentPlan(cid,sid,callback){
 	})
 }
 
+// copy the default plan to the user
+function copyPlan(cid,sid, plan, callback){
+
+    var options = { upsert:true};
+	StudentPlanModel.update({'sid':sid,'qid':cid},{'$set':plan},options,function(err,doc){
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, doc);
+		}
+	})
+}
+
 function getStudentPlans(sid,callback){
     try {
          sid = mongoose.Types.ObjectId(sid);
@@ -53,7 +67,7 @@ function getStudentPlans(sid,callback){
 
 function getOneStudentPlan(cid,sid,callback){
 
-	StudentPlanModel.findOne({'sid':sid,'cid':cid},'count plan sid city cid',function(err, doc){
+	StudentPlanModel.findOne({'sid':sid,'cid':cid},'plan count plan.ques',function(err, doc){
 		if(err){callback(err, null);}
 		else{
 			callback(null, doc);
@@ -62,6 +76,7 @@ function getOneStudentPlan(cid,sid,callback){
 }
 
 exports.createStudentPlan = createStudentPlan;
+exports.copyPlan = copyPlan;
 exports.getStudentPlans = getStudentPlans;
 exports.getOneStudentPlan =getOneStudentPlan;
 
@@ -98,7 +113,7 @@ function removeMilestone(plan_id, goal,callback){
 }
 
 function getMilestones(plan_id, callback){
-	StudentPlanModel.findById(plan_id,'plan count',function(err, doc){
+	StudentPlanModel.findById(plan_id,'plan count plan.ques',function(err, doc){
 		if(err){callback(err, null);}
 		else{
 			callback(null, doc);
@@ -140,8 +155,8 @@ function getQuestionsByNumber(pid, number, callback){
 	// http://stackoverflow.com/questions/3985214/mongodb-extract-only-the-selected-item-in-array
 	number = Number(number);
 	//StudentPlanModel.findOne({'_id':pid,'plan':{ '$elemMatch': { 'goal': number } } },'plan.ques',function(err, doc){
-	//StudentPlanModel.findOne({'_id':pid },{ 'plan':{ $slice: [ number, 1 ] }, 'plan.ques':1,'plan.goal':1 },function(err, doc){
-	StudentPlanModel.findOne({'_id':pid },{ 'plan':{ $slice: [ number, 1 ] }, 'plan.ques':1,'plan.goal':1 }).populate('plan.ques', 'que tip').exec( function(err, doc){
+	StudentPlanModel.findOne({'_id':pid },{ 'plan':{ $slice: [ number, 1 ] }, 'plan.ques':1,'plan.goal':1 },function(err, doc){
+	//StudentPlanModel.findOne({'_id':pid },{ 'plan':{ $slice: [ number, 1 ] }, 'plan.ques':1,'plan.goal':1 }).populate('plan.ques', 'que tip').exec( function(err, doc){
     	if(err){callback(err, null);}
 		else{
 			callback(null, doc);

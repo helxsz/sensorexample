@@ -56,10 +56,8 @@ scenaio 2:
 var subscriptionPattern = 'channel:*';
 redisClient.psubscribe(subscriptionPattern);
 redisClient.on('pmessage', function(pattern, channel, message){
-    
     /* Every time we receive a message, we check to see if it matches
        the subscription pattern. If it does, then go ahead and parse it. */
-
 	if(pattern == subscriptionPattern){
 	    try {
     		var data = JSON.parse(message)['data'];   		
@@ -181,9 +179,14 @@ app.get('/user/:id/notify',function(req,res,next){
 	})
 })
 
-function pushUserNotification(targetUID,UID,verb,msg){
+
+/*
+   should have callback and try catch to get the exception
+*/
+
+function pushUserNotification(targetUID,UID,verb,msg, type){
     var redisClient = redis.createClient(redis_port,redis_ip); 
-    redisClient.zadd('noti:'+targetUID,new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg}));
+    redisClient.zadd('noti:'+targetUID+":no",new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg,'t':type}));
 	redisClient.incrby('noti:'+targetUID+':count',1);
 	redisClient.quit();
 }
@@ -214,11 +217,11 @@ function pullUserNotificationCount(targetUID,callback){
 
 function pullUserNotification(targetUID,callback){
     var redisClient = redis.createClient(redis_port,redis_ip); 	
-	redisClient.zcard('noti'+targetUID,function(err,data){
+	redisClient.zcard('noti'+targetUID+':no',function(err,data){
        console.log('pullUserNotification ZCARD',data);
     }) 
 	
-    redisClient.zrange('noti:'+targetUID,0,-1,function(err,data){
+    redisClient.zrange('noti:'+targetUID+':no',0,-1,function(err,data){
 	     var n = 3;
 	     var lists = _.groupBy(data, function(a, b){
                 return Math.floor(b/n);
@@ -238,7 +241,7 @@ function pullUserNotification(targetUID,callback){
 function removeNewUserNotification(targetUID,callback){
 
     var redisClient = redis.createClient(redis_port,redis_ip); 
-    redisClient.zremrangebyrank('noti:'+targetUID,0,-1,function(err,data){
+    redisClient.zremrangebyrank('noti:'+targetUID+':no',0,-1,function(err,data){
 	    console.log('removeNewUserNotification romve ',data);
 	})
 
@@ -266,3 +269,32 @@ function removeNewUserNotification(targetUID,callback){
 exports.pushUserNotification = pushUserNotification;
 exports.pullUserNotification = pullUserNotification;
 exports.pullUserNotificationCount = pullUserNotificationCount;
+
+
+function notifyTutorOnMilestone(tutorID, studentID, questionSet){   
+    var msg = new Array();
+    for(var i=0;i<questionSet.length;i++){
+        msg.push({'que':questionSet[i]});
+    }	
+	console.log('notifyTutorOnMilestone '.green,'tutor:',tutorID, 'student:',studentID, 'questions:',msg.length);
+    //pushUserNotification(tutorID, studentID, 'Finish Milestone', msg, 'finish' );
+}
+
+function notifyTutorOnHelp(tutorID, studentID, questionID, helpMsg){
+    var msg = new Object();
+    msg.que = questionID;
+	msg.msg = helpMsg;
+	console.log('notifyTutorOnHelp '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionID,'helpMsg:',helpMsg);
+    //pushUserNotification(tutorID, studentID, 'Help', msg, 'help' );
+}
+
+function notifyStudentOnSolution(studentID, tutorID, questionSet){
+    var msg = new Object();
+    msg.que = questionID;
+	msg.msg = helpMsg;
+	console.log('notifyStudentOnSolution '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionSet);
+    //pushUserNotification(tutorID, studentID, 'Solution', msg, 'Solution' );
+}
+exports.notifyTutorOnMilestone = notifyTutorOnMilestone;
+exports.notifyTutorOnHelp = notifyTutorOnHelp;
+exports.notifyStudentOnSolution = notifyStudentOnSolution;

@@ -1,0 +1,133 @@
+<div class="container">
+  <div class="sun"></div>
+  <div class="cloud"></div>
+  <div class="airplane"></div>
+  
+  <div class="world">
+   
+  </div>
+ 
+  <div class="cut">
+    <div class='run'> </div>
+  </div>
+  <div class="tree"></div>
+</div>
+<style>
+
+
+.container{
+  width:500px;
+  height:500px;
+  margin:0 auto;
+  position:relative;
+  border:1px solid;  
+  overflow:hidden;
+  background:#a6d9d4;
+  background-image:-moz-radial-gradient(center center,circle,#a6d9d4,#036683);
+  background-image:-webkit-radial-gradient(center center,circle,#a6d9d4,#036683);
+}
+.cut{
+  position:absolute;
+  left:40%;
+  top:30%;
+  width:120px;
+  height:195px;
+  overflow:hidden;
+  
+}
+.run{height:195px;
+  background:url("http://i50.tinypic.com/2j26dee.png");
+  animation: run .5s steps(8) infinite;
+}
+@keyframes run{
+  0%{background-position:0px;}
+  100%{background-position:-960px;}
+
+}
+.world{
+  
+  width:500px;
+  height:500px;
+  border-radius:100%;  
+  overflow:hidden;             
+  background:url('http://i48.tinypic.com/2wexc1h.jpg') repeat;
+  background-size:100px;
+  position:absolute;
+  top:60%;left:0px;
+  animation:round 12s linear infinite;
+  
+}
+
+
+.cloud {
+  margin-top:100px;
+  margin-left:180px;
+  transform-origin:50% 400px;
+  animation:round 7s linear infinite;
+	 width: 150px; 
+  height: 60px;	
+ 	background: #f2f9fe;	
+ 	border-radius: 100px;	
+ 	position: relative;
+  z-index:0;
+}
+
+.cloud:after, .cloud:before {
+	content: '';
+	position: absolute;
+	background: #f2f9fe;
+	z-index: -1;
+}
+
+.cloud:after {
+	width: 60px; height: 60px;
+	top: -30px; left: 70px;
+	border-radius: 100px;
+
+}
+
+.cloud:before {
+	width: 80px; height: 80px;
+	top: -40px; right: 50px;	
+	border-radius: 200px;
+}
+
+.sun{
+  position:absolute;
+  left:50%;
+  width:60px;
+  height:60px;
+  border-radius:100%;
+  background:yellow;
+  box-shadow:inset 0 0 30px orange,0 0 30px yellow;
+  transform-origin:50% 500px;  
+  animation:round 15s linear infinite;
+}
+
+.tree{
+  width:300px;
+  height:300px;
+  position:absolute;
+  top:50px;
+  left:100px;
+  transform-origin:50% 500px;
+  animation:round 12s linear infinite;
+  background:url('http://i50.tinypic.com/15i17ok.png');
+
+}
+.airplane{
+  position:absolute;
+  left:30%;
+  top:10%;
+  transform-origin:50% 500px;
+  animation:round 9s linear infinite;
+  width:150px;
+  height:100px;
+  background:url('http://i48.tinypic.com/fm3vog.png') no-repeat;
+  background-size:150px 50px;
+}
+@keyframes round{ 100%{ transform:rotate( 360deg ); } }
+
+
+
+</style>

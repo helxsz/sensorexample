@@ -288,7 +288,7 @@ function init(){
 		
 		
 		function clientSendMsg(data){
-		    console.log('receive help request from ',socket.uid,socket.id);
+		    console.log('receive msg request from ',socket.uid,socket.id);
 			io.sockets.in("help").emit('msg', {
 			    'uid':socket.uid
 			});			
@@ -306,8 +306,35 @@ function init(){
               //msg: data.msg
             });	
           */			
-		}		
-		
+		}
+        /**********************************
+		*****   student share code   ******
+		**********************************/
+        socket.on('code view', clientCodeView);
+        function clientCodeView(data){  //{"uid":uid,"room":room,"code":code}
+            console.log('receive clientCodeView ',data.uid,data.room,data.code);
+			io.sockets.in("help").emit('code view', {
+			    'uid':data.uid, 'code':data.room
+			});			
+        }
+        /**********************************
+		*****   tutor gives advice   ******
+		**********************************/
+        socket.on('code snippet', tutorCodeSnippet);   
+		socket.on('code comment', tutorCodeComment);
+        function tutorCodeSnippet(data){  // {"uid":uid,"room":room,"code":code}
+            console.log('receive tutorCodeSnippet ',data.uid,data.room, data.room, data.code);
+			io.sockets.in("help").emit('code snippet', {
+			    'uid':data.uid, 'code':data.room
+			});			
+        }		
+        
+        function tutorCodeComment(data){  //  {"uid":uid,"room":room,"comment":comment,"line_num":codeline}
+            console.log('receive tutorCodeComment ',data.uid,data.room, data.room, data.comment, data.line_num);
+			io.sockets.in("help").emit('code comment', {
+			    'uid':data.uid, 'comment':data.comment, "line_num":data.line_num
+			});			
+        }		
         /**********************************
 		*****   room join/ disjoin   ******
 		**********************************/
@@ -377,4 +404,190 @@ function init(){
   });
 
 
+
+
+
+exports.genRoomKey = function() {
+  var shasum = crypto.createHash('sha1');
+  shasum.update(Date.now().toString());
+  return shasum.digest('hex').substr(0,6);
+};
+
 */
+
+/*
+ * Room name is valid
+
+
+exports.validRoomName = function(req, res, fn) {
+  req.body.room_name = req.body.room_name.trim();
+  var nameLen = req.body.room_name.length;
+
+  if(nameLen < 255 && nameLen >0) {
+    fn();
+  } else {
+    res.redirect('back');
+  }
+};
+
+
+ */
+/*
+ * Checks if room exists
+
+exports.roomExists = function(req, res, client, fn) {
+  client.hget('balloons:rooms:keys', encodeURIComponent(req.body.room_name), function(err, roomKey) {
+    if(!err && roomKey) {
+      res.redirect( '/' + roomKey );
+    } else {
+      fn()
+    }
+  });
+};
+
+ */
+
+
+/*
+ * Creates a room
+      
+exports.createRoom = function(req, res, client) {
+  var roomKey = exports.genRoomKey()
+    , room = {
+        key: roomKey,
+        name: req.body.room_name,
+        admin: req.user.provider + ":" + req.user.username,
+        locked: 0,
+        online: 0
+      };
+
+  client.hmset('rooms:' + roomKey + ':info', room, function(err, ok) {
+    if(!err && ok) {
+      client.hset('balloons:rooms:keys', encodeURIComponent(req.body.room_name), roomKey);
+      client.sadd('balloons:public:rooms', roomKey);
+      res.redirect('/' + roomKey);
+    } else {
+      res.send(500);
+    }
+  });
+};
+
+ */ 
+
+
+/*
+ * Get Room Info
+
+
+exports.getRoomInfo = function(req, res, client, fn) { 
+  client.hgetall('rooms:' + req.params.id + ':info', function(err, room) {
+    if(!err && room && Object.keys(room).length) fn(room);
+    else res.redirect('back');
+  });
+};
+
+exports.getPublicRoomsInfo = function(client, fn) {
+  client.smembers('balloons:public:rooms', function(err, publicRooms) {
+    var rooms = []
+      , len = publicRooms.length;
+    if(!len) fn([]);
+
+    publicRooms.sort(exports.caseInsensitiveSort);
+
+    publicRooms.forEach(function(roomKey, index) {
+      client.hgetall('rooms:' + roomKey + ':info', function(err, room) {
+        // prevent for a room info deleted before this check
+        if(!err && room && Object.keys(room).length) {
+          // add room info
+          rooms.push({
+            key: room.key || room.name, // temp
+            name: room.name,
+            online: room.online || 0
+          });
+
+          // check if last room
+          if(rooms.length == len) fn(rooms);
+        } else {
+          // reduce check length
+          len -= 1;
+        }
+      });
+    });
+  });
+};
+ */
+
+
+
+/*
+ * Get connected users at room
+
+
+exports.getUsersInRoom = function(req, res, client, room, fn) {
+  client.smembers('rooms:' + req.params.id + ':online', function(err, online_users) {
+    var users = [];
+
+    online_users.forEach(function(userKey, index) {
+      client.get('users:' + userKey + ':status', function(err, status) {
+        var msnData = userKey.split(':')
+          , username = msnData.length > 1 ? msnData[1] : msnData[0]
+          , provider = msnData.length > 1 ? msnData[0] : "twitter";
+
+        users.push({
+            username: username,
+            provider: provider,
+            status: status || 'available'
+        });
+      });
+    });
+
+    fn(users);
+
+  });
+};
+
+ */
+
+/*
+ * Get public rooms
+
+
+exports.getPublicRooms = function(client, fn){
+  client.smembers("balloons:public:rooms", function(err, rooms) {
+    if (!err && rooms) fn(rooms);
+    else fn([]);
+  });
+};
+
+ */
+
+/*
+ * Get User status
+
+
+exports.getUserStatus = function(user, client, fn){
+  client.get('users:' + user.provider + ":" + user.username + ':status', function(err, status) {
+    if (!err && status) fn(status);
+    else fn('available');
+  });
+};
+ */
+/*
+ * Enter to a room
+
+
+exports.enterRoom = function(req, res, room, users, rooms, status){
+  res.locals({
+    room: room,
+    rooms: rooms,
+    user: {
+      nickname: req.user.username,
+      provider: req.user.provider,
+      status: status
+    },
+    users_list: users
+  });
+  res.render('room');
+};
+
+ */

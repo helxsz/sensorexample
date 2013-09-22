@@ -1,0 +1,34 @@
+201  in a messaging pub\sub system where the messages can be requeued and order isn't guaranteed and messages may be processed more than once and the message hub is our client.
+
+For a PUT request: HTTP 200 or HTTP 204 should imply "resource updated successfully".
+
+For a DELETE request: HTTP 200 or HTTP 204 should imply "resource deleted successfully".
+
+CREATED 201
+
+Accepted 202  queue    http://www.adayinthelifeof.nl/2011/06/02/asynchronous-operations-in-rest/
+
+400 bad request
+401 (Unauthorized)  user login failed
+403 (Forbidden)     user don't have access to the resources
+404 (Not Found)     resource not found
+409  409 Conflict   user name existed
+408 (Request Timeout)
+500 (Internal Server Error)
+502 (Bad Gateway)  Service temporarily overloaded 502
+503 (Service Unavailable)  Gateway timeout
+504 (Gateway Timeout)
+
+what is the http code for update successsful? 201 or 
+
+
+
+      if(err) {
+	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    next(err);
+	  }
+	  else{
+	    console.log('update success'.green, data,req.url);
+		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		res.redirect(req.url);
+	  }	
