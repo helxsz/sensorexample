@@ -12,6 +12,7 @@ var check = require('validator').check,
 var crypto = require('crypto');	
 var moment = require('moment');
 var account_api = require('./account_api');
+var permissionAPI = require('./permission_api');
 
 var mongoose = require('../app').mongoose;
 var ObjectId = mongoose.Schema.ObjectId;
@@ -23,7 +24,7 @@ var courseModel = require('../model/course_model');
 var studentPlanModel = require('../model/student_plan_model');
 
 
-app.get('/course/:id/setting/milestone',getMilestonePage)
+app.get('/course/:id/setting/milestone',permissionAPI.authUser, permissionAPI.authTutorInCourse,getMilestonePage)
 function getMilestonePage(req,res,next){
     var locals = {};
     var id = req.params.id;
@@ -70,38 +71,70 @@ function getAllPlans(req,res,next){
 }
 */
 
+
+/****************************************************************
+
+        assign the plan to the student
+
+*****************************************************************/
 	
-app.post('/course/:course_id/plan/:student_id',createPlanForStudent);
-app.get('/course/:course_id/plan',getPlanForStudent);
-app.del('/course/:course_id/plan',deletePlanForStudent);
+app.post('/course/:id/plan/:student_id',permissionAPI.authUser, permissionAPI.authTutorInCourse,createPlanForStudent);
+app.get('/course/:id/plan',permissionAPI.authUser, getPlanForStudent);
+app.del('/course/:id/plan',permissionAPI.authUser, deletePlanForStudent);
 
 function createPlanForStudent(req,res,next){
-   var course_id = req.params.course_id, student_id = req.params.student_id;
+   var course_id = req.params.id, student_id = req.params.student_id;
    var uid = req.session.uid;
    console.log('createPlanForStudent','cid:',course_id,'uid',student_id);
+   /*
    studentPlanModel.createStudentPlan(course_id,student_id,function(err,plan){
         if(err) next(err);
         else {
 		   console.log('',plan);
 		   res.send(200,{'plan_id':plan._id, "meta": { "code": 200} });
-		   /*
+		   
 		   courseModel.addPlanToList(course_id, plan._id,function(err,data){
 		       if(err) next(err);
 		       else res.send(200,{'plan_id':plan._id, "meta": { "code": 200} });
 		   })
-		   */
+		   
 		}
    })
+   */
+    var locals = {};
+	async.parallel([
+		function(callback) {
+			studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
+				console.log('getPlanForStudent  getMilestones'.green, data1);
+				if(err) return res.send(404,{error:err});
+				else if(!data1) return res.send(404);
+				else{
+				    locals.plan = data1.plan;
+					//console.log('data',data1);
+				    callback();
+				}
+			})				                       		    
+		}],function(err) {
+	        if (err) return next(err); 
+			var data = new Object();
+			data.plan = locals.plan;
+			//data.plan.push({'goal':'aa11'});
+			studentPlanModel.copyPlan(course_id,student_id,data,function(err,data){
+                if(err) {console.log('error in assigning the plan to students'.red, err);return res.send(404,{error:err}); }
+				else if(data==0) {console.log('cant update assigning the plan'.red);return res.send(404); }
+                else { console.log('  assigning the plan'.green); res.send(200,{data:null});  }
+            })
+	});	   
+
 }
 
 function getPlanForStudent(req,res,next){
    	   
-   var uid = req.session.uid, cid = req.params.course_id;
+   var uid = req.session.uid, cid = req.params.id;
    console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
    if(uid == null || cid == null)
    return res.send(400,{'meta':400,"status":"error"});
 
-  
    studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
         if(err) next(err);
         else{
@@ -109,7 +142,6 @@ function getPlanForStudent(req,res,next){
 			res.send(200,data); 
 			if(data == null){
 			    var plan;
-
 	            async.parallel([
 		            function(callback) {
 				        studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
@@ -119,20 +151,14 @@ function getPlanForStudent(req,res,next){
 		            }],function(err) {
 	                    if (err) return next(err); 
                         res.send(200,data1); 
-	            });				
-				/*
-			    studentPlanModel.copyPlan(cid,sid,plan,function(err,data){
-			        if(err) next(err)	
-				    else res.send(200,data);				
-				})
-                */				
+	            });								
 			}		    
 		}
    })
 }
 
 function deletePlanForStudent(req,res,next){
-   var uid = req.session.uid, cid = req.params.courseid;
+   var uid = req.session.uid, cid = req.params.id;
    console.log('deletePlanForStudent',cid,uid);
    if(uid == null || question_id ==null || cid == null)
    return res.send(400,{'meta':400,"status":"error"});
@@ -140,6 +166,13 @@ function deletePlanForStudent(req,res,next){
    return res.send(400,{'meta':400,"status":"error"});
 
 }
+
+/********************************************************
+
+           build the plan
+
+*********************************************************/
+
 
 app.post('/workplan/:plan_id/addMilestone',addMilestone);
 app.post('/workplan/:plan_id/removeMilestone/:milestone',removeMilestone);

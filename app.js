@@ -4,6 +4,7 @@ var http = require('http');
 var domain = require('domain');
 var crypto = require('crypto');
 var https = require('https');
+var passport = require('passport');
 var app = express();
 
 var config = require('./conf/config.js');
@@ -121,8 +122,12 @@ app.configure(function(){
       next();
     });
    
-	  
-	app.use(express.static(__dirname+'/public'));	
+    app.use(passport.initialize());
+    app.use(passport.session());	  
+	
+	
+	app.use(express.static(__dirname+'/public'));
+    app.use(express.static(__dirname+'/static'));	
 	
 	app.use(webdir, 	express.static(__dirname+webdir));
 	app.use(mobiledir,	express.static(__dirname+mobiledir));
@@ -175,10 +180,10 @@ app.configure(function(){
     //http://stackoverflow.com/questions/10697660/force-ssl-with-expressjs-3	
 	app.use(function(req, res, next) {
        if(!req.secure) {
-	      console.log('not secure'.red,req.headers.host,req.get('Host'),req.url);
-          return res.redirect('https://' + req.get('Host') + req.url);
+	      //console.log('not secure'.red,req.headers.host,req.get('Host'),req.url);
+          //return res.redirect('https://' + req.get('Host') + req.url);
         }
-		console.log('secure '.green);
+		//console.log('secure '.green);
         next();
     });
 	app.set('trust proxy', true);
@@ -215,7 +220,7 @@ function conditionalCSRF(req, res, next) {
  }
   */   
   if (ua.indexOf("android") == -1) {
-    console.log('in csrf');
+    //console.log('in csrf');
     express.csrf();
 	next();
   } else {
@@ -308,6 +313,11 @@ var options = {
 var https_server; 
 if (!module.parent) {
     if(app){
+	
+	   app.listen(3000,function(){
+	     console.log('Express started on port 3000');	  
+	   });
+	/**/
 	/*
 	  var out = app.listen(config.port, '0.0.0.0',function(){
 	     console.log('Express started on port',config.port, out.address, out.address().port);	  
@@ -320,9 +330,11 @@ if (!module.parent) {
         }
       });
 	  */
+	  /**/
       https_server = https.createServer(options,app).listen(443, function(){
             console.log("Express server listening on port " + 433);
       });
+	  
     }else{
       console.log("\r\ terminated ...\r\n".grey);
       process.exit();

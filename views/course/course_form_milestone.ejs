@@ -461,7 +461,6 @@ $("#addMilestoneForm").on('submit',function(e){
     e.preventDefault();
     $.ajax({
            type: "POST",
-
            url: "/workplan/5218b3cbd830bb640c000002/addMilestone",
            data: $(this).serialize(), 
            success: function(data)

@@ -11,6 +11,8 @@ var moment = require('moment');
 var redis = require('redis'),
     fs = require('fs'),
 	io = require('socket.io');
+	
+var permissionAPI = require('./permission_api');
 /*********************************************
 
 redis
@@ -169,23 +171,30 @@ http://stackoverflow.com/questions/10248927/node-js-control-from-the-master-clus
 http://liamkaufman.com/blog/page/2/
 *****************************************************************************/
 //https://localhost/user/519985ed86e35aec15000001/notify 
-app.get('/user/:id/notify',function(req,res,next){
-    console.log('get user notify'.green);
-    pullUserNotification(req.params.id,function(err,data){	
+app.get('/user/notify',permissionAPI.authUser, function(req,res,next){
+    console.log('get user notify...........'.green);
+	var uid = req.session.uid;
+    pullUserNotification(uid,function(err,data){	
 	    if(err) { console.log(err); next(err)}
 		else {
 		    res.send(200,{'notifications':data});
 		}
 	})
 })
-
-
 /*
    should have callback and try catch to get the exception
 */
-
 function pushUserNotification(targetUID,UID,verb,msg, type){
-    var redisClient = redis.createClient(redis_port,redis_ip); 
+    var redisClient;
+    try{ 
+        redisClient = redis.createClient(redis_port,redis_ip);
+	}
+    catch (error)
+    {
+        console.log('cannnot start redis' + error);
+		redisClient.quit();
+		return callback(error,null);
+    }
     redisClient.zadd('noti:'+targetUID+":no",new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg,'t':type}));
 	redisClient.incrby('noti:'+targetUID+':count',1);
 	redisClient.quit();
@@ -204,7 +213,14 @@ pushUserNotification('a','e','follow','url');
 //pullUserNotificationCount('a');
 */
 function pullUserNotificationCount(targetUID,callback){
-    var redisClient = redis.createClient(redis_port,redis_ip);
+    var redisClient;
+    try{ 
+        redisClient = redis.createClient(redis_port,redis_ip);
+	}catch (error){
+        console.log('cannnot start redis' + error);
+		redisClient.quit();
+		return callback(error,null);
+    }
 	redisClient.get('noti:'+targetUID+':count',function(err,data){
 	    if(err) {  console.log('pullUserNotificationCount'.red,data); callback(err,null);}
 	    else { 
@@ -216,7 +232,16 @@ function pullUserNotificationCount(targetUID,callback){
 }
 
 function pullUserNotification(targetUID,callback){
-    var redisClient = redis.createClient(redis_port,redis_ip); 	
+    var redisClient;
+    try{ 
+        redisClient = redis.createClient(redis_port,redis_ip);
+	}
+    catch (error){
+        console.log('cannnot start redis' + error);
+		redisClient.quit();
+		return callback(error,null);
+    }	
+	
 	redisClient.zcard('noti'+targetUID+':no',function(err,data){
        console.log('pullUserNotification ZCARD',data);
     }) 
@@ -239,12 +264,19 @@ function pullUserNotification(targetUID,callback){
 }
 
 function removeNewUserNotification(targetUID,callback){
-
-    var redisClient = redis.createClient(redis_port,redis_ip); 
+    var redisClient;
+    try{ 
+        redisClient = redis.createClient(redis_port,redis_ip);
+		redisClient.quit();
+	}
+    catch (error)
+    {
+        console.log('cannnot start redis' + error);
+		callback(error,null);
+    }
     redisClient.zremrangebyrank('noti:'+targetUID+':no',0,-1,function(err,data){
 	    console.log('removeNewUserNotification romve ',data);
 	})
-
 	
 	redisClient.get('noti:'+targetUID+':count',function(err,len){
        console.log('removeNewUserNotification get count',len);
@@ -256,12 +288,9 @@ function removeNewUserNotification(targetUID,callback){
 	     else { 
 		   console.log('removeNewUserNotification noti count'.green,data);
 		   callback(null,data);
-         }
-		 
+         }		 
 	   })
-    })
-	
-	
+    })	
 }
 
 
@@ -277,7 +306,7 @@ function notifyTutorOnMilestone(tutorID, studentID, questionSet){
         msg.push({'que':questionSet[i]});
     }	
 	console.log('notifyTutorOnMilestone '.green,'tutor:',tutorID, 'student:',studentID, 'questions:',msg.length);
-    //pushUserNotification(tutorID, studentID, 'Finish Milestone', msg, 'finish' );
+    pushUserNotification(tutorID, studentID, 'Finish Milestone', msg, 'finish' );
 }
 
 function notifyTutorOnHelp(tutorID, studentID, questionID, helpMsg){
@@ -285,7 +314,7 @@ function notifyTutorOnHelp(tutorID, studentID, questionID, helpMsg){
     msg.que = questionID;
 	msg.msg = helpMsg;
 	console.log('notifyTutorOnHelp '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionID,'helpMsg:',helpMsg);
-    //pushUserNotification(tutorID, studentID, 'Help', msg, 'help' );
+    pushUserNotification(tutorID, studentID, 'Help', msg, 'help' );
 }
 
 function notifyStudentOnSolution(studentID, tutorID, questionSet){
@@ -293,7 +322,7 @@ function notifyStudentOnSolution(studentID, tutorID, questionSet){
     msg.que = questionID;
 	msg.msg = helpMsg;
 	console.log('notifyStudentOnSolution '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionSet);
-    //pushUserNotification(tutorID, studentID, 'Solution', msg, 'Solution' );
+    pushUserNotification(tutorID, studentID, 'Solution', msg, 'Solution' );
 }
 exports.notifyTutorOnMilestone = notifyTutorOnMilestone;
 exports.notifyTutorOnHelp = notifyTutorOnHelp;

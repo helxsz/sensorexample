@@ -205,53 +205,26 @@ display:none;
 </div>
 
 <script>
-getChatsOnQuestion( "520db60a8932d7700f000001", "520db60a8932d7700f000001", "520db60a8932d7700f000001", "520db60a8932d7700f000001");
-function getChatsOnQuestion(course_id,tutor_id,student_id,question_id){
-    
-    console.log('getChatsOnQuestion');
-	$.ajax({
-           type: "GET",
-		   url:"/help?tutor="+tutor_id+"&course="+course_id+"&student="+student_id+"&question="+question_id,
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           },		   
-           success: function(data)
-           {		        
-                console.log("getChatsOnQuestion  results",data.data);
-                for(var i=0;i<data.data.length;i++){				
-			   	    var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
-                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
-                        +'  <strong class="chatter_name">Luke Peters</strong>'+data.data[i].m
-					  +'</span>');	
-                    a.appendTo($('.chatter_convo'));
-                    $('#msg_area').val('');									
-				}				
- 				
-           }
-        });
-}
-
 $('#help_msg_btn').click(function(){
     console.log('help msg clicks',$('#csrf').val());
 	var length = $('.chatter_convo').find('.chatter_msg_item').size();
 	var msg = $('#msg_area').val();	
-	if(msg.length <20) return false;
-
-	var createdNew = 0;
-	if(length == 0){
-	    createdNew = 1;
-	}	
+	if(msg.length <20) {
+	    // the question should be a lot of more specific
+	    return false;
+	}
+	
 	$.ajax({
            type: "POST",
-		   url:"/help?role=0&new="+createdNew,
-		   //data: $(".help_form").serialize(),
+		   url:"/course/"+courseid+"/help?role=0",
+		   data: 'msg='+msg+'&question_id='+current_qid,
            beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
 		   error: function(jqXHR, textStatus, errorThrown){
                console.log('error',jqXHR.status,jqXHR.responseText);
            },		   
            success: function(data)
            {		        
-                console.log(data);			   
+                console.log('success  ',data);			   
 			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
                         +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
                         +'  <strong class="chatter_name">Luke Peters</strong>'+msg
@@ -261,5 +234,4 @@ $('#help_msg_btn').click(function(){
            }
         });  
 })
-
 </script>

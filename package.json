@@ -38,6 +38,13 @@
 	, "i18n":"latest"
 	, "pem":"latest"
 	, "hashids":"latest"
+	, "passport":"latest"
+	, "passport-facebook":"latest"
+	, "passport-twitter":"latest"
+	, "passport-local":"latest"
+	, "passport-google-oauth":"latest"
+	, "passport.socketio":"latest"
+	, "passport-github":"latest"
   }
   ,"engines":{
         "node":"latest"

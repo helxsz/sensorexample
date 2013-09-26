@@ -16,7 +16,7 @@ var config = {
 };
 */
 var SITE_ROOT_URL = "https://"+config.host;  //"http:localhost:8080"
-
+console.log(config.email.user,config.email.pass);
 var smtpTransport = emailer.createTransport("SMTP", {
     host: "smtp.gmail.com", // hostname
     secureConnection: true, // use SSL
@@ -48,10 +48,12 @@ exports.sendRegistraionMail = sendRegistraionMail;
 // email template  http://net.tutsplus.com/tutorials/html-css-techniques/the-state-of-css3-in-email-templates/
 // http://htmlemailboilerplate.com
 function sendInvitationMail(url, description,tutor,mail,callback){
-  var from = config.user;
+  var from = config.email.user;
   var to = mail;
   var subject = 'Feynlabs Invitation';
+  console.log('sendInvitationMail'.green,from, to , subject);
   //course/:id/invitation/:token/reply
+  /*
   var html = 
               '<p style="text-shadow: 2px 2px 2px #000;">   Welcome to the Feynlabs </p> '   
             + '<p style="border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; border: 3px solid #000; background-color: #ccc; padding: 5px;">   View it in a web browser.  </p> '   
@@ -63,7 +65,7 @@ function sendInvitationMail(url, description,tutor,mail,callback){
 			+ '<a href="http://htmlemailboilerplate.com" target ="_blank" title="Styling Links" style="color: orange; text-decoration: none;">Coloring Links appropriately</a>'
             + '<p>' + description + '</p>'
             + '<p>' + tutor + '</p>';
-
+    */
 			
 			
     html = 
@@ -114,10 +116,12 @@ function sendInvitationMail(url, description,tutor,mail,callback){
 
 
 function sendRegistraionMail(username,mail,callback){
-  var from = config.user;
-  var to = mail;
-  var subject = 'Feynlabs Registraion';
-  //course/:id/invitation/:token/reply
+    var from = config.email.user;
+    var to = mail;
+    var subject = 'Feynlabs Registraion';
+  
+    console.log('sendRegistraionMail'.green, from,to,subject);
+    //course/:id/invitation/:token/reply
 			
     html = 
 	       '<table cellpadding="0" cellspacing="0" style="width:600px;color: #f5290a;">'
@@ -166,7 +170,7 @@ function sendRegistraionMail(username,mail,callback){
 
 
 function sendActiveMail(who, token, name,callback) {
-  var from = config.user;
+  var from = config.email.user;
   var to = who;
   var subject = config.name + 'account activation';
   var html = '<p>hello£º<p/>' +
@@ -187,7 +191,7 @@ function sendActiveMail(who, token, name,callback) {
 
 
 function sendResetPassMail(who, token, name,callback) {
-  var from = config.user;
+  var from = config.email.user;
   var to = who;
   var subject = config.name + 'account reset';
   var html = '<p>hello£º<p/>' +

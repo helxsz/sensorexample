@@ -24,9 +24,14 @@ var UserSchema = mongoose.Schema({
 								cdate:{type:Date},
                                 mdate:{type:Date},
 								// admin properties
-								admin:{type:String,sparse:true,enum: ['admin', 'course_admin', 'feedback_admin', 'developer','web_developer','database_developer']}
+								admin:{type:String,sparse:true,enum: ['admin', 'course_admin', 'feedback_admin', 'developer','web_developer','database_developer']},
 								// social network properties
-								
+								social:{
+								   facebook:{ id:String,avatar:String,name:String,token:String},
+								   twitter:{id:String,avatar:String,name:String,token:String},
+								   github:{id:String,avatar:String,name:String,token:String},
+								   google:{id:String,avatar:String,name:String,token:String}
+								}
 								// other 
 								/*
 								activation: {

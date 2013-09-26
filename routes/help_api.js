@@ -20,21 +20,25 @@ var ObjectId = mongoose.Schema.ObjectId;
 var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
 	
-var notification_api = require('./notification_api');
+var notifyAPI = require('./notification_api');
 	
 var errors = require('../utils/errors');
 
-app.post('/help',callTutorForHelp);
-app.get('/help',getHelpInfoOnQuestion);
+app.post('/course/:id/help',permissionAPI.authUser, permissionAPI.authStudentInCourse, callTutorForHelp);
+app.get('/course/:id/help',permissionAPI.authUser, permissionAPI.authStudentInCourse, getHelpInfoOnQuestion);
 
 function callTutorForHelp(req,res,next){
-   var course_id = req.params.course_id, student_id = req.params.student_id,tutor_id = req.params.tutor_id, question_id = req.params.question_id, msg = req.params.msg;
-   console.log('callTutorForHlep',course_id,student_id,tutor_id, question_id, msg);
-   course_id = "520db60a8932d7700f000001";
-   student_id = course_id; tutor_id = course_id; question_id = course_id, msg="ehloafa";
+   var course_id = req.params.id, student_id = req.session.uid;
+   
+   var tutor_id = req.body.tutor_id, question_id = req.body.question_id, msg = req.body.msg;
+   
+   console.log('callTutorForHlep ','cid',course_id,'uid',student_id, 'qid',question_id, 'msg',msg);
+   //course_id = "520db60a8932d7700f000001";
+   //student_id = course_id; tutor_id = course_id; question_id = course_id, msg="ehloafa";
    var createNew = req.query.new, role=req.query.role;
+   /*
    if(createNew=='1'){   
-      helpModel.createNewHelp( { 'course':course_id,'user':student_id,'tutor':tutor_id,'question':question_id },function(err,plan){
+      helpModel.createNewHelp( { 'course':course_id,'user':student_id,'question':question_id },function(err,plan){
         if(err) next(err);
         else {
 		    console.log('',plan);
@@ -53,25 +57,48 @@ function callTutorForHelp(req,res,next){
             }		   		   
 		}
      })
-   }else{   
-            helpModel.updateHelp( { 'course':course_id,'user':student_id,'tutor':tutor_id,'question':question_id },{'$push':{'chats':{'t':new Date().getTime(),'m':msg, 'r':role}}},function(err,update){
-                     if(err) next(err);
-                     else {
-		                 console.log('',update);  
-                         if(update == 1){
-						    res.send(200,{ "meta": { "code": 200} });
-						 }else{
-						    res.send(404,{ "meta": { "code": 404} });
-						 }						 
-		             }
-            })     
+   }else{        
    }
+   */
+   
+	    var tutorID;
+	    async.series([
+            function(callback) {	        
+	             courseModel.findCourseById2(course_id,'tutor',function(err,data){
+				    if(err) console.log('error ',err);
+				    else {
+					    console.log('tutor is '.green,data.tutor.id);
+						tutorID = data.tutor.id;
+					}
+					callback();
+				 })        		
+		    },	
+		    function(callback) {
+	             if(tutorID)  notifyAPI.notifyTutorOnHelp(tutorID,student_id, question_id,msg);	        		
+                 callback();		    
+		    }
+		],function(err) {		
+            		
+	    });   
+   
+        helpModel.updateHelp( { 'course':course_id,'user':student_id,'question':question_id },{'$push':{'chats':{'t':new Date().getTime(),'m':msg, 'r':role}}},function(err,update){
+            if(err) next(err);
+            else {
+		        console.log('',update);  
+                if(update == 1){
+					res.send(200,{ "meta": { "code": 200} });
+				}else{
+					res.send(404,{ "meta": { "code": 404} });
+				}						 
+		    }
+        })   
 }
 
 function getHelpInfoOnQuestion(req,res,next){
-    var course_id = req.query.course, student_id = req.query.student,tutor_id = req.query.tutor, question_id = req.query.question;
-    console.log('callTutorForHlep',course_id,student_id,tutor_id, question_id );
-    helpModel.findHelpByQuery({ 'course':course_id,'user':student_id,'tutor':tutor_id,'question':question_id },function(err,data){
+    var course_id = req.params.id, student_id = req.session.uid;
+	var question_id = req.query.question;
+    console.log('callTutorForHlep',course_id,student_id, question_id );
+    helpModel.findHelpByQuery({ 'course':course_id,'user':student_id,'question':question_id },function(err,data){
         if(err) next(err);
         else {
 		   console.log('findHelpByQuery',data);
@@ -84,6 +111,7 @@ function getHelpInfoOnQuestion(req,res,next){
     })
 }
 
+ 
 /*   Model 1
 helpModel.findHelpByQuery({ 'course':'520db60a8932d7700f000001','user':'520db60a8932d7700f000001','tutor':'520db60a8932d7700f000001','question':'520db60a8932d7700f000001' },function(err,plan){
         if(err) next(err);

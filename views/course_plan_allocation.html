@@ -741,6 +741,42 @@ var courseid = pathname.split('/')[2];
 
  console.log( '#'+Math.floor(Math.random()*16777215).toString(16)  );   //http://www.paulirish.com/2009/random-hex-color-code-snippets/
 
+var uid ;
+getNotification();
+function getNotification(){
+    console.log('get notifications');
+    $.ajax({
+           type: "GET",
+           url: "/user/notify",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        console.log('get notifications success ',data, data.notifications.length);
+				/*
+			    for(var i=0;i<data.length;i++){			        
+				    console.log(data[i]._id,data[i].username,"img:",data[i].img);
+					var img_path;
+					if(data[i].img == undefined)  img_path= "/default_user.jpeg";
+					else img_path = '/images/'+data[i].img;
+					var s = $(
+					  '<li class="user-info span2 members ui-draggable"  id="'+ data[i]._id +'" data-id="'+ data[i]._id +'">'			      	
+                        +'<img src="'+ img_path  +'"> </img>'			
+					    +'<p>'+ data[i].username +'</p>'
+					    +'<span class="loc">Liverpool, UK</span>'
+				      +'</li>'
+				   );
+				   
+				   s.appendTo( $(".student_list ul") );
+			   }
+			   */
+           },error: function(jqXHR, textStatus, errorThrown){
+               console.error('get notifications error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });    
+ }
+ 
+ 
 getCourseStudents(courseid);
 
 // get the students
@@ -841,8 +877,7 @@ $(".filter").click(function() {
     var filter = $(this).text();
     if ($(this).hasClass("active-filter")) {
         console.log("match!");
-        $(".filter").removeClass("active-filter");
-                
+        $(".filter").removeClass("active-filter");               
     }
     else {
         $(".filter").addClass("active-filter");

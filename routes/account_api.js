@@ -178,10 +178,11 @@ function signupPage(req,res){
 			   console.log('find user uid'.green,user._id);
                 locals.user = {
                     username : user.username,
-					email : user.email
+					email : user.email,
+					img: user.img
                 };
 				
-			    res.render('/',locals);
+			    res.redirect('/');
             }			
 		 })
 	 } else {

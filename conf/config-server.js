@@ -48,7 +48,27 @@ module.exports = {
          user:"feynlabs.uk@gmail.com"
         ,pass:"newstartup"
         ,name:"Feynlabs"	
-	} 
+	},
+    github: {
+       clientID: '30c930492a8218b78db8',
+       clientSecret: '772869bd93d91b690cc00368a9e32c6e86f986a6',
+	   callbackURL:'/auth/github/callback'
+    },
+    facebook: {
+       clientID: 'APP_ID',
+       clientSecret: 'APP_SECRET',
+	   callbackURL:'/auth/facebook/callback'
+    },
+    twitter: {
+       clientID: 'APP_ID',
+       clientSecret: 'APP_SECRET',
+	   callbackURL:'/auth/twitter/callback'
+    },
+    google: {
+       clientID: 'APP_ID',
+       clientSecret: 'APP_SECRET',
+	   callbackURL:'/auth/google/callback'
+    } 
 };
 
 if (module.exports.environment == 'production') {

@@ -150,7 +150,7 @@ function findCourseById(id,callback){
 	CourseModel.findById(id,'tutor title desc city sdate edate img tags',function(err, doc){
 		if(err){callback(err, null);}
 		else{
-			console.log("findOneCourse".green);
+			console.log("findCourseById".green);
 			callback(null, doc);
 		}
 	})	
@@ -619,7 +619,7 @@ exports.addPlanToList =addPlanToList;
 exports.removePlanFromList =removePlanFromList;
 exports.findCoursePlansById = findCoursePlansById;
 
-/************************************  invitation with ObjectId ********************************/
+/************************************  invitation with ObjectId  not used anymore********************************/
 
 function addInvitationToList(cid,invitation_id,callback){
 
@@ -760,7 +760,9 @@ function addStudentByInvitation(cid,token,uid,callback){
 	//CourseModel.update({'_id':cid,'invitations.token':token},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}}, function(err,data) {
     // 		
 	//CourseModel.update({'_id':cid,'invitations':{'$elemMatch':{'token':token}}},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}},options,function(err,data) { 
-	CourseModel.update({'_id':cid,'invitations.token':token},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}}, function(err,data) { 
+	// http://stackoverflow.com/questions/10432677/update-field-in-exact-element-array-in-mongodb   http://docs.mongodb.org/manual/reference/operator/positional/
+	//CourseModel.update({'_id':cid,'invitations.token':token},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}}, function(err,data) { 
+	CourseModel.update({'_id':cid,'invitations.token':token},{'$set': { "invitations.$.status" : 4 } ,'$addToSet':{'stud':uid}}, function(err,data) { 
  	    if(err){callback(err, null);}
 		else{
 		    console.log('addStudentByInvitation'.green,data);

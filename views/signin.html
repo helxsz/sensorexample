@@ -234,13 +234,13 @@ background-color: #e5e5e5;	font-family: 'Open Sans', Arial, Helvetica, sans-seri
                     <a href="/terms/" target="blank">Terms of Use</a> and <a href="/privacy/" target="blank">Privacy Policy</a>.</small></p>        
                   </div>
                   <div>
-                    <form class="connect-button" name="login" method="post" action="/social/twitter/redirect/" id="twitter-connect-form">
+                    <form class="connect-button" name="login" method="post" action="/auth/github" id="twitter-connect-form">
                         <input type="hidden" name="_csrf" value="<%= token %>"/>        
                         <input type="hidden" name="next" value="/welcome/" />
         	            <a class="twitter-before"><span class="fontawesome-twitter"></span></a>
 			            <button class="twitter">Login Using Twitter</button>
 		            </form>
-                    <form class="connect-button" name="login" method="post" action="/social/facebook/redirect/" id="facebook-connect-form">
+                    <form class="connect-button" name="login" method="post" action="/auth/facebook" id="facebook-connect-form">
                         <input type="hidden" name="_csrf" value="<%= token %>"/>       
                         <input type="hidden" name="next" value="/welcome/" />        
 			            <a class="facebook-before"><span class="fontawesome-facebook"></span></a>

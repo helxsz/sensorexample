@@ -22,10 +22,14 @@ var Hashids = require("hashids"),
 var courseModel = require('../model/course_model');	
 var studentPlanModel = require('../model/student_plan_model');
 
-app.get('/course/:id/tracking',getCourseTrackingPage);
-app.get('/course/:id/planAllocation',getPlanAllocation);
-app.get('/course/:id/planAllocation2',getPlanAllocation2);
-app.get('/course/:id/planAllocation3',getPlanAllocation3);
+var permissionAPI = require('./permission_api');
+
+
+app.get('/course/:id/tracking',permissionAPI.authUser, permissionAPI.authTutorInCourse, getCourseTrackingPage);
+app.get('/course/:id/tracking2',permissionAPI.authUser, permissionAPI.authTutorInCourse, getCourseTrackingPage2);
+app.get('/course/:id/planAllocation',permissionAPI.authUser, permissionAPI.authTutorInCourse,getPlanAllocation);
+app.get('/course/:id/planAllocation2',permissionAPI.authUser, permissionAPI.authTutorInCourse,getPlanAllocation2);
+app.get('/course/:id/planAllocation3',  permissionAPI.authUser, permissionAPI.authTutorInCourse,getPlanAllocation3);
 function getCourseTrackingPage(req,res,next){
     var locals = {};
     var id = req.params.id;
@@ -46,6 +50,28 @@ function getCourseTrackingPage(req,res,next){
                   });
 	});	    
 }
+
+function getCourseTrackingPage2(req,res,next){
+    var locals = {};
+    var id = req.params.id;
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Course Tracking';
+                         res.render('course_tracking2',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});	    
+}
+
 
 
 function getPlanAllocation(req,res,next){

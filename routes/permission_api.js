@@ -61,14 +61,32 @@ function authStudentInCourse(req,res,next){
 		 	//	     
  		//courseModel.findCourseByQuery({'_id':req.params.id,'stud.$':req.session.uid},'title',function(err,course){
 		// http://stackoverflow.com/questions/16198429/mongodb-how-to-find-out-if-an-array-field-contains-an-element
-		courseModel.findCourseByQuery({'_id':req.params.id,'stud':{'$in':[req.session.uid]}},'title',function(err,course){
+		var course_id = req.params.id, uid = req.session.uid;
+		courseModel.findCourseByQuery({'_id':course_id,'stud':{'$in':[uid]}},'title',function(err,course){
 		      if(err || !course) {
 			     console.log('Courses  not admined'.red);
-				 res.json(403);
+				 res.json(403,{'data':null});
 				 return;
 		      }
 			  else{
 			     console.log('authStudents find student in the course'.green,course._id);
+			     next();
+              }			
+		})
+}
+
+function authTutorInCourse(req,res,next){
+		console.log('authTutorInCourse'.green, req.session.username,req.session.uid,'cid',req.params.id);
+
+		var course_id = req.params.id, uid = req.session.uid;
+		courseModel.findCourseByQuery({'_id':course_id,'tutor.id':uid},'title',function(err,course){
+		      if(err || !course) {
+			     console.log('authTutorInCourse , Courses  not admined to you'.red);
+				 res.json(403,{'data':null});
+				 return;
+		      }
+			  else{
+			     console.log('auth Tutor in the course'.green,course._id);
 			     next();
               }			
 		})
@@ -98,6 +116,24 @@ function deciphterSessionParameter(str,secret){
 }
 
 exports.authStudentInCourse =authStudentInCourse;
+exports.authTutorInCourse = authTutorInCourse;
+
+// Simple route middleware to ensure user is authenticated.  Otherwise send to login page.
+exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login')
+};
+ 
+// Check for admin middleware, this is unrelated to passport.js
+// You can delete this if you use different method to check for admins or don't need admins
+exports.ensureAdmin = function ensureAdmin(req, res, next) {
+        if(req.user && req.user.admin === true)
+            next();
+        else
+            res.send(403);
+};
+
+
 exports.authUser = authUser;
 exports.authUser1 = authUser1;
 exports.cipherSessionParameter = cipherSessionParameter;

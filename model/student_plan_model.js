@@ -41,7 +41,7 @@ function createStudentPlan(cid,sid,callback){
 function copyPlan(cid,sid, plan, callback){
 
     var options = { upsert:true};
-	StudentPlanModel.update({'sid':sid,'qid':cid},{'$set':plan},options,function(err,doc){
+	StudentPlanModel.update({'sid':sid,'cid':cid},{'$set':plan},options,function(err,doc){
 		if(err) {
 			callback(err, null);
 		}

@@ -73,7 +73,7 @@ function findQuestionById(qid,option,callback){
 	QuestionModel.findById(qid,'que tip tags lev opt',function(err, doc){
 		if(err){callback(err, null);}
 		else{
-			console.log("findOneCourse".green,qid);
+			//console.log("findQuestionById".green,qid);
 			callback(null, doc);
 		}
 	})	
