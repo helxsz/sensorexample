@@ -71,36 +71,65 @@ function getAllPlans(req,res,next){
 }
 */
 
-
+/***************************************************************
+     default course plan for the tutor 
+***************************************************************/
+app.get('/course/:id/tutor/plan',permissionAPI.authUser, permissionAPI.authTutorInCourse,getCoursePlanOfTutor);
+function getCoursePlanOfTutor(req, res, next){
+    var course_id = req.params.id;
+	var uid = req.session.uid;
+    console.log('get course plans default',course_id, uid);
+    studentPlanModel.getOneStudentPlan(course_id,uid,function(err,data){
+        if(err) next(err);
+		else if(!data) { 
+		     console.log('getCoursePlanOfTutor not found'.red);
+             studentPlanModel.createPlanAndAddMilestone(course_id,uid,[],function(err,data1){
+			    if(err) next(err);
+				else if (!data1) res.send(404);
+			    else res.send(data);
+			 })			 			 
+		} 
+        else{
+		    console.log('getCoursePlanOfTutor'.green, data);
+			res.send(200,data); 		    
+		}
+    })	
+}
+app.post('/course/:id/tutor/plan',permissionAPI.authUser, permissionAPI.authTutorInCourse,createTutorPlans);
+function createTutorPlans(req,res,next){
+   var course_id = req.params.id;
+   var uid = req.session.uid;
+   var goalText = req.body.goals;
+   // should check goals are array
+   var goals = goalText.split(',');
+   console.log('createTutorPlans','cid:',course_id, 'uid',uid, 'goal',goals.length);    
+   studentPlanModel.createPlanAndAddMilestone(course_id,uid,goals,function(err,plan){
+        if(err) next(err);
+		else if(!plan)  { console.log('create tutor plan failed'.red);  res.send(404);} 
+        else {
+		   console.log('',plan);
+		   res.send(201,{'plan_id':plan._id, "meta": { "code": 201} });		   
+		}
+   })
+}
 /****************************************************************
 
         assign the plan to the student
 
 *****************************************************************/
-	
-app.post('/course/:id/plan/:student_id',permissionAPI.authUser, permissionAPI.authTutorInCourse,createPlanForStudent);
+// for tutor to use	
+app.post('/course/:id/plan/:student_id',permissionAPI.authUser, permissionAPI.authTutorInCourse,assignPlanToStudent);
+app.get('/course/:id/plan/:student_id,',permissionAPI.authUser, permissionAPI.authTutorInCourse,getStudentPlanForTutor);
+// for the student
 app.get('/course/:id/plan',permissionAPI.authUser, getPlanForStudent);
+// for the tutor
 app.del('/course/:id/plan',permissionAPI.authUser, deletePlanForStudent);
 
-function createPlanForStudent(req,res,next){
+// should have a plan id
+function assignPlanToStudent(req,res,next){
    var course_id = req.params.id, student_id = req.params.student_id;
    var uid = req.session.uid;
-   console.log('createPlanForStudent','cid:',course_id,'uid',student_id);
-   /*
-   studentPlanModel.createStudentPlan(course_id,student_id,function(err,plan){
-        if(err) next(err);
-        else {
-		   console.log('',plan);
-		   res.send(200,{'plan_id':plan._id, "meta": { "code": 200} });
-		   
-		   courseModel.addPlanToList(course_id, plan._id,function(err,data){
-		       if(err) next(err);
-		       else res.send(200,{'plan_id':plan._id, "meta": { "code": 200} });
-		   })
-		   
-		}
-   })
-   */
+   console.log('assignPlanToStudent','cid:',course_id,'uid',student_id);
     var locals = {};
 	async.parallel([
 		function(callback) {
@@ -125,11 +154,38 @@ function createPlanForStudent(req,res,next){
                 else { console.log('  assigning the plan'.green); res.send(200,{data:null});  }
             })
 	});	   
+}
+
+function getStudentPlanForTutor(req,res,next){
+   var student_id = req.params.student_id, cid = req.params.id;
+   console.log('getPlanForStudent'.green,'cid:',cid,'student_id',student_id);
+   if(student_id == null || cid == null)
+   return res.send(400,{'meta':400,"status":"error"});
+
+   studentPlanModel.getOneStudentPlan(cid,student_id,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log('getPlanOfEachStudent'.green, data);
+			res.send(200,data); 
+			if(data == null){
+			    var plan;
+	            async.parallel([
+		            function(callback) {
+				        studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
+				            console.log('getPlanForStudent  getMilestones'.green, data);
+				            callback();
+				        })				                       		    
+		            }],function(err) {
+	                    if (err) return next(err); 
+                        res.send(200,data1); 
+	            });								
+			}		    
+		}
+   })   
 
 }
 
 function getPlanForStudent(req,res,next){
-   	   
    var uid = req.session.uid, cid = req.params.id;
    console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
    if(uid == null || cid == null)

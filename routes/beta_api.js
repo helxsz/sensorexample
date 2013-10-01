@@ -108,12 +108,15 @@ function homePage(req,res){
             }			
 		},
 		function(callback) {
-		   courseModel.findCoursesByQuery({},option,function(err,courses){
+		   //courseModel.findCoursesByQuery({},option,function(err,courses){
+		     courseModel.findCoursesAndTutorByQuery({},option,function(err,courses){
 		            if(err) {
-			            console.log('course uid not found'.red,err);
-		            }
+			            console.log('findCoursesAndTutorByQuery error '.red,err);
+		            }else if(!courses){console.log('course uid not found'.red);}
 			        else{
-			            console.log('find courses'.green,courses.length);			   
+			            console.log('find courses'.green,courses.length);	
+                        for(var i=0;i<courses.length;i++)
+                        console.log(courses[i]);						
                         locals.courses = courses; 
                     }
 				    callback();	

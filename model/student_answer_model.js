@@ -14,7 +14,8 @@ exports.AnswerModel = AnswerModel;
 function addAnswerResultToQuestion( sid, qid, answer,debug,callback){
 	var options = { upsert:true};		 //  new: true,
     //console.log('addAnswerResultToQuestion model',debug);
-	// http://docs.mongodb.org/manual/tutorial/limit-number-of-elements-in-updated-array/   
+	// http://docs.mongodb.org/manual/tutorial/limit-number-of-elements-in-updated-array/  
+    // http://blog.mongodb.org/post/58782996153/push-to-sorted-array	
 	//,$slice: -3
 	AnswerModel.update({'sid':sid,'qid':qid},{'$push':{'anw':answer,'debug':debug}},options,function(err,answer){
 		if(err) {

@@ -1,0 +1,173 @@
+<style>
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
+[class*="fontawesome-"]:before {
+  font-family: 'fontawesome', sans-serif;
+}
+
+
+
+
+
+.projects{
+margin: 0 auto;
+width: 960px;
+margin-bottom:30px;
+}
+
+.project {
+  width: 400px;
+  height: 125px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #ccc;
+  overflow: hidden;
+
+}
+
+.project img {
+  float: left;
+  width: 125px;
+  height: 125px;
+  border-right: 1px solid #eee;
+}
+
+.project article {
+float: right;
+padding: 5px 14px 5px;
+width: 221px;
+height: 80px;
+border-bottom: 1px solid #eee;
+}
+
+.project h2 {
+  margin: 0 0 7px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+  color: #555;  
+}
+
+.project p {
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+  color: #555;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  -webkit-font-smoothing: antialiased;
+  font-style, font-weight, letter-spacing, line-height, word-spacing: normal;    
+}
+
+.project nav {
+float: right;
+margin: 5px;
+width: 221px;
+}
+
+.project nav ul li {
+  float: right;
+  display: inline-block;
+}
+
+.project nav ul li a {
+  margin: 0 8px;
+  font-size: 0.8rem;
+}
+
+.project nav ul li span {
+color: #444;
+font-weight: bold;
+}
+.project nav ul li .fontawesome-retweet, nav ul li .fontawesome-reply {
+  color: #aaa;
+}
+
+.project nav ul li .fontawesome-star {
+  color: #4099FF;
+}
+
+.project nav li.time {
+  float: left;
+  color: #aaa;
+}
+
+
+h1.noresults {
+height: 60px;
+font-family: "MuseoSans_light";
+font-size: 2.35em;
+font-weight: lighter;
+color: #fff;
+text-align: center;
+line-height: 60px;
+background-color: #444;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+width:300px;
+margin: 0 auto;
+}
+
+</style>
+
+
+
+
+<% if(locals.courses) { %>
+<div class="gallery">
+    <div class="detail">
+            <h2>Courses Gallery</h2>
+            <h3>Explore what courses are empowering the students looking into the computer science.</h3>
+            <div class="share clear">
+                <div id="sort" class="right">
+                    <div class="clear">
+                        <label class="left">Sort by:</label>
+                        <div class="select-wrapper left">
+                            <div class="ss-select-wrapper">
+							    <select class="js-jump-on-change" style="width: 134px;">
+                                        <option value="/courses?sort=time">Last Updated</option>
+                                        <option value="/courses?sort=votes" selected="">Most Liked</option>
+                                </select><span class="ss-select" aria-hidden="true" style="width: 85px;">                 
+								<span class="arrow icon-chevron"></span>
+								<span class="label">Most Liked</span></span>
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="projects row">
+	  
+	  <% if(locals.courses.length == 0){ %>
+	     <h1 class="noresults">  No results found </h1>
+	     
+	  <% }; %>
+	  
+      <% courses.forEach( function( course ){ %>
+  
+        <div class="project span4">
+            <img src="http://goo.gl/rcwEv" alt="">
+            <article>
+                <h2><a href="/course/<%= course._id %>" ></a><%= course.title %></h2>
+                <p>
+                    <a href="/course/<%= course._id %>" >@waynespiegel</a><%= course.desc %>
+                </p>
+            </article>
+            <nav>
+                <ul>
+                    <li class="time">10m</li>
+                    <li><a href="#" class="fontawesome-star"><%= course.stars %></a></li>
+                    <li><a href="#" class="fontawesome-reply"><%= course.comments %></a></li>
+                </ul>
+            </nav>
+        </div>
+	
+      <% }); %>
+	</div>	
+	 <div id="load-more-wrapper">
+			<a id="load-more-projects-button" class="load-more-link btn grey" href="javascript:;">Load more Projects</a>
+	 </div>
+<% } %>
+</div>

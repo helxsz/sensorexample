@@ -79,8 +79,22 @@ module.exports = {
        clientID: 'APP_ID',
        clientSecret: 'APP_SECRET',
 	   callbackURL:'/auth/google/callback'
-    }	
+    },
+	// https://www.dropbox.com/developers/apps/info/hzgdwykknvbpiyz     feynlabs.uk
+    dropbox:{
+       clientID: 'hzgdwykknvbpiyz',
+       clientSecret: 'obxt2nq1r09ue6s',
+	   callbackURL:'http://127.0.0.1:3000/auth/dropbox/callback'	
+	}	
 };
+
+
+//SSL Info
+exports.country = "UK";
+exports.state = "Liverpool";
+exports.locale = "Liverpool";
+exports.commonName = "Feynlabs";
+exports.subjectAltName = "127.0.0.1";
 
 if (module.exports.environment == 'production') {
 	module.exports.port = process.env.PORT || 80; // Joyent SmartMachine uses process.env.PORT

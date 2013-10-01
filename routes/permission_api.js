@@ -65,7 +65,11 @@ function authStudentInCourse(req,res,next){
 		courseModel.findCourseByQuery({'_id':course_id,'stud':{'$in':[uid]}},'title',function(err,course){
 		      if(err || !course) {
 			     console.log('Courses  not admined'.red);
-				 res.json(403,{'data':null});
+				 if (req.xhr) {
+				    res.json(403,{'error':'not authenticated, please apply for the course first'});
+				 }else{
+				    res.render('error/403', { error: 'not authenticated, please apply for the course first' });
+				 }
 				 return;
 		      }
 			  else{
@@ -82,7 +86,11 @@ function authTutorInCourse(req,res,next){
 		courseModel.findCourseByQuery({'_id':course_id,'tutor.id':uid},'title',function(err,course){
 		      if(err || !course) {
 			     console.log('authTutorInCourse , Courses  not admined to you'.red);
-				 res.json(403,{'data':null});
+				 if (req.xhr) {
+				    res.json(403,{'error':'not authenticated'});
+				 }else{
+				    res.render('error/403', { error: 'not authenticated' });
+				 }
 				 return;
 		      }
 			  else{

@@ -104,7 +104,7 @@ function createNewCourse(data,callback){
 
 
 function findCoursesByQuery(condition,option,callback){
-	CourseModel.find(condition,'tutor title desc city sdate edate tags',option,function(err, doc){
+	CourseModel.find(condition,'tutor title desc city sdate edate tags img',option,function(err, doc){
 		if(err){callback(err, null);}
 		else{
 			callback(null, doc);
@@ -120,6 +120,17 @@ function findCoursesByQuery2(condition,fields,option,callback){
 		}
 	})	
 }
+
+function findCoursesAndTutorByQuery(condition,option,callback){  //
+	CourseModel.find(condition,'tutor title desc city sdate edate tags img',option).populate({path:'tutor.id',select:'username img'}).exec(function (err, doc){
+		if(err){callback(err, null);}
+		else{
+			callback(null, doc);
+		}
+	})	
+}
+
+
 
 function findCoursesAdmin(cid,uid,callback){
 	CourseModel.findOne({'_id':cid},'tutor title desc city sdate edate tags',function(err, doc){
@@ -215,20 +226,21 @@ function deleteCourseById(id,callback){
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function getCourseSetting(id,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
+	/*
 	CourseModel.findById(id,'tutor title img desc summ cate city sdate edate tags',function(err, course){
 		if(err){callback(err, null);}
 		else{
 			console.log("getCourseSetting".green);
 			callback(null, course);
 		}
-	})	
+	})
+    */	
+	CourseModel.findById(id,'tutor title desc city sdate edate tags img').populate({path:'tutor.id',select:'username img'}).exec(function (err, doc){
+		if(err){callback(err, null);}
+		else{
+			callback(null, doc);
+		}
+	})		
 }
 
 function updateCourseSetting(condition,update,callback){
@@ -804,6 +816,7 @@ exports.findCoursesByQuery = findCoursesByQuery;
 exports.findCoursesByQuery2 = findCoursesByQuery2;
 exports.findCourseById = findCourseById;
 exports.findCourseById2 = findCourseById2;
+exports.findCoursesAndTutorByQuery = findCoursesAndTutorByQuery;
 
 exports.findCourseByQuery = findCourseByQuery;
 exports.findCourseAndTutorById = findCourseAndTutorById;

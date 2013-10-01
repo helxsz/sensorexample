@@ -158,8 +158,10 @@ function getProfileSettingPage(req,res,next){
 			        email:user.email,
 					img: user.img
                 };
-               locals.title = 'Profile Setting';				
-			   res.render('setting_profile',locals);
+               locals.title = 'Profile Setting';
+               locals.setting = 'profile';			   
+			   //res.render('setting_profile',locals);
+			   res.render('setting/user_setting',locals);			   
             }			
 		 })
 
@@ -233,7 +235,18 @@ function updateUserImageToFolder(req,res,next){
 }
 // http://stackoverflow.com/questions/8110294/nodejs-base64-image-encoding-decoding-not-quite-working
 function updateUserImageToGridfs(req,res,next){
-	var file = req.files.image;
+	
+	var file;
+	try{
+	 file = req.files.image;
+	}catch(e){
+	    console.log('err image undefined');
+	    return res.send(400,{'error':'image undefined'});
+	}
+	
+    if(typeof file === "undefined") {
+	    return res.send(400);
+	}	
 	console.log('updateUserImageToMongo'.green,file.path,file.type,file.size);
 	
 
@@ -390,8 +403,10 @@ function getAccountSettingPage(req,res,next){
 					email: user.email,
 					img:user.img
                };
-               locals.title = 'Account Setting';			   
-			   res.render('setting_account',locals);
+               locals.title = 'Account Setting';
+               locals.setting = 'account';			   
+			   //res.render('setting_account',locals);
+			   res.render('setting/user_setting',locals);			   
             }			
 		 })
 	 }else{	
@@ -468,8 +483,10 @@ function getSoicalSettingPage(req,res,next){
 					email: user.email,
 					img: user.img
                };
-               locals.title = 'Social Setting';			   			   
-			   res.render('setting_social',locals);
+               locals.title = 'Social Setting';	
+               locals.setting = 'social';				   
+			   //res.render('setting_social',locals);
+			   res.render('setting/user_setting',locals);			   
             }			
 		 })
 
@@ -534,8 +551,10 @@ function getNotificationPage(req,res,next){
 					email: user.email,
 					img:user.img
                };
-               locals.title = 'Notification Setting';			   			   
-			   res.render('setting_notification',locals);
+               locals.title = 'Notification Setting';	
+               locals.setting = 'notification';				   
+			   //res.render('setting_notification',locals);
+			   res.render('setting/user_setting',locals);
             }			
 		 })
 

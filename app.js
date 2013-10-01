@@ -6,12 +6,15 @@ var crypto = require('crypto');
 var https = require('https');
 var passport = require('passport');
 var app = express();
+var ejs =  require('ejs');
 
 var config = require('./conf/config.js');
 var colors = require('colors');
 var webdir = '/web';
 var mobiledir = '/mobile';
 var access_logfile = fs.createWriteStream('./access.log',{flags:'a'});
+
+var https_server; 
 
 // Virtual Hosts
 /*
@@ -84,19 +87,20 @@ var allowCrossDomain = function(req, res, next) {
 **********************************************/
 app.configure(function(){
 
-    app.engine('.html', require('ejs').__express);
+    app.engine('.html', ejs.__express);
     app.set('view engine', 'html');
 	app.set('views',__dirname+'/views');
+	app.set('ejs',ejs);
 	
 	app.use(express.favicon(__dirname + '/public/favicon.ico'));
 	
   // should be placed before express.static
-  app.use(express.compress({
-    filter: function (req, res) {
-      return /json|text|javascript|css/.test(res.getHeader('Content-Type'));
-    },
-    level: 9
-  })); 	
+    app.use(express.compress({
+        filter: function (req, res) {
+         return /json|text|javascript|css/.test(res.getHeader('Content-Type'));
+        },
+        level: 9
+    })); 	
 	
 	 // bodyParser should be above methodOverride
 	app.use(express.bodyParser({uploadDir:__dirname+'/public/uploads',keepExtensions: true,limit: '50mb'}));
@@ -124,10 +128,10 @@ app.configure(function(){
    
     app.use(passport.initialize());
     app.use(passport.session());	  
-	
-	
+		
 	app.use(express.static(__dirname+'/public'));
-    app.use(express.static(__dirname+'/static'));	
+    app.use(express.static(__dirname+'/static'));
+    app.use(express.static(__dirname+'/weibo'));	
 	
 	app.use(webdir, 	express.static(__dirname+webdir));
 	app.use(mobiledir,	express.static(__dirname+mobiledir));
@@ -143,7 +147,6 @@ app.configure(function(){
 
     app.use(function (req,res, next) {
         var d = domain.create();
-        //
         d.on('error', function (err) {
           logger.error(err);
           res.statusCode = 500;
@@ -203,7 +206,6 @@ app.configure(function(){
             res.send({ error: 'Not found' });
             return;
         }
-        res.type('txt').send('Not found');
     });	
 });
 
@@ -298,49 +300,95 @@ function errorHandler(err, req, res, next) {
   res.render('error/500', { error: err });
 }
 
+var startServer = function() {
+    if (!module.parent) {
+        if(app){
+	  
+	        app.listen(3000,function(){
+	            console.log('Express started on port 3000');	  
+	        });
+	   
 
+	  	/*
+	        var out = app.listen(config.port, '0.0.0.0',function(){
+	           console.log('Express started on port',config.port);	  
+	        });
+	  
+	        process.nextTick(function () {
+                if (out && out.address && out.address().port !== config.port) {
+                    console.log("server listening on port: ".red + out.address().port);
+                }
+            });
+        */
+       }else{
+            console.log("\r\ terminated ...\r\n".grey);
+            process.exit();
+        }
+    }
+}
 
-var options = {
-/*		*/
+var startSSLServer = function(){
+	   var options = {
         key: fs.readFileSync('./conf/server.key').toString()
         ,cert: fs.readFileSync('./conf/server.crt').toString()
         ,requestCert: true
         ,rejectUnauthorized: false
 		,passphrase: "1027"
- 
-};
-
-var https_server; 
-if (!module.parent) {
-    if(app){
-	
-	   app.listen(3000,function(){
-	     console.log('Express started on port 3000');	  
-	   });
-	/**/
-	/*
-	  var out = app.listen(config.port, '0.0.0.0',function(){
-	     console.log('Express started on port',config.port, out.address, out.address().port);	  
-	  });
-	  console.log( out.address);	
-	  
-	  process.nextTick(function () {
-        if (out && out.address && out.address().port !== config.port) {
-          console.log("server listening on port: ".red + out.address().port);
-        }
-      });
-	  */
-	  /**/
-      https_server = https.createServer(options,app).listen(443, function(){
+      };
+	   
+      https_server = https.createServer(options,app).listen(443, '0.0.0.0', function(){
             console.log("Express server listening on port " + 433);
       });
-	  
-    }else{
-      console.log("\r\ terminated ...\r\n".grey);
-      process.exit();
-    }
 }
 
+var startSelfSSLServer = function() {
+    var privateKey="";
+    var certificate="";
+    try {
+        privateKey = fs.readFileSync('certs/server.key').toString();
+        certificate = fs.readFileSync('certs/server.cert').toString();
+    } catch ( e ) {
+        console.log( "no certificate found. generating self signed cert.\n" );
+    }
+    
+    if ( privateKey !== "" && certificate !== "" ) {
+		loadServer();
+		console.log('start SSL not private key and certificate '.red);
+    }else {
+        var spawn = require('child_process').spawn;
+        
+        var genSelfSignedCert = function() {
+            var genkey = spawn( 'openssl', [
+                'req', '-x509', '-nodes',
+                '-days', '365',
+                '-newkey', 'rsa:2048',
+                '-keyout', 'certs/server.key',
+                '-out', 'certs/server.cert',
+                '-subj',
+                '/C=' + config.country + '/ST=' + config.state + "/L=" + config.locale + "/CN=" + config.commonName + "/subjectAltName=" + config.subjectAltName
+            ]);
+            genkey.stdout.on('data', function(d) { util.print(d) } );
+            genkey.stderr.on('data', function(d) { util.print(d) } );
+            genkey.addListener( 'exit', function( code, signal ) {
+                fs.chmodSync('certs/server.key', '600');
+                loadServer();
+            });
+        };        
+        var loadServer = function() {
+		    console.log('load the server');
+            privateKey = fs.readFileSync('certs/server.key').toString();
+            certificate = fs.readFileSync('certs/server.cert').toString();
+			https_server = https.createServer({ key: privateKey, cert: certificate,requestCert: true ,rejectUnauthorized: false },app).listen(443, function(){
+                console.log("Express server listening on port " + 433);
+            });
+        };
+
+        genSelfSignedCert();
+    }
+};
+
+startServer();
+startSSLServer();
 exports.https_server = https_server;
 
 /******************************************************
@@ -403,19 +451,18 @@ if(cluster.isMaster){
            terminate the server
 *******************************************/
 app.on('close', function () {
-  console.log("Closed");
+  console.log("Closed app".red);
   mongoose.connection.close();
-  redisClient.quit();
+  //redisClient.quit();
 });
 //  terminator === the termination handler.
 function terminator(sig) {
    if (typeof sig === "string") {
-      console.log('%s: Received %s - terminating Node server ...',
-                  Date(Date.now()), sig);
+      console.log('%s: Received %s - terminating Node server ...',Date(Date.now()), sig);                 
       process.exit(1);
 	  app.close();
    }
-   console.log('%s: Node server stopped.', Date(Date.now()) );
+   console.log('%s: Node server stopped.'.red, Date(Date.now()) );
 }
 
 //  Process on exit and signals.
@@ -429,7 +476,7 @@ process.on('exit', function() { terminator(); });
 var util = require("util");
 // Don't crash on errors.
 process.on("uncaughtException", function(error) {
-  util.log("uncaught exception: " + error);
+  util.log("uncaught exception: ".red + error);
   util.log(error.stack);
 });
 
@@ -489,15 +536,15 @@ var reconnTimer = null;
  
 function tryReconnect() {
   reconnTimer = null;
-  console.log("try to connect: %d", mongoose.connection.readyState);
+  console.log("try to connect: %d".grey, mongoose.connection.readyState);
   db = mongoose.connect(config.mongodb_development,function(err){
-	if(err) console.log('connect mongodb error');
-	else console.log('mongodb connect success');
+	if(err) console.log('connect mongodb error'.red);
+	else console.log('mongodb connect success'.green);
   });
 }
 
 mongoose.connection.on('opening', function() {
-  console.log("reconnecting... %d", mongoose.connection.readyState);
+  console.log("reconnecting... %d".red, mongoose.connection.readyState);
 });
 
 mongoose.connection.on('connecting', function (err) {
@@ -607,4 +654,7 @@ function bootController(app, file) {
 	require(__dirname + "/routes/"+ name);				
 }
 
+
+var pluginHelper = require('./pluginHelper');
+pluginHelper.getPluginList(__dirname +'/plugins');
 

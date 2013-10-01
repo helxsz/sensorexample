@@ -45,6 +45,7 @@
 	, "passport-google-oauth":"latest"
 	, "passport.socketio":"latest"
 	, "passport-github":"latest"
+	, "dbox":"latest"
   }
   ,"engines":{
         "node":"latest"

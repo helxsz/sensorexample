@@ -366,7 +366,7 @@ function updateImageToGridfs(req,res,next){
 					course.save(function (err2) {
                             if (err) return next(err2); 
 							else console.log('save course image');
-			                res.redirect("/settings/profile");
+			                res.redirect("/settings/profile");//req.url
 							//res.send(200);
                     });
 				})

@@ -22,6 +22,19 @@ font-family: 'proxima-nova',Proxima Nova,'Helvetica Neue',Helvetica,sans-serif;
 background: #F3F5F8;
 }
 
+body, .content{
+       -webkit-transition:background 1s;
+	   -moz-transition:background 1s;
+	   -o-transition:background 1s;
+	   -ms-transition:background 1s;
+	   transition:background 1s;
+	   
+}
+body.dim, .content.dim{
+        background:#D9DFE9
+}
+
+
 #login-container label {
   margin: 15px 0 5px 5px;
 }
@@ -183,6 +196,33 @@ width: 400px;
 	text-transform: uppercase;
 	width: 250px;
 }
+
+.github-before {
+	background-color: #6D7772;;
+	border-radius: 3px 0px 0px 3px;
+	-moz-border-radius: 3px 0px 0px 3px;
+	-webkit-border-radius: 3px 0px 0px 3px;
+	color: #f4f4f4;
+	display: block;
+	float: left;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	width: 50px;
+}
+
+.github {
+	background-color: #A4AAA7;
+	border: none;
+	border-radius: 0px 3px 3px 0px;
+	-moz-border-radius: 0px 3px 3px 0px;
+	-webkit-border-radius: 0px 3px 3px 0px;
+	color: #f4f4f4;
+	cursor: pointer;
+	height: 50px;
+	text-transform: uppercase;
+	width: 250px;
+}
     </style>	
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -231,18 +271,24 @@ width: 400px;
                   </div>
 				
                   <div>
-                    <form class="connect-button" name="login" method="post" action="/auth/github" id="twitter-connect-form">
+                    <form class="connect-button" name="login" method="get" action="/auth/twitter" id="twitter-connect-form">
                         <input type="hidden" name="_csrf" value="<%= token %>"/>        
                         <input type="hidden" name="next" value="/welcome/" />
         	            <a class="twitter-before"><span class="fontawesome-twitter"></span></a>
 			            <button class="twitter">Login Using Twitter</button>
 		            </form>
-                    <form class="connect-button" name="login" method="post" action="/auth/facebook" id="facebook-connect-form">
+                    <form class="connect-button" name="login" method="get" action="/auth/facebook" id="facebook-connect-form">
                         <input type="hidden" name="_csrf" value="<%= token %>"/>       
                         <input type="hidden" name="next" value="/welcome/" />        
 			            <a class="facebook-before"><span class="fontawesome-facebook"></span></a>
 			            <button class="facebook">Login Using Facbook</button>        
 		            </form>
+                    <form class="connect-button" name="login" method="get" action="/auth/github" id="github-connect-form">
+                        <input type="hidden" name="_csrf" value="<%= token %>"/>       
+                        <input type="hidden" name="next" value="/welcome/" />        
+			            <a class="github-before"><span class="fontawesome-facebook"></span></a>
+			            <button class="github">Login Using Github</button>        
+		            </form>					
                     <p><small>Already have an account? <a href="/login/">Log in</a></small></p>
                    </div>
                 </div>
@@ -296,6 +342,13 @@ form .input.success:after{
  
  <script src="/assets/js/jquery.complexify.js"></script>
  <script>
+ $( "input" ).focus(function() {
+    $( "body" ).addClass('dim');
+}).focusout(function() {
+    $( "body" ).removeClass('dim');
+});
+ 
+ 
  var pass1 = $('#id_password'),
 		pass2 = $('#id_password2'),
 		email = $('#id_email'),

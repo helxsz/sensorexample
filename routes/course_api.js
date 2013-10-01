@@ -68,16 +68,6 @@ function getCourses(req,res,next){
 }
 
 
-
-
-
-
-
-
-
-
-
-
 app.get('/course/:id',getCourseDetail);
 app.get('/course/:id/students',getCourseDetailOnStudents);
 app.get('/course/:id/posts',getCourseDetailOnPosts);
@@ -408,64 +398,7 @@ function getCourseByUser(req,res){
 }
 
 
-app.post('/course/:id/join',joinCourse);
-app.post('/course/:id/disjoin',disJoinCourse);
 
-function joinCourse(req,res,next){
-   console.log('joinCourse',req.params.id);   
-   var locals = {};
-
-   courseModel.joinCourse(req.params.id,req.session.uid,function(err,course){
-		if(err) {
-		         console.log('course uid not found'.red,err);
-		         next(err);
-		}else if(!course || course ==0){
-			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
-			res.redirect("/course/"+req.params.id);		
-		}else{
-			console.log('join courses successfully'.green,course);
-			if(req.xhr) {
-                console.log('req.xhr  ',req.xhr);			
-			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
-			}else
-			res.redirect("/course/"+req.params.id);
-        }    
-   })
-/*  
-   var mongoose = require('../app').mongoose;
-   courseModel.findCourseById(req.params.id,function(err,course){
-        if(err) next(err);       
-		else{
-		   course.stud.push({'_id': mongoose.Types.ObjectId(req.session.uid)});
-           course.save(function (err) {
-               if (err) next(err); 
-			   res.redirect("/course/"+req.params.id);
-           });
-        }
-   })
- */   
-}
-
-function disJoinCourse(req,res,next){
-   console.log('disJoinCourse',req.params.id,req.session.uid);   
-   var locals = {};
-   courseModel.disJoinCourse(req.params.id,req.session.uid,function(err,course){
-		if(err) {
-		         console.log('course uid not found'.red,err);
-		         next(err);
-		}else if(!course || course ==0){
-			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
-			res.redirect("/course/"+req.params.id);		
-		}else{
-			console.log('disjoin courses succesfully'.green,course);
-			if(req.xhr) {
-                console.log('send ajax sucess to user');			
-			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
-			}
-			res.redirect("/course/"+req.params.id);
-        }    
-   })
-}
 
 function belongToCourseGroup(){
 

@@ -12,7 +12,8 @@ var studentPlanSchema = new mongoose.Schema({
 	count: {
           	m_all:Number ,m_now:Number,  // all milestones, now milestones
 	        q_all:Number , q_now:Number  // all questions, now questions
-	}
+	},
+	title: String
 });
 
 var Milestone = mongoose.Schema({ goal:String,ques: [ { type: ObjectId, ref: 'Question' } ], anws: [ String ]    });
@@ -36,6 +37,23 @@ function createStudentPlan(cid,sid,callback){
 		}
 	})
 }
+
+function createPlanAndAddMilestone(cid,sid,goals,callback){
+ 	var options = { upsert: true };
+	// {'$addToSet':{'plan':{'goal':goal}},'$inc':{'count.m_all':1}}
+   	StudentPlanModel.update({'cid':cid,'sid':sid},{'$push':{'plan':{'$each':goals}}},options,function(err,docs){
+		if(err) {
+			console.log('createPlanAndAddMilestone err '.red);
+			callback(err, null);
+		}
+		else {
+			callback(null, docs);
+		}
+	})
+}
+
+exports.createStudentPlan = createStudentPlan;
+exports.createPlanAndAddMilestone = createPlanAndAddMilestone;
 
 // copy the default plan to the user
 function copyPlan(cid,sid, plan, callback){
@@ -75,7 +93,6 @@ function getOneStudentPlan(cid,sid,callback){
 	})
 }
 
-exports.createStudentPlan = createStudentPlan;
 exports.copyPlan = copyPlan;
 exports.getStudentPlans = getStudentPlans;
 exports.getOneStudentPlan =getOneStudentPlan;
@@ -84,6 +101,8 @@ exports.getOneStudentPlan =getOneStudentPlan;
 /*************************************************************
 
 **************************************************************/
+
+
 function addMilestone(plan_id,goal,callback){
 	
  	var options = { new: false ,select:'_id'};	

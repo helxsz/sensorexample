@@ -252,7 +252,7 @@ transition: background 0.1s ease-out;
                     <label for="description-tf" class="control-label "><strong>Image</strong></label>
                     <div class="controls control span9"  tabindex="1">						
 					    <% if(locals.course.img) { %>
-                            <img src="/images/<%= locals.user.img %>" width="54" height="54" alt="User avatar" class="b-userbar__account-avatar">
+                            <img src="/course/image/<%= locals.course.img %>" width="54" height="54" alt="User avatar" class="b-userbar__account-avatar">
 					    <% } %>
 					    <% if(!locals.course.img) { %>
                             <img src="/assets/img/missing_little.png" width="54" height="54" alt="User avatar" class="b-userbar__account-avatar">					
@@ -325,7 +325,7 @@ transition: background 0.1s ease-out;
                     <div class=" controls control span9">						
 						<input id="city-tf" name="city" type="text" value="<%= locals.course.city || '' %>"  style="width:400px" >						
                     </div>
-                    <span class="tip" >Your username</span>	
+                    <span class="tip" >Your location</span>	
                    		
                 </div>
 				 			
@@ -334,7 +334,7 @@ transition: background 0.1s ease-out;
                     <div class="controls control span9"  tabindex="1">         
 						<input name="tags" id="tags" value="<%= locals.course.tags || '' %>" />
                     </div>
-                    <span class="tip" >Your username</span>															
+                    <span class="tip" >Your tags</span>															
                 </div>
 				
                 <div class="control-group">
@@ -354,7 +354,7 @@ transition: background 0.1s ease-out;
                 </div>
 
                  <div class="form-actions">
-                      <input type="submit" id="btn" value="Send Message">
+                      <input type="submit" id="btn" value="Update">
                 </div>
              </fieldset>
          </form>
@@ -363,6 +363,21 @@ transition: background 0.1s ease-out;
 		<div class="span4"   >
 		    <input class="typeahead" name="city" type="text"  style="width:400px" placeholder="Search cities..." >			
 		    <!-- <textarea  type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea> -->
+		    <div class="project ">
+			    <img class="video-thumbnail video-link" id=="/course/<%= course._id %>" src="/course/image/<%= course.img %>" alt="">
+			    <div class="video-caption">
+			        <h3><img src="/images/<%= course.tutor.id.img %>"  /><a href="/user/<%= course.tutor.id._id %>" ><%= course.tutor.id.username %></a></h3>
+				    <div class="video-details">
+				       <h2><a href="/course/<%= course._id %>" ><%= course.title %></a></h2>
+				       <div class="merchant-row">
+					        <div class="merchant"><strong><%= course.desc %></strong><br></div>
+					        
+					   </div>
+
+			       </div>
+			    </div>
+            </div>
+			
 		</div>
 	</div>	
 </div>
@@ -808,6 +823,84 @@ box-shadow: 0 5px 10px rgba(0,0,0,.2);
 .pickadate__holder--focused .pickadate__day--highlighted {
     background: #0089ec;
     color: #fff;
+}
+
+
+
+
+
+
+.project {
+width: 410px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #ccc;
+  overflow: hidden;
+-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.2);
+-moz-box-shadow: 0 0 5px rgba(0,0,0,0.2);
+box-shadow: 0 0 5px rgba(0,0,0,0.2);
+margin-bottom: 30px;
+}
+
+.video-thumbnail {
+background-image: url(https://dl6rt3mwcjzxg.cloudfront.net/assets/lets-talk/stlouis-9e811b6dd6056da6ff76f044f65d2cc6.jpg);
+}
+
+.video-thumbnail {
+display: block;
+height: 275px;
+background-size: cover;
+position: relative;
+width: 100%;
+}
+
+.video-thumbnail:after {
+content: "";
+position: absolute;
+background-image: url(https://dl6rt3mwcjzxg.cloudfront.net/assets/lets-talk/play-button-b19052c0d00f164faca4058e9f51d982.png);
+width: 47.5px;
+height: 47.5px;
+background-size: 100%;
+bottom: 20px;
+left: 20px;
+}
+
+.video-caption {
+height: 115px;
+line-height: 115px;
+padding: 0 25px;
+}
+
+.video-caption h3{
+display: -moz-inline-stack;
+display: inline-block;
+vertical-align: middle;
+zoom: 1;
+white-space: normal;
+float: left;
+}
+
+.video-details {
+font-size: 12px;
+line-height: 16px;
+float: left;
+}
+
+.merchant-row {
+overflow: hidden;
+}
+
+.merchant-row:first-child {
+margin-bottom: 15px;
+}
+
+.merchant:first-child {
+width: 140px;
+}
+
+strong {
+font-weight: 500;
 }
 </style>
 <script>

@@ -19,13 +19,12 @@ color:rgb(85, 131, 143);
 margin-left: auto;
 margin-right: auto;
 width: 1000px;
-margin-top: 20px;
 }
 
 
 
 
-.form-action input[type="submit"], modal-btn {
+.form-action input[type="submit"] {
 display: block;
 height: 33px;
 line-height: 34px;
@@ -45,7 +44,7 @@ border-radius: 40px;
 margin-top:5px;
 margin-top:5px;
 }
-.form-action input[type="submit"]:hover, , modal-btn:hover{
+.form-action input[type="submit"]:hover{
 background-color: #409f89;
 }
 </style>
@@ -251,17 +250,17 @@ a { text-decoration: none; }
     <span id="loading" class="folding">Loading...</span>
 
 <div class="row-fluid">
-    <!--
+
     <div class="board row">    
-	    
+	    <!--
 			<div class="user-info">
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjI0NDIwNUYzOTQ5OTExRTI5QzgzRDA2OUYzMzMzMEY3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjI0NDIwNUY0OTQ5OTExRTI5QzgzRDA2OUYzMzMzMEY3Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjQ0MjA1RjE5NDk5MTFFMjlDODNEMDY5RjMzMzMwRjciIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjQ0MjA1RjI5NDk5MTFFMjlDODNEMDY5RjMzMzMwRjciLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4W7vVCAAAPpElEQVR42lxay5UjuRFE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" alt="avatar" />			
 					<p>Sizhe xi</p>
 					<span>Liverpool, UK</span>
 			</div>			
-        		
+        -->			
     </div>
-	-->	 
+	 
     <div class="form_container row">
       <div class="span8" style="border-right: 1px dotted #d0d5cb;">
 			<div class="status-progress">				
@@ -269,222 +268,15 @@ a { text-decoration: none; }
 					<!-- <li><a href="#" class="current">1<span class="progress-info">Upload profile picture!</span></a></li>  -->
 				</ul>
 			</div> <!-- end status-progress -->
-			
-	 		
-
-	  
-        <a data-toggle="modal" class="modal-btn" style="display:none;" href="#PlanModal">Add Plan</a>
-		
-<div class="modal hide" id="PlanModal">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">x</button>
-        <h3>Add Plan</h3>
-    </div>
-        <div class="modal-body" style="text-align:left;">
-        <div class="row-fluid">
-            <div class="span10 offset1">
-                <div id="modalTab">
-                    <div class="tab-content row">
-					
-		<div class="tdl-holder span8">
-			<h2>GOAL LIST</h2>
-			<div class="tdl-content">
-				<ul>
-					<!-- <li><label><i></i><span class="tdl-goal">get up</span><a class="tdl-del" href='#'>x</a></label></li> -->
-				</ul>
-			</div>
-			<input type="text" class="tdl-new" placeholder="Write new item and hit 'Enter'...">
-		</div>										
-                        <div class="tab-pane active span4" >
-                            <form method="post" action='' id="add_plan_form">
-                                <!-- <p><input type="text" class="span12" name="milestones" id="milestones" placeholder="Milestones"></p> -->
-                                <p><button type="submit" class="btn btn-primary">Add Milestone and Plan</button></p>                                
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>		
-
-<style>
-.tdl-holder{
-	margin:0px auto;
-	width: 300px;
-}
-
-.tdl-holder h2{
-	background-color: #de3f53;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-	color:#fff;
-	font-family:"Roboto Condensed", Arial, sans-serif;
-	font-size:16px;
-	font-weight: 100;
-	padding-left: 15px;
-	margin:0;
-}
-
-.tdl-holder ul, .tdl-holder li {
-	list-style: none;
-	margin:0;
-	padding:0;
-}
-
-.tdl-holder li{
-	background-color: #262e4c;
-	border-bottom:1px solid #1c2340;
-	color: #b1b2c9;
-}
-
-.tdl-holder li span{
-	margin-left:30px;
-	-webkit-transition: all .2s linear;
-	   -moz-transition: all .2s linear;
-	     -o-transition: all .2s linear;
-		    transition: all .2s linear;	
-}
-
-.tdl-holder label{
-	cursor:pointer;
-	display:block;
-	line-height: 22px;
-	padding: 0 15px; 
-	position: relative;
-}
-
-.tdl-holder label:hover{
-	background-color: #2a3353;
-	color:#8284a3;
-}
-
-.tdl-holder label a{
-	background-color:#de3f53;
-	border-radius:50%;
-	color:#fff;
-	display:none;
-	float:right;
-	font-weight: bold;
-	line-height: normal;
-	height:16px;
-	margin-top: 5px;
-	text-align: center;
-	text-decoration: none;
-	width:16px;
-	-webkit-transition: all .2s linear;
-	   -moz-transition: all .2s linear;
-	     -o-transition: all .2s linear;
-		    transition: all .2s linear;	
-}
-
-.tdl-holder label:hover a{
-	display: block;
-}
-
-.tdl-holder label a:hover{	
-	background-color:#fff;
-	color:#de3f53;
-}
-.tdl-holder li.remove{
-	-webkit-animation:collapseItem 300ms ease;
-			animation:collapseItem 300ms ease;
-	-webkit-transform-origin: 50% 0%;
-		-ms-transform-origin: 50% 0%;
-			transform-origin: 50% 0%;
-
-}
-
-.tdl-holder li.remove span{
-	color: #586186;
-	text-decoration: line-through;
-}
-
-@keyframes collapseItem {
-    0% 		{ -ms-transform: perspective(500px) rotateX(0deg);transform: perspective(500px) rotateX(0deg); 	}
-    100% 	{ -ms-transform: perspective(500px) rotateX(-90deg);transform: perspective(500px) rotateX(-90deg); }
-}
-
-@-webkit-keyframes collapseItem {
-    0% 		{ -webkit-transform: perspective(500px) rotateX(0deg); 	}
-    100% 	{ -webkit-transform: perspective(500px) rotateX(-90deg);}
-}
-
-.tdl-holder input[type="text"]{
-	background-color: #171d37;
-	border: none;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-	box-shadow: inset 0 0 8px 0 #0e1329;
-	color: #464f72;
-	font-size:14px;
-	margin:0;
-	padding:10px 15px;
-	width:270px;
-	-webkit-transition: all .2s linear;
-	   -moz-transition: all .2s linear;
-	     -o-transition: all .2s linear;
-		    transition: all .2s linear;		
-}
-
-.tdl-holder input[type="text"]:hover{
-	color:#4c577f;
-}
-
-.tdl-holder input[type="text"]:focus{
-	color:#fff;
-}
-</style>
-<script>
-    $('.tdl-new').bind('keypress', function(e) {
-        var code = (e.keyCode ? e.keyCode : e.which);
-        if(code == 13) { //Enter keycode
-			console.log( $('.tdl-new').val() );
-			var a = $( '<li><label><i></i><span class="tdl-goal">'+ $('.tdl-new').val() +'</span><a class="tdl-del" href="#">x</a></label></li>');
-			a.appendTo($('.tdl-content ul'));
-			a.find('.tdl-del').click(function(e){
-			    $(this).parent().parent().remove();
-			})
-            $('.tdl-new').val('');
-			
-        }		
-	});
-	
-$("#add_plan_form").on('submit',function(e){
-    console.log('click add_plan_form');		
-    e.preventDefault();
-
-	var serialData = "";
-	$('.tdl-content ul li').each(function(e){
-		console.log( $(this).find('span').text(), $(this).html() );
-		serialData+=$(this).find('span').text();
-		serialData+=",";
-	})	
-	serialData = serialData.substring(0,serialData.length-1);
-	console.log(serialData.split(',').length);
-	serialData = 'goals='+serialData;
-	console.log(serialData);
-	/**/
-    $.ajax({
-           type: "POST",
-           url: "/course/"+course_id+"/tutor/plan",
-           data: serialData, 
-           success: function(data)
-           {
-                console.log(data);		   
-           }
-    });
-    	
-});	
-</script>	
-	 
-		<!--
         <form method="post" id="#form" class="form-horizontal " enctype="multipart/form-data" >		
             <input type="hidden" name="_csrf" value="<%= token %>"/>
                  <div class="form-action">
                       <input type="submit"  value="add plan "></input>					  
                 </div>			
-        </form>		
+        </form>
+	  
+
+	 
 		
         <form method="post" action="/workplan/5218b3cbd830bb640c000002/removeMilestone/efg"  class="form-horizontal " enctype="multipart/form-data" >
             <input type="hidden" name="_csrf" value="<%= token %>"/>
@@ -508,7 +300,7 @@ $("#add_plan_form").on('submit',function(e){
                       <input type="submit" value="add answer To milestone "></input>					  
                 </div>			
         </form>		
-		-->
+		
 		</div>
 		
 		
@@ -556,7 +348,7 @@ height: 40px;
 		
         <form method="post" id="addMilestoneForm" action="/workplan/5218b3cbd830bb640c000002/addMilestone/" enctype="multipart/form-data" >
 		    <input type="hidden" name="_csrf" value="<%= token %>"/>
-            <input type="text" id="milestone_input" placeholder="Add Milestone" name="goal" id="goal">
+            <input type="text" id="text" placeholder="Add Milestone" name="goal" id="goal">
             <input type="submit" value="Add">
         </form>		
 					
@@ -631,25 +423,7 @@ var pathname = window.location.pathname;
 console.log(pathname, pathname.split('/')[2]);
 
 var course_id = pathname.split('/')[2];
-var plan_id = null;
 console.log('course id',course_id);
-
-getTutorPlanInCourse(course_id);
-getQuestionOfCourse(course_id);
-
-var default_milestones = [
-                    "Taxonomy of programming languages and basics of Python"
-					,"fundamentals"
-					,"Math"
-                    ,"Science"
-					,"Art"
-					, "Games"
-					, "Measurement of physical phenomenon(Based in the PI/GPIO))"
-					, "How to combine components to larger programs"
-					, " Django"
-					, "How Python relates to other languages"
-];
-
 
 $('#loading')
     .hide()  // hide it initially
@@ -660,6 +434,20 @@ $('#loading')
         $(this).hide();
     })
 ;
+
+
+$("#form").on('submit',function(e){
+    console.log('click');		
+    e.preventDefault();
+    $.ajax({
+           type: "POST",
+           url: "/course/"+   course_id +"/plan/519985ed86e35aec15000001",
+           data: $(this).serialize(), 
+           success: function(data){
+               console.log(data);
+           }
+         });	
+});
 
 
 $(document).on('click', '.dropdown-menu li', function () {
@@ -673,7 +461,7 @@ $("#addMilestoneForm").on('submit',function(e){
     e.preventDefault();
     $.ajax({
            type: "POST",
-           url: "/workplan/"+ plan_id +"/addMilestone",
+           url: "/workplan/5218b3cbd830bb640c000002/addMilestone",
            data: $(this).serialize(), 
            success: function(data)
            {
@@ -684,8 +472,7 @@ $("#addMilestoneForm").on('submit',function(e){
 			   console.log('wid', $('.status-progress ul').width(), wid);
 			   $('.status-progress li').css( "margin-right", wid/3+"px"  );
 			   s.tooltip();
-               s.popover({ title: 'abc', content: "abcw", html:true, placement:'bottom' });	
-               $('#milestone_input').text('');			   
+               s.popover({ title: 'abc', content: "abcw", html:true, placement:'bottom' });			   
            }
     });	
 });
@@ -709,17 +496,21 @@ $("#addQuestionForm").on('submit',function(e){
 	     val+=array[i]+",";	    
 	}
 	val+=array[array.length-1];
-	console.log(val);	
-	$('#question_input').val(val);	
-	var milestone = $('#milestoneInput').val();	
+	
+	console.log(val);
+	
+	$('#question_input').val(val);
+	
+	var milestone = $('#milestoneInput').val();
+	
     $.ajax({
            type: "POST",
-           url: "/workplan/"+  plan_id  +"/milestone/"+milestone+"/addQuestions",
+           url: "/workplan/5218b3cbd830bb640c000002/milestone/"+milestone+"/addQuestions",
            data: $(this).serialize(), 
            success: function(data)
            {
 	            $('.tasks-list input').each(function() {
-                    var n = $(this).val(); 
+                    var n = $(this).val(); // <- This works
 		            if($(this).is(':checked')){
 						$(this).parent().fadeOut(function() {
                             $(this).remove();
@@ -727,10 +518,23 @@ $("#addQuestionForm").on('submit',function(e){
 		            }		 
                 });				
            }
-    });  	
+    });
+   	
 });
 
 
+
+//getQuestionsOfMilestone("5218b3cbd830bb640c000002");
+
+// course id
+//getCourseStudents(course_id);
+
+//getStudentPlanInCourse(course_id,"519985ed86e35aec15000001");
+
+// plan id
+getCoursePlanMilestones("5218b3cbd830bb640c000002");
+
+getQuestionOfCourse(course_id);
 function getQuestionOfCourse(course_id){
     $.ajax({
            type: "GET",
@@ -743,7 +547,7 @@ function getQuestionOfCourse(course_id){
                     console.log(entry.que,entry.sol,entry._id);				    
 					$(".tasks-list").append(
 					        '<label class="tasks-list-item" data-id="'+entry._id+'">'
-                                +'<input type="checkbox" name="task_1" value="0" class="tasks-list-cb" >'
+                                +'<input type="checkbox" name="task_1" value="0" class="tasks-list-cb" checked>'
                                 +'<span class="tasks-list-mark"></span>'
                                 +'<span class="tasks-list-desc">'+entry.que+'</span>'
                             +'</label>'					
@@ -753,51 +557,106 @@ function getQuestionOfCourse(course_id){
     });
 }
 
-
-function getTutorPlanInCourse(course_id){
-    // get the plan of a student   520db60a8932d7700f000001
-    // /course/:course_id/plan/:student_id
+function getQuestionsOfMilestone(plan_id,index){
+    // get all the question of a milestone
     $.ajax({
            type: "GET",
-		   url:"/course/"+ course_id +"/tutor/plan",
+           url: "/workplan/"+plan_id+"/milestone/"+ index +"/questions",
 		   contentType:"application/json; charset=utf-8",
            dataType:"json",		   
            success: function(data)
            {
-               console.log('tutor plan :',data,data.plan.length);
-			   if(!data ){
-			        $('.modal-btn').show();
-			        $('.status-progress').hide();
-					return;
-			   }
+               console.log(data);
+           }
+    });
+}
+
+// get all the milestones of a plan
+// 5218b3cbd830bb640c000002
+function getCoursePlanMilestones(plan_id){    
+    $.ajax({
+           type: "GET",
+           url: "/workplan/"+plan_id+"/milestones",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+               console.log(data._id, data.plan.length);
 			   
-			   plan_id = data._id;
-			   console.log('plan id',plan_id);
 			   for(var i=0;i<data.plan.length;i++){
 			        console.log('goal',data.plan[i].goal);
 					var s = $('<li data-id="'+data._id+'" data-index="'+  i +'" ><a href="#" title="' + data.plan[i].goal +  '" data-toggle="' + data.plan[i].goal +  '"      >'+(i+1) +'</a></li>');     // <span class="progress-info">Upload profile picture!</span>
-					if(data.plan[i].goal){ 
-					    if(data.plan[i].ques){
-					        for(var j=0;j<data.plan[i].ques.length;j++){
-					            console.log('.....'+data.plan[i].ques[j]);
-					        }
-						}
-					    s.appendTo( $('.status-progress ul') );
-					    s.popover({ title: data.plan[i].goal, content: "", html:true, placement:'bottom' });		
+					for(var j=0;j<data.plan[i].ques.length;j++){
+					    console.log('.....'+data.plan[i].ques[j]);
+					}
+					s.appendTo( $('.status-progress ul') );
+					s.popover({ title: data.plan[i].goal, content: "", html:true, placement:'bottom' });		
 					
-			            $('.dropdown-menu').append('<li data-id="'+  data._id  +'">'+ data.plan[i].goal  +'</li>');
-										
-					    s.click(function(){
-					        console.log(  $(this).attr('data-id'),$(this).attr('data-index') );
-						    var index = $(this).attr('data-index');
-						    var plan_id = $(this).attr('data-id');
-					    })
-                    }					
+			        $('.dropdown-menu').append('<li data-id="'+  data._id  +'">'+ data.plan[i].goal  +'</li>');
+					
+					
+					s.click(function(){
+					    console.log(  $(this).attr('data-id'),$(this).attr('data-index') );
+						var index = $(this).attr('data-index');
+						var plan_id = $(this).attr('data-id');
+						getQuestionsOfMilestone(plan_id,index);
+					})
+					
+					
 			   }
 			   var wid = $('.status-progress').width()/data.plan.length;
 			   console.log('wid', $('.status-progress ul').width(), wid);
 			   $('.status-progress li').css( "margin-right", wid/3+"px"  );
-			   $('.status-progress li a').tooltip(); 			   
+			   $('.status-progress li a').tooltip();
+               			   
+           }
+    }); 
+}
+
+
+
+
+
+
+// get the students
+function getCourseStudents(course_id){
+    $.ajax({
+           type: "GET",
+           url: "/course/"+course_id+"/students",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+			   for(var i=0;i<data.length;i++){			        
+				    console.log(data[i]._id,data[i].username,"img:",data[i].img);
+					var img_path;
+					if(data[i].img == undefined)  img_path= "/default_user.jpeg";
+					else img_path = '/images/'+data[i].img;
+					var s = $(
+					  '<div class="user-info span2" data-id="'+ data[i]._id +'">'			      	
+                        +'<img src="'+ img_path  +'"> </img>'			
+					    +'<p>'+ data[i].username +'</p>'
+					    +'<span>Liverpool, UK</span>'
+				      +'</div>'
+				   );
+				   
+				   s.appendTo( $(".board") );
+			   }
+           }
+    });
+}
+
+function getStudentPlanInCourse(course_id,student_id){
+    // get the plan of a student   520db60a8932d7700f000001
+    // /course/:course_id/plan/:student_id
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ course_id +"/plan/"+student_id,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+               console.log(data);
            }
     });
 }
@@ -812,18 +671,4 @@ function getTutorPlanInCourse(course_id){
 <!--
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'></script>
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/start/jquery-ui.css" />
-//getQuestionsOfMilestone("5218b3cbd830bb640c000002");
-function getQuestionsOfMilestone(plan_id,index){
-    // get all the question of a milestone
-    $.ajax({
-           type: "GET",
-           url: "/workplan/"+plan_id+"/milestone/"+ index +"/questions",
-		   contentType:"application/json; charset=utf-8",
-           dataType:"json",		   
-           success: function(data)
-           {
-               console.log(data);
-           }
-    });
-}
 -->

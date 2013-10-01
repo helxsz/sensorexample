@@ -160,6 +160,21 @@ h4.logo span:nth-of-type(6){
   color:#d91821;
 }
 
+
+.specialFeatures {
+border-radius: 20px;
+background: #20a7dd;
+text-transform: uppercase;
+text-shadow: none;
+font-weight: bold;
+font-size: 11px;
+letter-spacing: 1px;
+border: none;
+color: #fff;
+padding: 0 30px;
+line-height: 36px;
+}
+
 </style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -175,7 +190,7 @@ h4.logo span:nth-of-type(6){
 		
 
 		<li class="">
-            <a href="/new/course"  class="menu_item">Start Course</a>
+            <a href="/new/course"  class="menu_item ">Start Course</a>
         </li>
 		<!--
 		<li> 
@@ -185,11 +200,29 @@ h4.logo span:nth-of-type(6){
 
 		
 	  </ul>
-
-		<form class='search pull-right' action="">
+	  
+	   
+        <!--
+		<form class='search ' action="">
                 <input type="text" />              
         </form>	  
-
+        -->
+		
+		<ul class=" pull-right row specialFeatures">
+		    <div class="navButton" style="font-size:12px;">SPECIAL FEATURES</div>
+			<li class="dropdown1 ">
+                <ul class="dropdown-menu">
+                    <li style="-webkit-transform-origin: 50% 0% 0px; opacity: 0; -webkit-transform: matrix3d(1, 0, 0, 0, 0, 0, -1, 0.00125, 0, 1, 0, 0, 0, 0, 0, 1);">
+					    <!-- <a href="#/experience" style="background-image:url(http://gravitymovie.warnerbros.com/assets/images/epk/downloads/wallpapers/thumbs/keyart_desktop_thumb.jpg);" target="_self"> -->
+						<img src="http://gravitymovie.warnerbros.com/assets/images/epk/downloads/wallpapers/thumbs/keyart_desktop_thumb.jpg" />
+						<div class="overlay">
+						</div>
+						<p style="font-size:14px;">SPACEWALK<span style="font-size:undefined;">A 3D WEBGL EXPERIENCE</span></p></a>
+					</li>						
+                </ul>
+            </li>		
+		</ul>
+		
 	    <!-- include ../widget/power -->
 	  <% if(locals.user) { %>
 	  
@@ -317,6 +350,85 @@ box-shadow: 0px 1px 0px #fff;
 
 .search input[type="text"]:focus ~ button{
   color:#777;
+}
+
+.specialFeatures {
+height: 100%;
+color: rgb(80, 71, 71);
+margin-top: 8px;
+}
+
+.navButton {
+display: block;
+height: 100%;
+line-height: 30px;
+color: white;
+font-size: 12px;
+cursor: pointer;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+-webkit-transition: background 0.2s ease-out;
+-moz-transition: background 0.2s ease-out;
+-o-transition: background 0.2s ease-out;
+transition: background 0.2s ease-out;
+font-family: 'Futura W02 Medium', sans-serif;
+}
+
+.navButton .dropdown1 {
+visibility:hidden;   
+}
+
+.navButton:hover .dropdown1 {
+visibility:visible;
+}
+
+.specialFeatures>.dropdown1>li {
+margin: 3px 0;
+border: 1px solid #515253;
+height: 104px;
+background-size: cover;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+-webkit-font-smoothing: antialiased;
+}
+
+.specialFeatures>.dropdown1>li>a {
+display: block;
+width: 100%;
+height: 100%;
+background-size: cover;
+background-position: center;
+}
+
+.specialFeatures>.dropdown1>li>a>.overlay {
+position: absolute;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.2);
+opacity: 1;
+-webkit-transition: opacity 0.5s ease-out;
+-moz-transition: opacity 0.5s ease-out;
+-o-transition: opacity 0.5s ease-out;
+transition: opacity 0.5s ease-out;
+}
+
+.specialFeatures>.dropdown1>li>a>p {
+position: relative;
+font-size: 14px;
+padding-top: 36px;
+font-family: 'Futura W02 Medium', sans-serif;
+letter-spacing: 2px;
+}
+
+.specialFeatures>.dropdown1>li>a>p>span {
+display: block;
+line-height: 22px;
+font-size: 11px;
+font-family: 'Futura W02 Heavy', sans-serif;
+letter-spacing: 3px;
+-webkit-font-smoothing: antialiased;
 }
 
 </style>

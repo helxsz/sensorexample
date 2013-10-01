@@ -79,7 +79,7 @@ font-size: 18px;
 
 .content input[type="text"] {
 border: 1px solid #e5e5e5;
-font-size: 18px;
+font-size: 16px;
 width: 400px;
 display: block;
 padding: 10px 5px;
@@ -89,7 +89,40 @@ outline: 0;
 box-shadow: 0px 1px 0px #fff;
 }
 
+.content  select {
+border: 1px solid #e5e5e5;
+font-size: 16px;
+width: 400px;
+display: block;
+font-family: 'Open Sans Light', sans;
+color: #333;
+outline: 0;
+box-shadow: 0px 1px 0px #fff;
+}
+
+.content  select:focus{
+  border:1px solid #539fb5; 
+}
+
 .content input[type="text"]:focus{ 
+  border:1px solid #539fb5; 
+} 
+
+
+.content textarea {
+border: 1px solid #e5e5e5;
+font-size: 18px;
+width: 400px;
+height:200px;
+display: block;
+padding: 10px 5px;
+font-family: 'Open Sans Light', sans;
+color: #333;
+outline: 0;
+box-shadow: 0px 1px 0px #fff;
+}
+
+.content textarea:focus{ 
   border:1px solid #539fb5; 
 } 
 
@@ -138,64 +171,30 @@ background-color: #409f89;
                 <li><a href="/settings/notification" >Notifications</a></li>
             </ul>
 	    </div>	  
-	
-      <div class="span9  content">
-         <form method="post" action="/settings/profile" id="account-form" class="form-horizontal " >
-            <input type="hidden" name="_csrf" value="<%= token %>"/>
-	        <input type="hidden" name="_method" value="put" />
-            <h1>Profile</h1>
-            <p  class="subheading">Please tell us a little about yourself</p>
-            <hr>
-            <fieldset>
-                <div id="user-cg" class="control-group">
-                   <label for="user-tf" class="control-label">Username</label>
-                   <div class="controls">
-                      <input id="user-tf" type="text" name="username" value="<%= user.username %>" class="input-xlarge disabled">
-                    </div>
-                </div>
-                <div id="email-cg" class="control-group">
-                    <label for="email-tf" class="control-label">Email</label>
-                    <div class="controls">
-                       <input id="email-tf" type="text" name="email" value="<%= user.email %>" class="input-xlarge">
-                    </div>
-                </div>
-                <hr>
-                <p id="sub2" class="subheading"></p>
-                <div id="fullname-cg" class="control-group">
-                    <label for="fullname-tf" class="control-label">fullname</label>
-                    <div class="controls">
-                       <input id="fullname-tf" type="text" name="fullname" value="<%= user.fullname %>" class="input-xlarge">
-                    </div>
-                </div>
-                <div id="location-cg" class="control-group">
-                    <label for="location-tf" class="control-label">location</label>
-                    <div class="controls">
-                       <input id="location-tf" type="text" name="location" value="<%= user.location %>" class="input-xlarge">
-                    </div>
-                </div>
-                <div id="about-cg" class="control-group">
-                    <label for="about-tf" class="control-label">about</label>
-                    <div class="controls">
-                         <input id="about-tf" type="text" name="about" value="<%= user.about %>" class="input-xlarge">
-                    </div>
-                </div>	  
-                <div class="control-group">
-                     <input type="submit" id="profile_btn" value="Update Setting"></input>
-                </div>
-            </fieldset>
-        </form>
-		
-        <form method="post" action="/settings/profile/image" id="image-form" class="form-horizontal" enctype="multipart/form-data">
-            <input type="hidden" name="_csrf" value="<%= token %>"/>		
-            <input  type="file" name="image" class="input-xlarge">
-		    <input type="submit" id="image-form-btn" value="Update Profile Image" ></input>
-			
-		</form>
-      </div>
-	</div>  
-<!-- display form errors in a custom modal window //-->
 
-
+        <% include setting/profile %>
+	</div>
+<script>
+/*
+ $("#photo-form").on('submit',function(e){
+    console.log('click photo-form"');		
+    e.preventDefault();
+    $.ajax({
+           type: "POST",
+           url: "/settings/profile/image",
+		   beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+           data: $(this).serialize(), 
+           success: function(data)
+           {
+                console.log('upload image success');			
+           },
+		   error:function(){
+		        console.log('err in uploading the image')
+		   }		   
+    });  	
+});
+*/ 
+</script>	
             <% include footer %>
 		</div>
 	</div>	

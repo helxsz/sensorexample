@@ -27,7 +27,7 @@ var notifyAPI = require('./notification_api');
 
 // 
 app.get('/profile/:username/student',permissionAPI.authUser,getStudentDashboardPage);
-app.get('/profile/:username/tutor',permissionAPI.authUser,getTutorDashboardPage);
+
 function getStudentDashboardPage(req,res,next){
     var locals = {};
     var id = req.params.id;
@@ -50,27 +50,7 @@ function getStudentDashboardPage(req,res,next){
 
 }
 
-function getTutorDashboardPage(req,res,next){
-    var locals = {};
-    var id = req.params.id;
-	
-	async.parallel([
-		function(callback) {
-            callback();		    
-		}],function(err) {
-	      if (err) return next(err); 
-	      res.format({
-                    html: function(){
-						 locals.title = 'Tutor Dashboard';
-                         res.render('dashboard_tutor',locals);			
-                    },
-                    json: function(){
-                         res.send(locals.courses);
-                    }
-                  });
-	    });	
 
-}
 
 // Test
 app.get('/course/:id/test' , permissionAPI.authUser, getCourseTestPage);
@@ -162,6 +142,80 @@ function getCourseTestPage3(req,res,next){
                   });
 	});	 
 }
+
+/***********************************************************
+
+**************************************************************/
+
+
+app.post('/course/:id/join', permissionAPI.authUser, joinCourse);
+app.post('/course/:id/disjoin', permissionAPI.authUser, disJoinCourse);
+
+function joinCourse(req,res,next){
+   console.log('joinCourse',req.params.id);  
+
+   var course_id = req.params.id, uid = req.session.uid;
+   
+   var locals = {};
+
+    studentPlanModel.createPlanAndAddMilestone(course_id,uid,[],function(err,data1){
+		if(err) next(err);
+		else if (!data1) res.send(404);
+		else res.send(data);
+	})   
+   
+   courseModel.joinCourse(course_id,uid,function(err,course){
+		if(err) {
+		         console.log('course uid not found'.red,err);
+		         next(err);
+		}else if(!course || course ==0){
+			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			res.redirect("/course/"+req.params.id);		
+		}else{
+			console.log('join courses successfully'.green,course);
+			if(req.xhr) {
+                console.log('req.xhr  ',req.xhr);			
+			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			}else
+			res.redirect("/course/"+req.params.id);
+        }    
+   })
+/*  
+   var mongoose = require('../app').mongoose;
+   courseModel.findCourseById(req.params.id,function(err,course){
+        if(err) next(err);       
+		else{
+		   course.stud.push({'_id': mongoose.Types.ObjectId(req.session.uid)});
+           course.save(function (err) {
+               if (err) next(err); 
+			   res.redirect("/course/"+req.params.id);
+           });
+        }
+   })
+ */   
+}
+
+function disJoinCourse(req,res,next){
+   console.log('disJoinCourse',req.params.id,req.session.uid);   
+   var locals = {};
+   courseModel.disJoinCourse(req.params.id,req.session.uid,function(err,course){
+		if(err) {
+		         console.log('course uid not found'.red,err);
+		         next(err);
+		}else if(!course || course ==0){
+			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			res.redirect("/course/"+req.params.id);		
+		}else{
+			console.log('disjoin courses succesfully'.green,course);
+			if(req.xhr) {
+                console.log('send ajax sucess to user');			
+			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			}
+			res.redirect("/course/"+req.params.id);
+        }    
+   })
+}
+
 
 
 /************************************

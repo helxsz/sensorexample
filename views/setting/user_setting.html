@@ -30,7 +30,6 @@ body {
   background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
   background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
 }
-
 .container{
 position: relative;
 display: block;
@@ -65,12 +64,10 @@ padding-bottom: 5px;
 
 </style>  
 
-
-
   <body>
     <div class="wrapper">
 	    <div class="inner-wrapper"> 
-        <% include header %>
+        <% include ../header %>
 
 	
 	<div class="row-fluid container">
@@ -88,11 +85,23 @@ padding-bottom: 5px;
             </ul>
 	    </div>	  
 	
-        <% include setting/social %>  
+		 <% if(locals.setting=="account"){ %>
+            <% include account %>  
+		<% } %>
+				
+		<% if(locals.setting=="profile"){ %>
+            <% include profile %>  
+ 
+        <% } %>
+		<% if(locals.setting=="social"){ %>
+            <% include social %>  
+
+        <% } %>
+		<% if(locals.setting=="notification"){ %>
+            <% include notification %>  		
+         <% } %>  
 	</div>  
-
-
-            <% include footer %>
+            <% include ../footer %>
 		</div>
 	</div>	
  </body>	
