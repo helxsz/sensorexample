@@ -25,6 +25,44 @@ https://github.com/advptr/mento/blob/master/mento-server.js
 	GridStore = mongoose.mongo.GridStore;
 	Grid = mongoose.mongo.Grid;
 	ObjectID = mongoose.mongo.BSONPure.ObjectID;
+	
+	var db = mongoose.connection.db;
+
+	/*  http://stackoverflow.com/questions/8516550/querying-mongodb-gridfs
+	http://docs.mongodb.org/manual/reference/gridfs/
+	http://mongodb.github.io/node-mongodb-native/api-generated/gridstore.html
+// Verify the existance of the fs.files document
+        db.collection('fs.files', function(err, collection) {
+          collection.count(function(err, count) {
+            assert.equal(1, count);
+          })
+        });	
+		http://coenraets.org/blog/2012/10/creating-a-rest-api-using-node-js-express-and-mongodb/
+		
+	*/	
+	exports.findFilesByMetadata = function(metadata, fn) {
+        db.collection('fs.files', function(err, collection) {
+            collection.find(metadata, function(err, item) {
+                if(err) {
+				    return fn(err);
+			    }		
+                return fn(null, item);
+            });
+       });
+    };
+	
+	exports.findFileByMetadata = function(metadata, fn) {
+        db.collection('fs.files', function(err, collection) {
+            collection.findOne(metadata, function(err, item) {
+                if(err) {
+				    return fn(err);
+			    }		
+                return fn(null, item);
+            });
+       });
+    };
+ 
+////////////////////////////////////////////////////////////////////////////////////	
 
     exports.delete = function(id, fn) {
         var db, store;
@@ -130,5 +168,8 @@ https://github.com/advptr/mento/blob/master/mento-server.js
 		}
 		return opts;
 	};
+	
+	
+
 
 }).call(this);

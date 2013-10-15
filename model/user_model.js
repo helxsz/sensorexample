@@ -25,6 +25,8 @@ var UserSchema = mongoose.Schema({
                                 mdate:{type:Date},
 								// admin properties
 								admin:{type:String,sparse:true,enum: ['admin', 'course_admin', 'feedback_admin', 'developer','web_developer','database_developer']},
+								// tutor properties
+								tutor:{experience:{type:String}, skills:{type:String}, courses:Number},
 								// social network properties
 								social:{
 								   facebook:{ id:String,avatar:String,name:String,token:String},
@@ -249,7 +251,7 @@ function findUserByQuery(condition,callback){
 	UserModel.findOne(condition,function(err, doc){
 		if(err){callback(err, null);}
 		else{
-			console.log("findOneUser");
+			//console.log("findOneUser");
 			//if(doc == null) console.log('doc is null');
 			//else console.log(doc.name+"   "+doc.email);
 			callback(null, doc);

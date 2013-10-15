@@ -23,11 +23,12 @@ var notification_api = require('./notification_api');
 	
 var errors = require('../utils/errors');
 
-
-app.get('/locations/:location_id',getLocationByID);
 app.get('/locations/search',searchLocation);
+app.get('/locations/:location_id',getLocationByID);
+
 
 /**************
+https://squareup.com/market
 {
     "data": {
         "id": "1",
@@ -53,8 +54,26 @@ function getLocationByID(req,res,next){
 }
 **************/
 function searchLocation(req,res,next){
-   var lat = req.query.lat,lng = req.query.lng, dis = req.query.dis;
-   console.log(lat,lng,dis);
+    var lat = req.query.lat,lng = req.query.lng, dis = req.query.dis;
+    console.log(lat,lng,dis);
+	console.log('searchLocation');
+    var locals = {};
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Location';
+                         res.render('location',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});   
 }
 
 
@@ -70,9 +89,43 @@ app.get('/locations/:location_id/tutor',getRecentTutorInLocation);
 function getRecentCourseInLocation(req,res,next){
    var location_id = req.params.location_id;
    console.log(location_id);
+    var locals = {};
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Location';
+                         res.render('location',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});   
 }
 
 function getRecentTutorInLocation(req,res,next){
    var location_id = req.params.location_id;
    console.log(location_id);
+    var locals = {};
+	
+	async.parallel([
+		function(callback) {
+            callback();		    
+		}],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Location';
+                         res.render('location',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});   
 }

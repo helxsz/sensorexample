@@ -12,6 +12,8 @@
    <script src="/assets/js/backbone-min.js"></script>
 <script src="/assets/js/avgrund.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/assets/js/socket.io.js"></script>
+	
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
@@ -176,266 +178,303 @@ font-size: 15px;
             <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
 			<input type="hidden" id='course_id' value="<%= locals.course._id %>"/>
             <% include header %>
-			<!--     http://blog.evantahler.com/blog/production-deployment-with-node-js-clusters.html
-                     <div class="tp-title"><span>Bryan Moats</span><span>8</span></div>			
-	                 
-            -->	
+
             <div class='row container-fluid' style='margin-top:100px;'>			
-			  <div class="tabbable span7" > <!-- Only required for left/right tabs style="margin:0 auto;width:960px;"-->
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
-                    <li><a href="#class" data-toggle="tab">Class</a></li>
-					<li><a href="#student" data-toggle="tab">Student</a></li>
-					<li><a href="#comment" data-toggle="tab">Comment</a></li>
-					<li><a href="#question" data-toggle="tab">Question</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="home">
-			            <% include course/course_page %>					    
-                    </div>
-                    <div class="tab-pane" id="class">
-                    </div>
-                    <div class="tab-pane " id="student">
-                    </div>
-                    <div class="tab-pane" id="comment">
-                    </div>
-                    <div class="tab-pane" id="question">
-                    </div>					
-                </div>				
+			  <div class="tabbable span7 offset1" > 
+
+<style>
+section.container {
+	width: 592px;
+	height: auto;
+	margin: 0 auto;
+}
+
+section header {
+	margin: 25px 0;
+	padding-bottom: 25px;
+	border-bottom: 1px dotted #AAB2BD;
+}
+
+section header h1 {
+	font-weight: 200;
+	font-size: 3em;
+	color: #656D78;
+	text-align: center;
+}
+
+section.box {
+	width: 128px;
+	background-color: #FFFFFF;
+	box-shadow: 0 2px 6px #CCC;
+	border-radius: 5px;
+	display: block;
+	float: left;
+	margin: 10px;
+}
+
+section.box h1 {
+	font-weight: 400;
+	font-size: 14px;
+	display: block;
+	float: left;
+	padding: 5px 0px 0px 5px;
+}
+
+section.box p {
+	font-weight: 300;
+	font-size: 11px;
+	color: #999999;
+	display: block;
+	float: left;
+	padding: 5px 0px 5px 5px;
+}
+
+section.color-left {
+	width: 64px;
+	height: 50px;
+	background-color: #000;
+	border-top-left-radius: 5px;
+	display: block;
+	float: left;
+}
+
+section.color-right {
+	width: 64px;
+	height: 50px;
+	background-color: #000;
+	border-top-right-radius: 5px;
+	display: block;
+	float: left;
+}
+
+/* Grapefruit */
+section.color-left.grapefruit-light {background-color:#ED5565;}
+section.color-right.grapefruit-dark {background-color:#DA4453;}
+
+/* Bittersweet */
+section.color-left.bittersweet-light {background-color:#FC6E51;}
+section.color-right.bittersweet-dark {background-color:#E9573F;}
+
+/* Sunflower */
+section.color-left.sunflower-light {background-color:#FFCE54;}
+section.color-right.sunflower-dark {background-color:#F6BB42;}
+
+/* Grass */
+section.color-left.grass-light {background-color:#A0D468;}
+section.color-right.grass-dark {background-color:#8CC152;}
+
+
+
+.not-enabled{
+background-color:#F2F4F5;
+color: #BCC2C2;
+}
+
+
+.banded-box {
+float: left;
+position: relative;
+z-index: 1;
+width: 460px;
+min-height: 300px;
+margin: 0 0 0 32px;
+}
+
+.banded-box.raised {
+-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.25);
+-moz-box-shadow: 0 2px 3px rgba(0,0,0,0.25);
+box-shadow: 0 2px 3px rgba(0,0,0,0.25);
+}
+
+.rounded {
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+-ms-border-radius: 3px;
+-o-border-radius: 3px;
+border-radius: 3px;
+}
+
+.banded-box h3 {
+background-color: #ff4539;
+color: white;
+padding-top: 10px;
+padding-bottom: 5px;
+}
+
+.banded-box p {
+margin-bottom: 10px;
+line-height: 1.35;
+margin-left: 10px;
+margin-right: 10px;
+}
+
+.banded-box .button {
+color: #fff;
+background-color: #E22222;
+position: absolute;
+bottom: 54px;
+left: 50%;
+margin-left: -57px;
+display: inline-block;
+vertical-align: middle;
+zoom: 1;
+font-size: 12px;
+font-weight: bold;
+padding: 10px 35px;
+border-radius: 2em;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+</style>				
+				
+<section class="span7">				
+				<header>
+					<h1>Course Modules</h1>
+				</header>
+
+                    <div class="banded-box rounded raised ">
+				        <h3>College Code Camp</h3>
+						<p>The first experiment of feanlabs is to understand how people perceive the coding
+						
+    <% if(locals.loggedin) { %> 	
+		<div class="span3">
+		    <% if(!locals.user.isStudent) { %> 			
+                <form method="post" id="login-form"  " action="/course/<%= locals.course._id %>/join" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="_csrf" value="<%= token %>"/>
+                    <button type="submit" id="btn-login" class="btn"><i class="icon-white"></i>Join The Course</button>
+                </form> 
+	        <% } %>	
+	
+             <% if(locals.user.isStudent) { %> 			
+                </p><a class="button" href="/course/<%= locals.course._id %>/test3">Apply</a> 
+	        <% } %>	  
+		</div>  
+    <% } %>						
+						
+						
+						
+						
+				    </div>				
+</section>				
+
+
+
+                <h2 style="margin-top:20px;margin-bottom:20px;">The incoming experiments</h2>
+                <ul style="overflow: auto; clear:both;">
+
+					<section class="box  not-enabled" >
+						<section class="color-left bittersweet-light"></section>
+						<section class="color-right bittersweet-dark"></section>
+						<h1>Coding Project Collaboration</h1>
+					</section>
+
+					<section class="box  not-enabled" >
+						<section class="color-left sunflower-light"></section>
+						<section class="color-right sunflower-dark"></section>
+						<h1>Device Control through Raspberrypi</h1>
+					</section>
+
+					<section class="box  not-enabled" >
+						<section class="color-left grass-light"></section>
+						<section class="color-right grass-dark"></section>
+						<h1>Semantic learning</h1>
+					</section>
+				</ul>
+
+                    <div class="content">
+					   <ul class="important-dates cols-3"><li><h3>Applications Due</h3><time datetime="2013-10-25"><b>25</b>Oct 2013</time></li><li><h3>Winners Notified</h3><time datetime="2013-11-15"><b>15</b>Nov 2013</time></li><li><h3>College Code Camp</h3><time datetime="2014-01-08"><b>07 - 11</b>Jan 2014</time></li>
+					   </ul>
+					</div>
               </div>
 			  <%  include course/course_profile %>
 			</div>
-           	<!--		
-			<div class="notesite">
-			   <div class="percent">
-			     <span class="int">7</span>
-				 <span class="dec">.40</span>
-			   </div>
-			   <div id="slice" class="gt50">
-			     <div class="pie" style="-webkit-transform: rotate(3.24deg);"></div>
-			   </div>
-			</div>
-			
-			
-			<div class="page-title">Developer Center</div>	
+<style>
+.important-dates li:first-child {
+margin-left: -20px;
+}
+
+.important-dates li {
+position: relative;
+z-index: 1;
+text-align: center;
+height: 180px;
+}
+
+.important-dates li h3 {
+position: relative;
+z-index: 1;
+margin-bottom: 90px;
+font-size: 18px;
+color: gray;
+height: 18px;
+}
+
+.important-dates li time {
+display: block;
+position: relative;
+z-index: 1;
+text-transform: uppercase;
+font-size: 11px;
+width: 200px;
+}
+
+.important-dates li time b {
+font-size: 35px;
+font-weight: 300;
+margin-bottom: 10px;
+}
+
+.important-dates:before {
+position: absolute;
+z-index: 1;
+display: block;
+top: 55px;
+left: 0;
+width: 100%;
+height: 2px;
+content: "";
+background-color: #bfbfbf;
+background-image: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #ffffff), color-stop(10%, rgba(255,255,255,0)), color-stop(90%, rgba(255,255,255,0)), color-stop(100%, #ffffff));
+background-image: -webkit-linear-gradient(left, #ffffff 0%,rgba(255,255,255,0) 10%,rgba(255,255,255,0) 90%,#ffffff 100%);
+background-image: -moz-linear-gradient(left, #ffffff 0%,rgba(255,255,255,0) 10%,rgba(255,255,255,0) 90%,#ffffff 100%);
+background-image: -o-linear-gradient(left, #ffffff 0%,rgba(255,255,255,0) 10%,rgba(255,255,255,0) 90%,#ffffff 100%);
+background-image: linear-gradient(left, #ffffff 0%,rgba(255,255,255,0) 10%,rgba(255,255,255,0) 90%,#ffffff 100%);
+}
+
+.cols-3>* {
+width: 33.33333%;
+float: left;
+}
+
+.important-dates li time:before {
+position: absolute;
+left: 30%;
+top: -56px;
+display: block;
+width: 20px;
+height: 20px;
+margin: -10px 0 0 -10px;
+background: #ff4539;
+-webkit-border-radius: 50%;
+-moz-border-radius: 50%;
+-ms-border-radius: 50%;
+-o-border-radius: 50%;
+border-radius: 50%;
+content: "";
+}
+
+.important-dates {
+position: relative;
+z-index: 1;
+padding: 0 32px;
+}		
+</style>
             
-            <div class="graph"></div> 
-            -->
-
-
-
-
-
-
-
-
-			
-            <% include footer %>			
+			     <% include footer %>	
+					
 			
 		</div>
 	</div>				
   </body>
-  
-<script>
-
-$('a[data-toggle="tab"]').on('show', function (e) {
-   // console.log(e.target,e.relatedTarget);
-    var divid = $(e.target).attr('href').substr(1);
-    console.log(divid);	
-
-	if(divid=='home'){
-	
-	}else if(divid=='student'){
-	    $("#"+divid).load('/course/'+$('#course_id').val()+'/students', function(response, status, xhr) {
-		    console.log(response,status);
-			if(status=='success'){
-			    
-			}		    
-        });
-	}else if(divid=='class'){
-	    $("#"+divid).load('/course/'+$('#course_id').val()+'/class', function(response, status, xhr) {
-			if(status=='success'){
-			    
-			}        
-		});	
-	}else if(divid=='comment'){
-	    $("#"+divid).load('/course/'+$('#course_id').val()+'/comments', function(response, status, xhr) {
-			if(status=='success'){
-			    
-			}		    
-        });	
-	}else if(divid=='question'){
-	    $("#"+divid).load('/course/'+$('#course_id').val()+'/questions', function(response, status, xhr) {
-			if(status=='success'){
-			    
-			}		    
-        });	
-	}
-})
-
-</script>  
-
-
-
-<!--
-
-<style>
-text {
-  font: 10px sans-serif;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-
-</style>
-<form>
-  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
-  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
-</form>
-<script src="http://d3js.org/d3.v3.min.js"></script>
--->
-<script>
-/*
-var n = 4, // number of layers
-    m = 58, // number of samples per layer
-    stack = d3.layout.stack(),
-    layers = stack(d3.range(n).map(function() { return bumpLayer(m, .1); })),
-    yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
-    yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
-
-var margin = {top: 40, right: 10, bottom: 20, left: 10},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-var x = d3.scale.ordinal()
-    .domain(d3.range(m))
-    .rangeRoundBands([0, width], .08);
-
-var y = d3.scale.linear()
-    .domain([0, yStackMax])
-    .range([height, 0]);
-
-var color = d3.scale.linear()
-    .domain([0, n - 1])
-    .range(["#aad", "#556"]);
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .tickSize(0)
-    .tickPadding(6)
-    .orient("bottom");
-
-var svg = d3.select(".graph").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var layer = svg.selectAll(".layer")
-    .data(layers)
-  .enter().append("g")
-    .attr("class", "layer")
-    .style("fill", function(d, i) { return color(i); });
-
-var rect = layer.selectAll("rect")
-    .data(function(d) { return d; })
-  .enter().append("rect")
-    .attr("x", function(d) { return x(d.x); })
-    .attr("y", height)
-    .attr("width", x.rangeBand())
-    .attr("height", 0);
-
-rect.transition()
-    .delay(function(d, i) { return i * 10; })
-    .attr("y", function(d) { return y(d.y0 + d.y); })
-    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
-
-svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
-
-d3.selectAll("input").on("change", change);
-
-var timeout = setTimeout(function() {
-  d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
-}, 2000);
-
-function change() {
-  clearTimeout(timeout);
-  if (this.value === "grouped") transitionGrouped();
-  else transitionStacked();
-}
-
-function transitionGrouped() {
-  y.domain([0, yGroupMax]);
-
-  rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
-      .attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
-      .attr("width", x.rangeBand() / n)
-    .transition()
-      .attr("y", function(d) { return y(d.y); })
-      .attr("height", function(d) { return height - y(d.y); });
-}
-
-function transitionStacked() {
-  y.domain([0, yStackMax]);
-
-  rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
-      .attr("y", function(d) { return y(d.y0 + d.y); })
-      .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-    .transition()
-      .attr("x", function(d) { return x(d.x); })
-      .attr("width", x.rangeBand());
-}
-
-// Inspired by Lee Byron's test data generator.
-function bumpLayer(n, o) {
-
-  function bump(a) {
-    var x = 1 / (.1 + Math.random()),
-        y = 2 * Math.random() - .5,
-        z = 10 / (.1 + Math.random());
-    for (var i = 0; i < n; i++) {
-      var w = (i / n - y) * z;
-      a[i] += x * Math.exp(-w * w);
-    }
-  }
-
-  var a = [], i;
-  for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
-  for (i = 0; i < 5; ++i) bump(a);
-  return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
-}
-*/
-</script>
-
-
-
-
-<style type="text/css">
-svg {
-  font-family: "Helvetica Neue", Helvetica;
-}
-
-.line {
-  fill: none;
-  stroke: #000;
-  stroke-width: 2px;
-}
-</style>
-
-
-
-
 
 </html>

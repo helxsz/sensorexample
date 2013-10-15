@@ -9,6 +9,7 @@
 margin: 0 auto;
 width: 960px;
 margin-bottom:30px;
+
 }
 
 .project {
@@ -22,6 +23,8 @@ width: 410px;
 -moz-box-shadow: 0 0 5px rgba(0,0,0,0.2);
 box-shadow: 0 0 5px rgba(0,0,0,0.2);
 margin-bottom: 30px;
+position:relative;
+overflow:hidden;
 }
 
 .video-thumbnail {
@@ -156,10 +159,13 @@ margin: 0 auto;
 				  <form method="post" id="login-form"  action="/course/<%= course._id %>/join" enctype="application/x-www-form-urlencoded">
                     <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
                     <button type="submit" id="btn-login" class="btn"><i class="icon-white"></i>join</button>
-                  </form>
-				  
-				  
+                  </form>				  
+				   <button class="rollover-btn"><a href="http://twitter.com/joericho">@joericho</a></button> 
 			</div>
+  <div class="post-date">
+       <div class="post-month">Sep</div>
+       <div class="post-day">13</div>
+  </div>			
         </div>
 	
       <% }); %>
@@ -169,3 +175,47 @@ margin: 0 auto;
 	 </div>
 <% } %>
 </div>
+
+<style>
+<!-- 
+http://codepen.io/dope/pen/Flxoi 
+http://codepen.io/Metty/pen/biEDd
+-->
+.rollover-btn {
+  position:absolute;
+  right:0;
+  bottom:-50px;
+  background:#ec6231;
+  border:none;
+  color:#fff;
+  border-radius:10px 0px 0px 0px;
+  cursor:pointer;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;  
+}
+
+.project:hover > .rollover-btn {
+  bottom:0px;
+}
+
+.rollover-btn:hover {
+  bottom:0px;
+}
+
+.post-date{
+  background:#232323;
+  font-weight:bold;
+  text-align:center;
+  width:65px;
+  margin:0;
+  padding:5px 0em;
+  position:absolute;
+  left:-65px;
+  top:20px;
+}
+
+.post-month{color:#666;display:block;font-size:14px}
+.post-day{color:#e3e3e3;display:block;font-size:23px;margin-top:-8px;font-weight:bold}
+
+</style>

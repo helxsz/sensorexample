@@ -23,7 +23,7 @@ var userModel = require('../model/user_model');
 var notification_api = require('./notification_api');	
 var errors = require('../utils/errors');	
 
-app.get('/',homePage);
+app.get('/',permissionAPI.authUser,homePage);
 
 app.get('/beta',betaHomePage);
 
@@ -35,15 +35,13 @@ function betaHomePage(req,res,next){
 	async.parallel([
 	    function(callback) {
 	       if (req.session.uid) {
-		        console.log('retrieve homePage'.green, req.session.username,req.session.uid);
 		        userModel.findUserById(req.session.uid,function(err,user){
 		            if(err) {
-			            console.log('user uid not found with server error'.red, err);
+			            //console.log('user uid not found with server error'.red, err);
 		            }else if(!user){
-					    console.log('user uid not found'.red, err);
+					    //console.log('user uid not found'.red, err);
 					}
 			        else{
-			            console.log('find user uid'.green,user._id);
                         locals.user = {
                            username: user.username,
 					       email: user.email,
@@ -59,10 +57,10 @@ function betaHomePage(req,res,next){
 		function(callback) {
 		   courseModel.findCoursesByQuery({},option,function(err,courses){
 		            if(err) {
-			            console.log('course uid not found'.red,err);
+			            //console.log('course uid not found'.red,err);
 		            }
 			        else{
-			            console.log('find courses'.green,courses.length);			   
+			            //console.log('find courses'.green,courses.length);			   
                         locals.courses = courses; 
                     }
 				    callback();	
@@ -86,15 +84,14 @@ function homePage(req,res){
 	async.parallel([
 	    function(callback) {
 	       if (req.session.uid) {
-		        console.log('retrieve homePage'.green, req.session.username,req.session.uid);
 		        userModel.findUserById(req.session.uid,function(err,user){
 		            if(err) {
-			            console.log('user uid not found with server error'.red, err);
+			            //console.log('user uid not found with server error'.red, err);
 		            }else if(!user){
-					    console.log('user uid not found'.red, err);
+					    //console.log('user uid not found'.red, err);
 					}
 			        else{
-			            console.log('find user uid'.green,user._id);
+			            //console.log('find user uid'.green,user._id);
                         locals.user = {
                            username: user.username,
 					       email: user.email,
@@ -108,15 +105,13 @@ function homePage(req,res){
             }			
 		},
 		function(callback) {
-		   //courseModel.findCoursesByQuery({},option,function(err,courses){
 		     courseModel.findCoursesAndTutorByQuery({},option,function(err,courses){
 		            if(err) {
-			            console.log('findCoursesAndTutorByQuery error '.red,err);
+			            //console.log('findCoursesAndTutorByQuery error '.red,err);
 		            }else if(!courses){console.log('course uid not found'.red);}
 			        else{
-			            console.log('find courses'.green,courses.length);	
-                        for(var i=0;i<courses.length;i++)
-                        console.log(courses[i]);						
+                        //for(var i=0;i<courses.length;i++)
+                        //console.log(courses[i]);						
                         locals.courses = courses; 
                     }
 				    callback();	

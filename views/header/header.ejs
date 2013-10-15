@@ -298,4 +298,71 @@ $(".userbar__account-avatar").click(function() {
            }
     });	
 });
+
+
+
+addMsgNotifcationToTutor('313563330214114585','http://media-cache-ec0.pinimg.com/avatars/isiprinos_1374959866_75.jpg','Isidoros Prinos','9 weeks ago','abc');
+
+				
+function addMsgNotifcationToTutor(id,img,name, time, set){
+    console.log('addMsgNotifcationToTutor');
+    var noti = $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> finished a milestone.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>' );
+	$('.Notifications ul').prepend(noti);	 
+}
+
+function addHelpNotificationToTutor(id,img,name, time, qid, msg){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> asked a question.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');				
+}
+
+function addMsgNotificationToStudent(id,img,name, time, set){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your tutor'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> gave the solutions.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');
+}
+
+function addHelpNotificationToStudent(id,img,name, time, qid, msg){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your tutor'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> replied your question.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');			
+
+}				
 </script>

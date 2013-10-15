@@ -61,7 +61,22 @@ function findQuestions(condition,option,callback){
 		   else
 		   {
 			   docs.forEach(function(doc){
-				   console.log("each Questions     "+doc.question+"   "+doc.answer+"    "+doc.level );
+				   console.log("each Questions     "+doc.que+"   "+doc.ans+"    "+doc.tip );
+			   });
+			   callback(err,docs);
+		   }
+	});
+}
+
+function findQuestionsInGroup(group,fields,option,callback){
+
+	QuestionModel.find({ '_id': { $in: group } },fields,option, function(err, docs){
+		   if(err){ callback(err, null); } //
+		   else
+		   {
+		       //console.log(docs);
+			   docs.forEach(function(doc){
+				   console.log("each Questions     "+ doc._id + doc.que+"   "+doc.tip );
 			   });
 			   callback(err,docs);
 		   }
@@ -132,5 +147,6 @@ exports.createNewQuestion = createNewQuestion;
 exports.findQuestions =findQuestions;
 exports.findQuestionById = findQuestionById;
 exports.findQuestionByQuery = findQuestionByQuery;
+exports.findQuestionsInGroup = findQuestionsInGroup;
 exports.updateQuestion = updateQuestion;
 exports.deleteQuestion = deleteQuestion;

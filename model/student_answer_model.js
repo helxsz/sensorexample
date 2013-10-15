@@ -5,11 +5,14 @@ var answerSchema = new mongoose.Schema({
     sid: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 	qid: { type:mongoose.Schema.Types.ObjectId, ref: 'Question'},
     anw: [{ type: String}],
-	debug:[{ type: String }]
+	debug:[{ type: String }],
+	verified: { type: Boolean, default:false },
+	right:{type:Boolean, default:false}
 });
  
 var AnswerModel = mongoose.model('Answer',answerSchema);
 exports.AnswerModel = AnswerModel; 
+
 
 function addAnswerResultToQuestion( sid, qid, answer,debug,callback){
 	var options = { upsert:true};		 //  new: true,
@@ -25,8 +28,38 @@ function addAnswerResultToQuestion( sid, qid, answer,debug,callback){
 			callback(null, answer);
 		}
 	})
-
 }
+
+
+function verifyAnswer(sid, qid, right,callback){
+    
+	AnswerModel.update({'sid':sid,'qid':qid},{'$set':{'verified':true,'right':right}},function(err,answer){
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, answer);
+		}
+	})
+}
+
+/*
+function verifyAnswers(sid, qid, right){
+    
+	AnswerModel.update({'sid':sid,'qid':qid},{'$set':{'verified':true,'right':right}},function(err,answer){
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, answer);
+		}
+	})
+}
+exports.verifyAnswers = verifyAnswers;
+*/
+
+exports.verifyAnswer = verifyAnswer;
+
 
 function removeAnswerResultToQuestion(sid ,qid,callback){
 			
@@ -78,3 +111,19 @@ exports.addAnswerResultToQuestion = addAnswerResultToQuestion;
 exports.removeAnswerResultToQuestion = removeAnswerResultToQuestion;
 exports.getAnswerResultsOnQuestion = getAnswerResultsOnQuestion;  
 exports.removeAnswerResultByIndex = removeAnswerResultByIndex;
+
+function getAnswersInGroup(sid, qidGroup, fields, callback){  //'anw debug'
+
+	//AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields,function(err,ref){ //aws
+	AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields).populate({path:'qid',select:'que'}).exec(function (err, ref){
+		if(err) {
+			callback(err, null);
+		}else{
+		    callback(null,ref);
+		}
+	})
+}
+exports.getAnswersInGroup = getAnswersInGroup;
+
+
+

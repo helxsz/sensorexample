@@ -28,6 +28,7 @@ var Hashids = require("hashids"),
 app.get('/course/:id/questions',getCourseDetailOnQuestions);
 app.get('/course/:id/questions/:qid',getQuestionById);
 
+
 //******************   admin operation   ***************************/
 app.post('/course/:id/questions',postNewQuestion);
 app.put('/course/:id/questions/:qid',editQuestionById);
@@ -37,7 +38,7 @@ function getCourseDetailOnQuestions(req,res,next){
     var locals = {};
 	async.parallel([
 	    function(callback) {
-            courseModel.findCourseQuestionsById(req.params.id,function(err,data){
+            courseModel.findCourseQuestionsById(req.params.id,'que _id',function(err,data){
 			    if(err) { next(err); callback();	}
 	            else{				    				    
                     locals.questions = data;	
@@ -47,7 +48,7 @@ function getCourseDetailOnQuestions(req,res,next){
 			})           
 		}],function(err){
 	        if (err) return next(err);
-		    console.log(req.accepted);
+		    //console.log(req.accepted);
 			
 			if(req.accepts('application/json')){	
                 console.log("'application/json'");			
@@ -73,6 +74,8 @@ function getCourseDetailOnQuestions(req,res,next){
 		  */
 	    });	
 }
+
+
 
 function postNewQuestion(req,res,next){
 
@@ -199,78 +202,3 @@ db.inventory.update( { tags: { $in: ["appliances", "school"] } }, { $set: { sale
 */
 
 
-/**************************************************************
-
-       course test user submit
-
-***************************************************************/
-var userQuizModel = require('../model/user_quiz_model');
-
-app.get('/course/:id/test',getCourseTestPage);
-app.post('/course/:id/test',submitCourseTest);
-function getCourseTestPage(req,res,next){
-    var locals = {};
-    locals.title = 'test';
-	console.log('getCourseTestPage  html',req.params.id);		
-	async.parallel([
-	    function(callback) {
-            courseModel.findCourseQuestionsById(req.params.id,function(err,data){
-			    if(err) { next(err); callback();	}
-	            else{				    				    
-				    locals.ques = data;
-                    locals.course_id = req.params.id;					
-                    callback();	
-				}
-			})           
-		},
-	    function(callback) {
-            userQuizModel.findQuizByCIDAndUID(req.params.id, req.session.uid,function(err,data){
-			    if(err) { next(err); callback();	}
-	            else{				    				    
-				    console.log('findQuizByCIDAndUID   ',data);				
-                    callback();	
-				}
-			})           
-		}		
-		],function(err){
-	      if (err) return next(err);		  
-	      res.format({
-                    html: function(){
-					     //console.log('getCourseTestPage  html',locals);
-                         res.render('course_test', locals);
-                    },
-                    json: function(){
-                         res.send(locals.students);
-                    }
-                  });		  
-	    });			
-}
-
-function submitCourseTest(req,res,next){
-
-   
-
-}
-app.post('/course/:cid/test/:qid',userPostQuestion);
-
-function userPostQuestion( req,res,next ){
-
-    console.log(req.params.cid,req.params.qid, req.session.uid, req.body.content);
-	
-	if(!req.params.cid ||!req.params.qid || !req.session.uid){req.send(404);return};
-	
-	userQuizModel.updateAnswer3(req.params.cid,req.session.uid,req.params.qid,req.body.content,function(err,data){
-	    if(err) { next(err);  }
-		else if(data==null){
-		    console.log('userPostQuestion  insert question');
-			//var data = new userQuizModel();
-			res.send(200);
-		}else{
-		    console.log('userPostQuestion  update success',data);
-		    res.send(200,data);
-		    
-		}
-	
-	});
-   
-}

@@ -1,10 +1,8 @@
 
 <style>
 
-.chatter {
-position: fixed;
-right: 0px;
-top: 160px;
+.chatter1 {
+
 z-index: 1000;
 margin: 0;
 padding: 12px 12px 16px 12px;
@@ -17,10 +15,13 @@ font-weight: 400;
 font-smoothing: antialiased;
 outline: 3px solid rgba(0,0,0,0.05);
 background: #2c3e50;
-display:none;
+position: fixed;
+right: 0px;
+top: 160px;
+height: 420px;
 }
 
-.chatter .chatter_field {
+.chatter1 .chatter_field {
   position: relative;
   margin: 0 0 8px 0;
   padding: 11px 12px 9px 12px;
@@ -37,7 +38,7 @@ display:none;
   background: #ffffff;
 }
 
-.chatter .chatter_field.chatter_message {
+.chatter1 .chatter_field.chatter_message {
   margin: 0;
   padding: 11px 12px 9px 12px;
   font-size: 14px;
@@ -46,7 +47,7 @@ display:none;
   resize: none;
 }
 
-.chatter .chatter_convo {
+.chatter1 .chatter_convo {
   position: relative;
   margin: 0 -6px 12px -6px;
   padding: 0 6px;
@@ -57,7 +58,7 @@ display:none;
   overflow-y: auto;
 }
 
-.chatter .chatter_convo .chatter_msg_item {
+.chatter1 .chatter_convo .chatter_msg_item {
   position: relative;
   margin: 5px 0 8px 0;
   padding: 8px 10px;
@@ -66,37 +67,37 @@ display:none;
   background: rgba(255,255,255,0.26);
 }
 
-.chatter .chatter_convo .chatter_msg_item .chatter_avatar {
+.chatter1 .chatter_convo .chatter_msg_item .chatter_avatar {
   position: absolute;
   top: 0;
 }
 
-.chatter .chatter_convo .chatter_msg_item.chatter_msg_item_admin .chatter_avatar {
+.chatter1 .chatter_convo .chatter_msg_item.chatter_msg_item_admin .chatter_avatar {
   left: -52px;
 }
 
-.chatter .chatter_convo .chatter_msg_item.chatter_msg_item_user .chatter_avatar {
+.chatter1 .chatter_convo .chatter_msg_item.chatter_msg_item_user .chatter_avatar {
   right: -52px;
 }
 
-.chatter .chatter_convo .chatter_msg_item .chatter_avatar img {
+.chatter1 .chatter_convo .chatter_msg_item .chatter_avatar img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
 
-.chatter .chatter_convo .chatter_msg_item.chatter_msg_item_admin {
+.chatter1 .chatter_convo .chatter_msg_item.chatter_msg_item_admin {
   margin-left: 52px;
   float: left;
 }
 
-.chatter .chatter_convo .chatter_msg_item.chatter_msg_item_user {
+.chatter1 .chatter_convo .chatter_msg_item.chatter_msg_item_user {
   margin-right: 52px;
   float: right;
   background: rgba(255,255,255,0.16);
 }
 
-.chatter .chatter_convo .chatter_msg_item.chatter_msg_item_admin:before {
+.chatter1 .chatter_convo .chatter_msg_item.chatter_msg_item_admin:before {
   content: '';
   position: absolute;
   top: 15px;
@@ -152,86 +153,12 @@ display:none;
   background: rgba(255,124,124,0.7);
 }
 </style>  
-<div class="chatter">  
+<div class="chatter1">  
     <div class="chatter_convo">
-<!--      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>Hello!</span>
       
-      <span class="chatter_msg_item chatter_msg_item_user">
-        <a href="" class="chatter_avatar"><img src="https://dl.dropboxusercontent.com/u/26364944/depp.gif" /></a>
-        <strong class="chatter_name">Jack Sparrow</strong>Oh hello. Who is this?</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>My name is Luke. How can I help you today? :)</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_user">
-        <a href="" class="chatter_avatar"><img src="https://dl.dropboxusercontent.com/u/26364944/depp.gif" /></a>
-        <strong class="chatter_name">Jack Sparrow</strong>Just saying hello!</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>Oh alright, Hello then Jack, you pirate, you.</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>Hello!</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_user">
-        <a href="" class="chatter_avatar"><img src="https://dl.dropboxusercontent.com/u/26364944/depp.gif" /></a>
-        <strong class="chatter_name">Jack Sparrow</strong>Oh hello. Who is this?</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>My name is Luke. How can I help you today? :)</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_user">
-        <a href="" class="chatter_avatar"><img src="https://dl.dropboxusercontent.com/u/26364944/depp.gif" /></a>
-        <strong class="chatter_name">Jack Sparrow</strong>Just saying hello!</span>
-      
-      <span class="chatter_msg_item chatter_msg_item_admin">
-        <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a>
-        <strong class="chatter_name">Luke Peters</strong>Oh alright, Hello then Jack, you pirate, you.</span>
--->      
     </div>
-	
-	       <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>        
-           <textarea name="msg" placeholder="Type your message here..." class="chatter_field chatter_message" id="msg_area"></textarea>
-           <button id="help_msg_btn" class="submit" value="Submit">
-   
-	
+	<input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>        
+    <textarea name="msg" placeholder="Type your message here..." class="chatter_field chatter_message" id="msg_area"></textarea>
+    <button id="help_msg_btn" class="primary-btn btn submit" value="Submit">	</button>
 </div>
 
-<script>
-$('#help_msg_btn').click(function(){
-    console.log('help msg clicks',$('#csrf').val());
-	var length = $('.chatter_convo').find('.chatter_msg_item').size();
-	var msg = $('#msg_area').val();	
-	if(msg.length <20) {
-	    // the question should be a lot of more specific
-	    return false;
-	}
-	
-	$.ajax({
-           type: "POST",
-		   url:"/course/"+courseid+"/help?role=0",
-		   data: 'msg='+msg+'&question_id='+current_qid,
-           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           },		   
-           success: function(data)
-           {		        
-                console.log('success  ',data);			   
-			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
-                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
-                        +'  <strong class="chatter_name">Luke Peters</strong>'+msg
-					  +'</span>');	
-                a.appendTo($('.chatter_convo'));
-                $('#msg_area').val('');				
-           }
-        });  
-})
-</script>

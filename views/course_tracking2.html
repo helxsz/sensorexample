@@ -7,10 +7,11 @@
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
 	
-	<script src='/assets/js/require.js' defer async="true" ></script>
+	
 
 
 <script >
+/*
 require.config({
   paths: {
     "j":'https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
@@ -30,8 +31,10 @@ require.config({
 require(['jquery','j'], function (jquery){
     console.log('.......................',$('#crsf').val());
 });
+*/
 </script>	
-    <!-- -->
+    <!-- <script src='/assets/js/require.js' defer async="true" ></script>  -->
+
 	
     <script src="/assets/js/jquery/jquery-1.10.2.min.js "></script> 
     <script src="/assets/js/jquery/jquery-ui 1.9.2.min.js"></script> 
@@ -941,6 +944,29 @@ letter-spacing: 5px;
 			</div>
 -->		
 		</div>
+		
+<style>
+.upload { background-color: #dcc483; padding:8px; border-radius:10px; cursor: pointer; margin-bottom:3em; width:400px; margin:0 auto; }
+.upload .inner { padding:24px; font-size:22px; border-radius:10px; border:4px dashed #B39C5D; text-align: center; font-weight:400; color:#A38E55;
+			-webkit-transition: all 200ms ease-in-out;
+			-moz-transition: all 200ms ease-in-out;
+			-ms-transition: all 200ms ease-in-out;
+			-o-transition: all 200ms ease-in-out;
+			transition: all 200ms ease-in-out; }
+.upload:hover .inner { color:#94804A; border-color:#94804A; }
+</style>		
+<script>
+
+</script>		
+		<div class="upload">
+            <div class="inner">
+                 Click or drop a file here.
+            </div>
+        </div>
+		<form>
+               <input type='file' id="image_input" style="display:none;"/>
+		</form>
+		
 	</div>
 	
 <style>
@@ -1072,39 +1098,7 @@ var courseid = pathname.split('/')[2];
  console.log( '#'+Math.floor(Math.random()*16777215).toString(16)  );   //http://www.paulirish.com/2009/random-hex-color-code-snippets/
 
 var uid ;
-getNotification();
-function getNotification(){
-    console.log('get notifications');
-    $.ajax({
-           type: "GET",
-           url: "/user/notify",
-		   contentType:"application/json; charset=utf-8",
-           dataType:"json",		   
-           success: function(data)
-           {
-		        console.log('get notifications success ',data, data.notifications.length);
-				/*
-			    for(var i=0;i<data.length;i++){			        
-				    console.log(data[i]._id,data[i].username,"img:",data[i].img);
-					var img_path;
-					if(data[i].img == undefined)  img_path= "/default_user.jpeg";
-					else img_path = '/images/'+data[i].img;
-					var s = $(
-					  '<li class="user-info span2 members ui-draggable"  id="'+ data[i]._id +'" data-id="'+ data[i]._id +'">'			      	
-                        +'<img src="'+ img_path  +'"> </img>'			
-					    +'<p>'+ data[i].username +'</p>'
-					    +'<span class="loc">Liverpool, UK</span>'
-				      +'</li>'
-				   );
-				   
-				   s.appendTo( $(".student_list ul") );
-			   }
-			   */
-           },error: function(jqXHR, textStatus, errorThrown){
-               console.error('get notifications error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
-           }
-    });    
- }
+
  
  
 getCourseStudents(courseid);
@@ -1244,7 +1238,36 @@ function assignPlanToStudent(planid, studentid, callback){
     }
   });
 
+function readURL(input) {
+  if (input && input[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+	console.log(e.target.result);
+    $("#result .base64").val( e.target.result )
+		$("#result").slideDown();
+    }
+		reader.readAsDataURL(input[0]);
+	}
+}
 
+
+$("#image_input").change(function(){
+    readURL(this.files);
+});
+
+$(".upload").click(function(){
+	    console.log('upload click');
+		$("#image_input").click();
+});
+
+$(".upload").on('drop', function(e) {
+		e.preventDefault();
+		readURL(e.originalEvent.dataTransfer.files);
+}).on('dragover', function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		e.dataTransfer.dropEffect = 'copy';
+});	
 </script>  
 
 <script>
@@ -1292,33 +1315,31 @@ $('#chat_btn').click(function(){
    sendMsgCommand(uid,uid,"room", editor.getValue());
 })
 
+/*****************************
 initWebsocket();
 var socket;
 var socket_id, uid;
 var room;
 function initWebsocket(){
             console.log('init train socket');
-			socket = io.connect('https://localhost', {secure: true,"connect timeout": 1000});
+			socket = io.connect('https://127.0.0.1', {secure: true,"connect timeout": 1000});
 						
             socket.on('connect', onConnectSuccessCallback);
 			
 			socket.on('disconnect',onDisconnectCallback);
+			socket.on('error', onErrorCallback);
 			
-            socket.on('msg', onMsgReceivedCallback);
-						
+            socket.on('msg', onMsgReceivedCallback);						
 			socket.on('new user', onNewUserCallback);
 			socket.on('user leave',onUserLeaveCallback);
-			
-            socket.on('error', onErrorCallback);	
-
             // receive something from client
             socket.on('student help',onStudentHelpCallback);
             // receive something from tutor			
 
 }
-/**********************************
-        common command
-***********************************/
+
+/////////////////////////////////////////        common command
+
 function sendMsgCommand(tid, uid, room, msg){
    var data = JSON.stringify({"tid":tid,"uid":uid,"room":room,"msg":msg});
    socket.emit('msg request',data);
@@ -1330,9 +1351,8 @@ function closeConnectionCommand(){
 }
 
 
-/**************************************
-     tutor command
-***************************************/
+///////////////////////////////////////     tutor command
+
 function sendCodeSnippetCommand(uid,room,code){
     var data = JSON.stringify({"uid":uid,"room":room,"code":code});	
 	socket.emit('code snippet',data);
@@ -1343,9 +1363,7 @@ function sendCodeCommentCommand(uid,room,comment,codeline){
 	socket.emit('code comment',data);
 }
 
-/***********************************
-            callback function
-************************************/
+////////////////////            callback function
 function onErrorCallback(reason){
     console.error('Unable to connect Socket.IO', reason);
 }
@@ -1385,14 +1403,12 @@ function onDisconnectCallback(message){
       }, 1000);
 }
 
-/*******************************
-   receive something from student
-********************************/
+////////////////   receive something from student
 function onStudentHelpCallback(message){
     
 
 }
-
+*********************/
 </script>  
 
 </html>

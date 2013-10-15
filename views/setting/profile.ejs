@@ -111,19 +111,34 @@ background-color: #409f89;
                 <div id="fullname-cg" class="control-group">
                     <label for="fullname-tf" class="control-label">Fullname</label>
                     <div class="controls">
-                       <input id="fullname-tf" type="text" name="fullname" value="<%= user.fullname %>" class="input-xlarge">
+					    <% if(user.fullname){ %>	
+                           <input id="fullname-tf" type="text" name="fullname" value="<%= user.fullname %>" class="input-xlarge">
+						<% } %>
+					    <% if(!user.fullname){ %>	
+                           <input id="fullname-tf" type="text" name="fullname" value="" class="input-xlarge">
+						<% } %>						
                     </div>
                 </div>
                 <div id="location-cg" class="control-group">
-                    <label for="location-tf" class="control-label">Location</label>
+                    <label for="location-tf" class="control-label">Location</label>  
                     <div class="controls">
-                       <input id="location-tf" type="text" name="location" value="<%= user.location %>" class="input-xlarge">
+					    <% if(user.location){ %>	
+                           <input id="location-tf" type="text" name="location" value="<%= user.location %>" class="input-xlarge">
+						<% } %>
+					    <% if(!user.location){ %>	
+                           <input id="location-tf" type="text" name="location" value="" class="input-xlarge">
+						<% } %>	
                     </div>
                 </div>
                 <div id="about-cg" class="control-group">
                     <label for="about-tf" class="control-label">About</label>
                     <div class="controls">
-                         <textarea id="about-tf" type="text" name="about" value="<%= user.about %>" class="input-xlarge" > </textarea>
+					    <% if(user.about){ %>
+                            <textarea id="about-tf" type="text" name="about" value="<%= user.about %>" class="input-xlarge" > </textarea>
+						<% } %>
+					    <% if(!user.about){ %>	
+                           <textarea id="about-tf" type="text" name="about" value="<%= user.about %>" class="input-xlarge" > </textarea>
+						<% } %>						
                     </div>
                 </div>	
 

@@ -6,11 +6,17 @@
 // http://danielstudds.com/setting-up-passport-js-secure-spa-part-1/  http://danielstudds.com/adding-verify-urls-to-an-express-js-app-to-confirm-user-emails-secure-spa-part-6/
 // https://github.com/madhums/node-express-mongoose-demo
 // http://elegantcode.com/2012/05/15/taking-toddler-steps-with-node-js-passport/
+
+//http://stackoverflow.com/questions/18413836/how-do-i-create-a-cookie-passportjs-facebook
+//http://stackoverflow.com/questions/11210817/link-facebook-data-to-currently-logged-in-user-with-passport-js
+//http://stackoverflow.com/questions/17675887/github-oauth-for-node-js-express-application-private-email
 var mongoose = require("mongoose")
     , GridStore = mongoose.mongo.GridStore
     , ObjectID = mongoose.mongo.BSONPure.ObjectID;
 var crypto = require('crypto');	
 var _=require('underscore');
+
+var request = require('request');
 
 var config = require('../conf/config.js');
 var app = require('../app.js').app;
@@ -31,21 +37,25 @@ var passport = require('passport') ,
 	GithubStrategy = require('passport-github').Strategy,
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 	
-// serialize sessions
+// serialize sessions    
+//http://danialk.github.io/blog/2013/02/23/authentication-using-passportjs/
+//https://github.com/pablodenadai/Corsnection/blob/master/server/app/app.js
+
  passport.serializeUser(function(user, done) {
-    done(null, user);
+    done(null, user._id);
  })
 
 passport.deserializeUser(function(id, done) {
-    done(null,id);
-	/*
+    //done(null,id);
+	/*//http://stackoverflow.com/questions/11186174/passportjs-how-to-get-req-user-in-my-views */
     userModel.findUserByQuery({ _id: id }, function (err, user) {
-      done(err, user)
+      done(err, user);
     })
-	*/
+	
 })
 
-/*
+/*http://stackoverflow.com/questions/17397052/nodejs-passport-authentication-token
+  https://github.com/hokaccha/node-jwt-simple
 	social:{
 		facebook:{ id:String,avatar:String,name:String,token:String},
 		twitter:{id:String,avatar:String,name:String,token:String},
@@ -60,36 +70,55 @@ console.log(config.github.clientID,config.github.clientSecret,config.github.call
 passport.use(new GithubStrategy({
       clientID: config.github.clientID,
       clientSecret: config.github.clientSecret,
-      callbackURL: config.github.callbackURL
+      callbackURL: config.github.callbackURL,
+	  scope: ['user:email', 'public_repo', 'repo', 'gist']
     },
     function(accessToken, refreshToken, profile, done) {
-	 /*
+	    console.log('GithubStrategy   /auth/github.............',accessToken, profile.id, profile.displayName, profile.username, profile.emails[0].value, profile._json.avatar_url);	  	
+		
+		/*
+		if(profile.emails.length==0){  //http://stackoverflow.com/questions/17675887/github-oauth-for-node-js-express-application-private-email		
+		}
+		*/
+		request('https://api.github.com/user/emails?access_token={'+accessToken+'}', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log('get email from token '.green, response.statusCode,  body) // Print the google web page.
+            }else{
+			    console.log('get email from token error'.red,error,response.statusCode);
+			}
+        })	
+        
+		
+        //https://api.github.com/user/emails?access_token={your access token}
       userModel.findUserByQuery({ 'social.github.id': profile.id }, function (err, user) {
         if (!user) {
-		   console.log('github user not found'.red);
-		  
-          user = new User({
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            username: profile.username,
-            provider: 'github',
-            github: profile._json
-          })
-          user.save(function (err) {
-            if (err) console.log(err)
-            return done(err, user)
-          })
-		 
+		    console.log('github user not found'.red);
+		    userModel.createNewUser( {  username:profile.username,  
+			                            email:profile.emails[0].value, 
+										img:profile._json.avatar_url, 
+										fullname:profile.displayName,
+										password:profile._json.avatar_url,
+                            			social:{github:{id:profile.id,avatar:profile._json.avatar_url, name:profile.username,token:accessToken} }}, 
+		    function(err,data){
+                if(err)	return done(err);
+                else if(!data)	return done(null, false, { message: 'can not create your profile in database' });  			
+				else {
+				   console.log('save the new github user into database'.green, data._id);
+				   data.isNew= true;
+				   return done(err, data);
+                }				
+		    })			
         } else {
 		  console.log('github user  found'.green);
-          return done(err, user)
+		  user.isNew=false;
+          return done(err, user);
         }
       })
-	  */
-	    console.log('GithubStrategy   /auth/github.............',profile.id, profile.displayName, profile.username, profile.emails[0], profile._json.avatar_url);	  
+	   /*
         process.nextTick(function () {
          return done(null, profile);
-       });	  	  
+       });
+       */	   
     }
 ))
 
@@ -97,71 +126,80 @@ passport.use(new GithubStrategy({
 passport.use(new FacebookStrategy({
       clientID: config.facebook.clientID,
       clientSecret: config.facebook.clientSecret,
-      callbackURL: config.facebook.callbackURL
+      callbackURL: config.facebook.callbackURL,
+	  passReqToCallback: true
     },
     function(accessToken, refreshToken, profile, done) {
-	 /*
-      User.findOne({ 'facebook.id': profile.id }, function (err, user) {
-        if (err) { return done(err) }
-        if (!user) {
-          user = new User({
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            username: profile.username,
-            provider: 'facebook',
-            facebook: profile._json
-          })
-          user.save(function (err) {
-            if (err) console.log(err)
-            return done(err, user)
-          })
+	    console.log('FacebookStrategy   /auth/facebook.............',profile.id, profile.displayName, profile.username, profile.emails[0].value, profile._json.avatar_url);	 
+		
+        userModel.findUserByQuery({ 'social.facebook.id': profile.id }, function (err, user) {
+          if (!user) {
+		    console.log('facebook user not found'.red);
+		    userModel.createNewUser( {  username:profile.username,  
+			                            email:profile.emails[0].value, 
+										img:profile._json.avatar_url, 
+										fullname:profile.displayName,
+										password:profile._json.avatar_url,
+                            			social:{facebook:{id:profile.id,avatar:profile._json.avatar_url, name:profile.username,token:accessToken} }}, 
+		    function(err,data){
+                if(err)	return done(err);
+                else if(!data)	return done(null, false, { message: 'can not create your profile in database' });  			
+				else {
+				   console.log('save the new facebook user into database'.green, data._id);
+				   return done(err, user);
+                }				
+		    })			
+        } else {
+		  console.log('facebook user  found'.green);
+          return done(err, user);
         }
-        else {
-          return done(err, user)
-        }
-      })
-	 */
-	    console.log('FacebookStrategy   /auth/github.............',profile.id, profile.displayName, profile.username, profile.emails[0].value, profile._json.avatar_url);	  
-        process.nextTick(function () {
+      })               
+	    /*
+		process.nextTick(function () {
          return done(null, profile);
-       });	 
+        });  
+        */	   
     }
   ))
   
 
-
+//http://stackoverflow.com/questions/11210817/link-facebook-data-to-currently-logged-in-user-with-passport-js
   // use twitter strategy  
 passport.use(new TwitterStrategy({
       consumerKey: config.twitter.clientID,
       consumerSecret: config.twitter.clientSecret,
-      callbackURL: config.twitter.callbackURL
+      callbackURL: config.twitter.callbackURL,
+	  //passReqToCallback: true
     },
     function(token, tokenSecret, profile, done) {
-	/*
-      User.findOne({ 'twitter.id': profile.id }, function (err, user) {
-        if (err) { return done(err) }
-        if (!user) {
-          user = new User({
-            name: profile.displayName,
-            username: profile.username,
-            provider: 'twitter',
-            twitter: profile._json
-          })
-          user.save(function (err) {
-            if (err) console.log(err)
-            return done(err, user)
-          })
+	    console.log('TwitterStrategy   /auth/twitter.............',profile.id, profile.displayName, profile.username, profile.emails[0], profile._json.avatar_url);	  
+        userModel.findUserByQuery({ 'social.twitter.id': profile.id }, function (err, user) {
+          if (!user) {
+		    console.log('twitter user not found'.red);
+		    userModel.createNewUser( {  username:profile.username,  
+			                            email:profile.emails[0].value, 
+										img:profile._json.avatar_url, 
+										fullname:profile.displayName,
+										password:profile._json.avatar_url,
+                            			social:{twitter:{id:profile.id,avatar:profile._json.avatar_url, name:profile.username,token:accessToken} }}, 
+		    function(err,data){
+                if(err)	return done(err);
+                else if(!data)	return done(null, false, { message: 'can not create your profile in database' });  			
+				else {
+				   console.log('save the new twitter user into database'.green, data._id);
+				   return done(err, user);
+                }				
+		    })			
+        } else {
+		  console.log('twitter user  found'.green);
+          return done(err, user);
         }
-        else {
-          return done(err, user)
-        }
-      })
-	*/
-	    console.log('TwitterStrategy   /auth/github.............',profile.id, profile.displayName, profile.username, profile.emails[0], profile._json.avatar_url);	  
-        process.nextTick(function () {
+      })        
+		/*
+		process.nextTick(function () {
          return done(null, profile);
-       });	
-	
+        });
+        */		
     }
 ))
 
@@ -171,12 +209,16 @@ app.get('/auth/github',passport.authenticate('github') , function(req, res){
 	console.log('github not called '.red);
 });
 
-app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login',successRedirect: '/' }), function(req, res) {
-    res.redirect('/');	
+// ,successRedirect: '/' http://stackoverflow.com/questions/10111445/passport-different-redirect-for-login-and-account-registration
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), function(req, res) {
+    console.log('github then redirect'.green);
+	if (req.user.isNew) { res.redirect('/discover/course?isNew=true');	 }
+    else res.redirect('/discover/course?isNew=false');
+    
 });
 
 //  facebook
-app.get('/auth/facebook', passport.authenticate('facebook'), function(req, res){
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] }), function(req, res){
     // The request will be redirected to Facebook for authentication, so this
     // function will not be called.
 });
@@ -215,13 +257,7 @@ passport.use(new LocalStrategy({
     }
 ))  
   
-  
-
-
-
-
-
-
+ 
   // use google strategy
 passport.use(new GoogleStrategy({
       clientID: config.google.clientID,
@@ -248,4 +284,28 @@ passport.use(new GoogleStrategy({
       })
     }
 ));
+
+
+//http://passportjs.org/guide/authorize/
+app.get('/connect/twitter',
+  passport.authorize('twitter-authz', { failureRedirect: '/account' })
+);
+
+app.get('/connect/twitter/callback',
+  passport.authorize('twitter-authz', { failureRedirect: '/account' }),
+  function(req, res) {
+    var user = req.user;
+    var account = req.account;
+
+    // Associate the Twitter account with the logged-in user.
+    account.userId = user.id;
+    account.save(function(err) {
+      if (err) { return self.error(err); }
+      self.redirect('/');
+    });
+  }
+);
+
+
+
  */

@@ -16,7 +16,7 @@
 <script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script> 
 <script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script> 
 <script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>
-   
+    <script src="/assets/js/popcorn/popcorn-complete.min.js"></script>   
    
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
@@ -121,46 +121,7 @@ top: 5px;
 
 			
             <% include header %>	
-    	 		
-	        
 
-<!--			
-			<div class="alert">
-			    <a href="#" class="close icon notranslate">X</a>
-				<span class="msg">Welcome to the new Lifehacker. 
-				    <a href="http://lifehacker.com/welcome-to-the-new-lifehacker-472650381" class="nowrap">Learn More ?</a>
-				</span>
-			</div>
-			
-			<div class="page-title">Developer Center</div>			
-
-			
-			<div class="banner">
-              <div class="rand" style="height: 98px;">
-                <img data-src="https://static.squarespace.com/static/ta/5134cbefe4b0c6fb04df8065/6291/assets/tour/rand-fishkin.jpg" data-image-dimensions="98x98" style="display: inline-block;" class="lazy-loaded" alt="Squarespace Rand Fishkin" src="https://static.squarespace.com/static/ta/5134cbefe4b0c6fb04df8065/6291/assets/tour/rand-fishkin.jpg?format=100w">
-              </div>
-              <div class="info">
-                <span class="name">Rand Fishkin, CEO</span>
-                <span class="name">SEOmoz</span>
-              </div>
-			  
-			  <blockquote class="quote">
-                 The Squarespace team has put together a remarkable platform. Every aspect of the product - user experience, featureset, SEO friendliness, design and more - all work together to create one of the few content management systems I'm proud to recommend.
-              </blockquote>			  
-            </div>
-			
-			
-            <div class="notify">           
-                <a id="close-notify" onclick="notify.close(true)">¡Á</a>
-            </div>			
-			
-     <form action="" method="get" id="support" class="support-search-big">
-        <div id="fauxForm">
-          <input id="q" maxlength="100" type="text" placeholder="Ask a question" value="">
-        </div>
-        <input id="support-search-submit" class="submit" type="submit" value="Search">
-     </form>			
--->
         <style>
 .content {
 width: 1024px;
@@ -227,7 +188,35 @@ font-size: 11px;
 font-size: 45px;
 font-weight: 300;
 margin-bottom: 10px;
-}		
+}	
+
+.video-js {
+background-color: #000;
+position: relative;
+padding: 0;
+font-size: 10px;
+vertical-align: middle;
+font-weight: 400;
+font-style: normal;
+font-family: Arial,sans-serif;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}	
+
+.modal{
+   background-color:transparent; 
+}
+
+.modal-body {
+    max-height: 800px;
+	max-width: 1000px;
+	width:900px;
+    max-height: none;
+    text-align: center;
+    margin-left: -175px;	
+}
 		
 		</style>
 		<!--
@@ -244,8 +233,21 @@ margin-bottom: 10px;
 		-->	
 			
 
-	        <div class="container-fluid content">		    
-                
+	        <div class="container-fluid content" style="margin-top:140px;margin-bottom:40px; border-bottom: 1px solid #ccc;padding-bottom:30px;">	
+                <!--			
+	            <video height="550" width="878" style="height:550px, width:878px" id="step3" controls class="video-js" preload="auto" poster="https://s3.amazonaws.com/ksr/projects/480289/photo-main.jpg?1367828708"> 
+                    <source src="https://d2pq0u4uni88oo.cloudfront.net/projects/480289/video-237382-webm.webm"></source>
+                </video>
+                -->
+			    <div class="span5">
+				    <h2>Feynlabs is a global community where children can learn computer science skills from coding.</h2>
+			    </div>
+			    <div class="span4" style="margin-top:20px;">
+				    <a  class="watch-video-link" data-video-id="A9Nn_koZDNg" data-toggle="modal" href="#video-modal">
+					<img src="https://s3.amazonaws.com/ksr/projects/480289/photo-main.jpg?1367828708" 
+					    alt="Watch How It Works" 
+						style="width:230px;height:140px;-webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;">				</a>
+			    </div>     
 	        </div>
 	        <div class="container-fluid content">	
                 <% include course/course_list2 %>	
@@ -255,25 +257,39 @@ margin-bottom: 10px;
             <% include footer %>
 			
 		</div>
+	
+<div class="modal hide fade" id="video-modal">
+
+  <div class="modal-body">
+    	<video height="550" width="878" style="height:550px, width:878px" id="step3" controls class="video-js" preload="auto" poster="https://s3.amazonaws.com/ksr/projects/480289/photo-main.jpg?1367828708"> 
+            <source src="https://d2pq0u4uni88oo.cloudfront.net/projects/480289/video-237382-webm.webm"></source>
+        </video>
+  </div>
+  <div class="modal-footer">
+  </div>
+</div>	
+		
 	</div>				
   </body>
 
   
 <script>
+var popcorn = Popcorn( ".video-js" );
+//popcorn.autoplay(true);
+$('.modal').on('hidden', function () {
+    popcorn.pause();	
+})
+
+$('.modal').on('shown', function() {
+    popcorn.play(0);
+    $(this).find('.modal-body').css({  //width:'auto',
+                               height:'auto', 
+                              'max-height':'100%'});	
+})
+
 //  include press   	 include intro 	 include user/wall   include video      include widget/flip    	
-			
-initWebsocket();
-function initWebsocket(){
-            console.log('init train socket');
-            var socket =  io.connect(':8082/');
-						
-            socket.on('connect', function(message) {
-                console.log('on connect',message);
-            });
-            socket.on('news', function(message){
-			   console.log(message);			   
-            });
-}
+// http://www.kickstarter.com/projects/ajitjaokar/computer-science-for-your-child?ref=card
+
 
 </script>  
   

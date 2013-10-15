@@ -31,7 +31,7 @@ function getMilestonePage(req,res,next){
 	
 	async.parallel([
 		function(callback) {
-            courseModel.getCourseSetting(req.params.id,function(err,data){
+            courseModel.findCourseById2(req.params.id,'_id',function(err,data){
                 if(err) {next(err);callback();}
 	            else{
 	               //console.log('getCourseSettingPage success'.green,data.title,data.city);
@@ -46,30 +46,15 @@ function getMilestonePage(req,res,next){
                     html: function(){
 						 locals.title = 'Course Setting';
 						 locals.page = 'milestone';
-                         res.render('course_setting',locals);			
+                         res.render('course/course_setting',locals);			
                     },
                     json: function(){
-                         res.send(locals.courses);
+                         res.send(locals.course);
                     }
                   });
 	    });	 
 }
 
-/*	
-app.get('/course/:course_id/plan',getAllPlans);	
-function getAllPlans(req,res,next){
-   
-   var course_id = req.params.course_id;
-   console.log('get all plans of that course',course_id);
-   studentPlanModel.getStudentPlans(course_id,function(err,plans){
-       if(err) next(err);
-       else {
-		   console.log('',plans);
-		   res.send(200,plans);
-	   }
-   })
-}
-*/
 
 /***************************************************************
      default course plan for the tutor 
@@ -133,7 +118,8 @@ function assignPlanToStudent(req,res,next){
     var locals = {};
 	async.parallel([
 		function(callback) {
-			studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
+		    /////////////////////////////////////////////////////////////
+			studentPlanModel.getMilestones2(course_id, uid ,function(err,data1){
 				console.log('getPlanForStudent  getMilestones'.green, data1);
 				if(err) return res.send(404,{error:err});
 				else if(!data1) return res.send(404);
@@ -168,49 +154,28 @@ function getStudentPlanForTutor(req,res,next){
 		    console.log('getPlanOfEachStudent'.green, data);
 			res.send(200,data); 
 			if(data == null){
-			    var plan;
-	            async.parallel([
-		            function(callback) {
-				        studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
-				            console.log('getPlanForStudent  getMilestones'.green, data);
-				            callback();
-				        })				                       		    
-		            }],function(err) {
-	                    if (err) return next(err); 
-                        res.send(200,data1); 
-	            });								
-			}		    
+			    res.send(404,data);							
+			}	    
 		}
-   })   
-
+   })
 }
 
 function getPlanForStudent(req,res,next){
-   var uid = req.session.uid, cid = req.params.id;
-   console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
-   if(uid == null || cid == null)
-   return res.send(400,{'meta':400,"status":"error"});
+    var uid = req.session.uid, cid = req.params.id;
+    console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
+    if(uid == null || cid == null)
+    return res.send(400,{'meta':400,"status":"error"});
 
-   studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
+    studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
         if(err) next(err);
         else{
 		    console.log('getPlanForStudent2'.green, data);
 			res.send(200,data); 
 			if(data == null){
-			    var plan;
-	            async.parallel([
-		            function(callback) {
-				        studentPlanModel.getMilestones("5218b3cbd830bb640c000002",function(err,data1){
-				            console.log('getPlanForStudent  getMilestones'.green, data);
-				            callback();
-				        })				                       		    
-		            }],function(err) {
-	                    if (err) return next(err); 
-                        res.send(200,data1); 
-	            });								
+                res.send(404);				
 			}		    
 		}
-   })
+    })
 }
 
 function deletePlanForStudent(req,res,next){
@@ -228,8 +193,114 @@ function deletePlanForStudent(req,res,next){
            build the plan
 
 *********************************************************/
+app.post('/course/:id/milestone/tutor',addTutorMilestone);
+app.delete('/course/:id/milestone/tutor',removeTutorMilestone);
+app.get('/course/:id/milestone/tutor',getTutorMilestones);
+function addTutorMilestone(req,res,next){
+   var cid = req.params.id;
+   var goal = req.body.goal;
+   var uid = req.session.uid;
+   //var goals = [{'goal':'abc','goal':'efg'}];
+   console.log('addMilestone',cid,goal);
+   studentPlanModel.addMilestone2(cid,uid,goal,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log('addMilestone  api'.green,data);
+			if(data == 1)   res.send(200,  {"meta":{'code':200} });		   
+			else res.send(200,{"meta":{'code':404} });	
+		}     
+   })
+}
+
+function removeTutorMilestone(req,res,next){
+   var cid = req.params.id, milestone = req.params.milestone;
+   var uid = req.session.uid;
+   console.log('getOneMilestone',cid, milestone);
+   studentPlanModel.removeMilestone2(cid,uid,milestone,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log('removeMilestone  api'.green,data);
+			if(data == 1)   res.send(200,  {"meta":{'code':200} });		   
+			else res.send(200,{"meta":{'code':404} });
+		}      
+   })
+}
+
+function getTutorMilestones(req,res,next){
+   var cid = req.params.id;    var uid = req.session.uid;
+   console.log('getMilestones',cid,uid);
+   studentPlanModel.getMilestones2(cid,uid,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log('getMilestones'.green,data);
+			console.log(data.plan[0].goal, data.plan[0].ques.length);
+			for(var i=0;i<data.plan[0].ques.length;i++)
+			console.log(data.plan[0].ques[i]);
+		    res.send(200,data);
+		}     
+   })
+}
 
 
+
+app.post('/course/:id/milestone/:milestone_id/addQuestions',addQuestionToMilestone2);
+app.get('/course/:id/milestone/:milestone_id/questions',getQuestionsOfMilestone2);
+app.delete('/course/:id/milestone/:milestone_id/removeQuestions/:question_id',removeQuestionFromMilestone2); 
+
+function addQuestionToMilestone2(req,res,next){
+   var cid = req.params.id, milestone_id = req.params.milestone_id;
+    var uid = req.session.uid;
+   var question_body = req.body.questions;
+   console.log('addQuestionToMilestone'.green,cid,milestone_id,question_body);
+   var ques = question_body.split(',');
+   studentPlanModel.addQuestionToMilestone2(cid,uid, milestone_id,ques,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log(data);
+			if(data == 1)   res.send(200,  {"meta":{'code':200} });		   
+			else res.send(200,{"meta":{'code':404} });
+		}     
+   })
+}
+
+function getQuestionsOfMilestone2(req,res,next){
+   var cid = req.params.id, milestone_index = req.params.milestone_id;
+    var uid = req.session.uid;
+   console.log('getQuestionsOfMilestone',cid,milestone_index);
+   studentPlanModel.getQuestionsByNumber2(cid,uid, milestone_index,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log(data.plan[0],data.plan.length,data.plan[0].goal);
+			/*
+			console.log(data.plan[0].goal,data.plan[0].ques.length);
+			for(var i=0;i<data.plan[0].ques.length;i++)
+			console.log(data.plan[0].ques[i]);
+			*/
+		    res.send(200,{"meta":{'code':200},"data":data.plan[0] });
+			//res.send(200,{"meta":{'code':404} });
+		}    
+   
+   })
+}
+
+function removeQuestionFromMilestone2(req,res,next){
+   var id = req.params.id, milestone_id = req.params.milestone_id, question_id = req.params.question_id;
+    var uid = req.session.uid;
+   console.log('getQuestionsOfMilestone',id,milestone_id, question_id);
+   studentPlanModel.removeQuestionFromMilestone2(id,uid, milestone_id,question_id,function(err,data){
+        if(err) next(err);
+        else{
+		    console.log(data);
+			if(data == 1)   res.send(200,  {"meta":{'code':200} });		   
+			else res.send(200,{"meta":{'code':404} });
+		}     
+   })
+}
+
+
+
+
+/*
 app.post('/workplan/:plan_id/addMilestone',addMilestone);
 app.post('/workplan/:plan_id/removeMilestone/:milestone',removeMilestone);
 app.get('/workplan/:plan_id/milestones', getMilestones);
@@ -276,9 +347,10 @@ function getMilestones(req,res,next){
 		}     
    })
 }
+*/
+ 
 
-
-
+/*
 app.post('/workplan/:plan_id/milestone/:milestone_id/addQuestions',addQuestionToMilestone);
 app.get('/workplan/:plan_id/milestone/:milestone_id/questions',getQuestionsOfMilestone);
 app.post('/workplan/:plan_id/milestone/:milestone_id/removeQuestions/:question_id',removeQuestionFromMilestone); 
@@ -305,11 +377,7 @@ function getQuestionsOfMilestone(req,res,next){
         if(err) next(err);
         else{
 		    console.log(data.plan[0],data.plan.length,data.plan[0].goal);
-			/*
-			console.log(data.plan[0].goal,data.plan[0].ques.length);
-			for(var i=0;i<data.plan[0].ques.length;i++)
-			console.log(data.plan[0].ques[i]);
-			*/
+
 		    res.send(200,{"meta":{'code':200},"data":data.plan[0] });
 			//res.send(200,{"meta":{'code':404} });
 		}    
@@ -329,3 +397,4 @@ function removeQuestionFromMilestone(req,res,next){
 		}     
    })
 }
+*/

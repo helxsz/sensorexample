@@ -37,12 +37,19 @@ var sessionStore = new MongoStore({url: config.sessionStore}, function() {
 // redis session
 //host: config.redis.host, port: config.redis.port,
 */
-var RedisStore  = require("connect-redis")(express);
-var sessionStore = new RedisStore({  client:  require("redis").createClient(config.redis.port,config.redis.host) },function() {
-    	                  console.log('connect redis session success...');
+var redisClient = require("redis").createClient(config.redis.port,config.redis.host)
+redisClient.auth(config.redis.auth, function(result) {
+	console.log("Redis authenticated.".green);  
 });
-
-
+redisClient.on("error", function (err) {  
+     console.log("redis Error " + err.red);  
+     return false;  
+});    
+redisClient.on('connect',function(err){
+	console.log('redis connect success'.green);
+});
+var RedisStore  = require("connect-redis")(express);
+var sessionStore = new RedisStore({  client:redisClient  });
 exports.sessionStore= sessionStore;
 
 
@@ -91,6 +98,8 @@ app.configure(function(){
     app.set('view engine', 'html');
 	app.set('views',__dirname+'/views');
 	app.set('ejs',ejs);
+	
+    app.disable('x-powered-by');
 	
 	app.use(express.favicon(__dirname + '/public/favicon.ico'));
 	
@@ -304,8 +313,8 @@ var startServer = function() {
     if (!module.parent) {
         if(app){
 	  
-	        app.listen(3000,function(){
-	            console.log('Express started on port 3000');	  
+	        app.listen(config.port,'0.0.0.0',function(){
+	            console.log('Express started on port',config.port);	  
 	        });
 	   
 
@@ -337,8 +346,10 @@ var startSSLServer = function(){
       };
 	   
       https_server = https.createServer(options,app).listen(443, '0.0.0.0', function(){
-            console.log("Express server listening on port " + 433);
-      });
+            console.log("Express server listening on port ".green + 433);
+			var websocket = require('./routes/websocket_api');
+			websocket.initWebsocket(https_server);
+      });	  
 }
 
 var startSelfSSLServer = function() {
@@ -453,7 +464,6 @@ if(cluster.isMaster){
 app.on('close', function () {
   console.log("Closed app".red);
   mongoose.connection.close();
-  //redisClient.quit();
 });
 //  terminator === the termination handler.
 function terminator(sig) {
@@ -492,13 +502,26 @@ var mongoose = require('mongoose');
 //mongoose.createConnection('localhost', 'database', port, opts);
 //var opts = { server: { auto_reconnect: false,poolSize: 10 }, user: 'username', pass: 'mypassword',replset: { strategy: 'ping', rs_name: 'testSet' } }
 mongoose.connect(config.mongodb_development,function(err){
-	if(err) console.log('connect mongodb error');
+	if(err) { 
+		connectMongoError(err);
+	}
 	else console.log('mongodb connect success');
 });
 
 mongoose.connection.on('open', function (err) {
       if (reconnTimer) { clearTimeout(reconnTimer); reconnTimer = null; }
-
+      
+	  if(!err){
+	    //http://stackoverflow.com/questions/18688282/handling-timeouts-with-node-js-and-mongodb
+         mongoose.connection.db.on('close', function() {
+            if (this._callBackStore) {
+                for(var key in this._callBackStore._notReplied) {
+                    this._callHandler(key, null, 'Connection Closed!');
+                }
+            }
+         });
+      }
+	  
 	  mongoose.connection.db.admin().serverStatus(function(err, data) { 
 	    if (err) {
 	      if (err.name === "MongoError" && err.errmsg === 'need to login') {
@@ -522,7 +545,7 @@ mongoose.connection.on('open', function (err) {
           //setTimeout(connectWithRetry, 5000);	      
 	    }
 	    else{
-	    	console.log('mongod db open success');
+	    	console.log('mongod db open success',mongoose.connection.readyState);
 	    }
 	  });
 });
@@ -535,12 +558,33 @@ mongoose.connection.on('open', function (err) {
 var reconnTimer = null;
  
 function tryReconnect() {
-  reconnTimer = null;
-  console.log("try to connect: %d".grey, mongoose.connection.readyState);
-  db = mongoose.connect(config.mongodb_development,function(err){
-	if(err) console.log('connect mongodb error'.red);
-	else console.log('mongodb connect success'.green);
+    reconnTimer = null;
+    console.log("try to connect: %d".grey, mongoose.connection.readyState);
+    db = mongoose.connect(config.mongodb_development,function(err){
+	    if(err) {
+	        console.log('connect mongodb error'.red);
+		    connectMongoError(err);
+	    }
+	    else console.log('mongodb connect success'.green,mongoose.connection.readyState);
   });
+}
+
+
+function connectMongoError(error){
+	    console.log('connect mongodb error');
+		var reportAPI = require('./routes/report_api');
+		reportAPI.reportToAdmin('cannot connect to mongodb '+error,function(err,data){
+	           if(err) { console.log('can not send problem report mail ',err); }
+	           else { console.log('send problem report mail successfully'.green); }		
+		})
+		
+        if (reconnTimer) {
+             console.log("already trying");
+        }
+        else {
+             reconnTimer = setTimeout(tryReconnect, 60000); // try after delay
+        }
+
 }
 
 mongoose.connection.on('opening', function() {
@@ -594,35 +638,6 @@ function done (err) {
 var GridStore = mongoose.mongo.GridStore;
 var db = mongoose.connection.db;
 
-/*********************************************
-
-        redis
-
-
- 
-var redis_ip= config.redis.host;  
-var redis_port= config.redis.port; 
-
-var redis = require("redis"),
-redisClient = redis.createClient(redis_port,redis_ip); 
-
-redisClient.auth(config.opt.redis_auth, function(result) {
-	console.log("Redis authenticated.");  
-})
-
-redisClient.on("error", function (err) {  
-     console.log("redis Error " + err.red);  
-     return false;  
-});    
-
-redisClient.on('connect',function(err){
-	console.log('redis connect success');
-})
-**********************************************/
-
-
-
-
 ///////////////////////////////////////////////////// 
 exports.app = app;
 exports.mongoose = mongoose;
@@ -655,6 +670,6 @@ function bootController(app, file) {
 }
 
 
-var pluginHelper = require('./pluginHelper');
-pluginHelper.getPluginList(__dirname +'/plugins');
+//var pluginHelper = require('./pluginHelper');
+//pluginHelper.getPluginList(__dirname +'/plugins');
 

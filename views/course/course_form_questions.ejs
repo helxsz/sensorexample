@@ -237,7 +237,7 @@ background-color: #409f89;
                     <label for="description-tf" class="control-label"><strong>Description</strong></label>
                     <div class="controls control span9">
 						<textarea id="description-tf" type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
+                        <span ><span class="character_counter">1000</span>/1000</span>
 					</div>	
                     <span class="tip" >Describe your questions in either text or code</span>																			
       		    </div>
@@ -246,7 +246,7 @@ background-color: #409f89;
                     <label for="tip-tf" class="control-label"><strong>Tip</strong><small>(optional)</small></label>
                     <div class="controls control span9">
 						<textarea id="tip-tf" type="text" name="tip" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
+                        <span ><span class="character_counter">1000</span>/1000</span>
 					</div>
                     <span class="tip" >Give your tip in either text or code</span>																								
       		    </div>
@@ -255,7 +255,7 @@ background-color: #409f89;
                     <label for="solution-tf" class="control-label"><strong>Solution</strong></label>
                     <div class="controls control span9">
 						<textarea id="solution-tf" type="text" name="solution" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
+                        <span ><span class="character_counter">1000</span>/1000</span>
 					</div>					
       		    </div>
 								
@@ -274,7 +274,7 @@ background-color: #409f89;
                 <div id="tags-cg" class="control-group ">
                     <label for="tags-tf" class="control-label"><strong>Tags</strong><small>(optional)</small></label>
                     <div class="controls control span9">         
-						<input name="tags" id="tags" value="" />
+						<input name="tags" id="tags-tf" value="" />
                     </div>
                 </div>
 								
@@ -328,12 +328,46 @@ border-radius: 8px;
 -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
 box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
+
+
+.update-status {
+width: 128px;
+background-color: #FFFFFF;
+box-shadow: 0 2px 6px #CCC;
+border-radius: 5px;
+float: left;
+margin: 10px;
+position: absolute;
+top: 40%;
+left: 50%;
+z-index:3000;
+display:none;
+}
+
+
+
+.update-status h1 {
+font-weight: 400;
+font-size: 20px;
+color: #494A4A;
+margin:0px auto;
+margin-top:40px;
+margin-bottom:20px;
+}
 </style>
 
 
 
 <script>
-
+function successLoad(){
+    $('.update-status').show();
+    $('.update-status h1').text('SUCCESS');
+	//$('.update-status').addClass('animated fadeIn');
+	setTimeout(function(){
+	    //$('.update-status').addClass('animated fadeOut');
+		$('.update-status').hide();
+	},1500);
+}
 
 $("#question_form").on('submit',function(e){
     console.log('click');		
@@ -345,6 +379,12 @@ $("#question_form").on('submit',function(e){
            success: function(data)
            {
                console.log(data);
+			   $('#description-tf').val(''):
+			   $('#tip-tf').val(''):
+			   $('#solution-tf').val(''):
+			   $('#tags-tf').val(''):
+
+			   successLoad();
            }
          });	
 });
@@ -361,6 +401,7 @@ $('#question_btn').click(function(){
 			   data.forEach(function(entry) {
                    console.log(entry.que,entry.sol,entry._id);
                });
+			   successLoad();
            }
     });
 })

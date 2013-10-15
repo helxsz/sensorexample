@@ -187,14 +187,14 @@ function updateUserProfile(req,res,next){
    // {'email':req.body.email,'loc':req.body.location,'fullname':req.body.fullname,'about':req.body.about}
    userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){                                                        
       if(err) {
-	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    if(req.xhr) return res.send({'error':err.err},406);
 	    next(err);
 	  }else if( !data || data==0){
-	      return res.send({'meta':204,'data':null},204);
+	      return res.send({'data':null},406);
 	  }
 	  else{
 	    console.log('update success'.green, data,req.url);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect(req.url);
 	  }	  
    })
@@ -308,7 +308,7 @@ function updateUserImageToGridfs(req,res,next){
 					user.save(function (err2) {
                             if (err) return next(err2); 
 							else console.log('save user image',user.password,user.salt,user.img);
-							if(req.xhr) return res.send({'meta':200,'data':{'img':user.img}},200);
+							if(req.xhr) return res.send({'data':{'img':user.img}},200);
 			                res.redirect("/settings/profile");
                     });
 				})
@@ -347,7 +347,7 @@ function getUserImageFromGrids(req,res,next){
 function getImageFromGrids(req,res,next){
     if(req.params.id ==null)
 	    return 	res.send(404,{'error':'image not found'});
-	if(req.params.id == undefined){
+	if(typeof req.params.id == "undefined"){
 	
 	   console.log('id undenfined');
 	   res.send(404,{'error':'image not found'});
@@ -424,7 +424,7 @@ function updateUserAccount(req,res,next){
                check(update.email).isEmail();
               } catch (e) {
                    res.statusCode = 400;
-                   res.end(JSON.stringify({status:"error", errors:[{"message":"email is invalid"}]}));      
+                   res.end(JSON.stringify( {"error":"email is invalid"}));      
                    return;
             }	   
    }   
@@ -432,14 +432,14 @@ function updateUserAccount(req,res,next){
    //{'email':req.body.email}
    userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
       if(err){
-	     if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	     if(req.xhr) return res.send({'error':err.err},406);
 	     return next(err);
 	  }else if( !data || data==0){
-	      return res.send({'meta':204,'data':null},204);
+	      return res.send({'data':null},406);
 	  }	 
 	  else{
 	    console.log('update success'.green, data);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect('/');
 	  }	  
    })
@@ -450,12 +450,12 @@ function deleteUserAccount(req,res,next){
    userModel.deleteUserById( req.session.uid ,function(err,data){
       console.log('delete user account data'.green,data);
       if(err){ 
-	     if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	     if(req.xhr) return res.send({'error':err.err},406);
 	     return next(err);
 	  }	 
 	  else{
 	    console.log('delete success'.green,data);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect('/');
 	  }	  
    })
@@ -496,12 +496,12 @@ function deleteUserSoical(req,res,next){
    console.log('delete user account');
    userModel.deleteUserById( mongoose.Types.ObjectId(req.session.uid) ,function(err,data){
       if(err) {
-	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    if(req.xhr) return res.send({'error':err.err},406);
 	    next(err);
 	  }
 	  else{
 	    console.log('delete success'.green);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect('/');
 	  }	  
    })
@@ -517,14 +517,14 @@ function updateUserSoical(req,res,next){
    console.log(req.body.email);
    userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
       if(err) {
-	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    if(req.xhr) return res.send({'error':err.err},406);
 	    next(err);
 	  }else if( !data || data==0){
-	      return res.send({'meta':204,'data':null},204);
+	      return res.send({'data':null},406);
 	  }	
 	  else{
 	    console.log('update success'.green, data);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect('/');
 	  }	  
    })  
@@ -569,14 +569,14 @@ function updateUserNotification(req,res,next){
    console.log(req.body.email);
    userModel.updateUser({'_id':req.session.uid},{'$set':update},function(err,data){
       if(err) {
-	    if(req.xhr) return res.send({'meta':204,'data':null,'error':err.err},204);
+	    if(req.xhr) return res.send({'error':err.err},406);
 	    next(err);
 	  }else if( !data || data==0){
-	      return res.send({'meta':204,'data':null},204);
+	      return res.send({'data':null},406);
 	  }	
 	  else{
 	    console.log('update success'.green, data);
-		if(req.xhr) return res.send({'meta':200,'data':null},200);
+		if(req.xhr) return res.send({'data':null},200);
 		res.redirect('/');
 	  }	  
    })  

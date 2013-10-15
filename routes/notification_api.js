@@ -13,13 +13,16 @@ var redis = require('redis'),
 	io = require('socket.io');
 	
 var permissionAPI = require('./permission_api');
+
+
+var websocketAPI  = require('./websocket_api');
 /*********************************************
 
 redis
 https://github.com/helxsz/Realtime-Demo/blob/master/helpers.js
 
  
-https://gist.github.com/scttnlsn/3210919
+https://gist.github.com/scttnlsn/3210919  mongodb subscribe publish
 **********************************************/
  
 var redis_ip= config.redis.host;  
@@ -174,6 +177,7 @@ http://liamkaufman.com/blog/page/2/
 app.get('/user/notify',permissionAPI.authUser, function(req,res,next){
     console.log('get user notify...........'.green);
 	var uid = req.session.uid;
+	
     pullUserNotification(uid,function(err,data){	
 	    if(err) { console.log(err); next(err)}
 		else {
@@ -181,6 +185,31 @@ app.get('/user/notify',permissionAPI.authUser, function(req,res,next){
 		}
 	})
 })
+
+app.get('/user/notify/socket',permissionAPI.authUser, function(req,res,next){
+    //console.log('get user notify   socket...........'.green);
+	var uid = req.session.uid;
+	
+	websocketAPI.sendMsgToUserSocket(uid,{'test':'test'},function(err,data){
+	    if(err){
+		    console.log(' can not get user socket '.red,err);
+			res.send(400,{data:null});
+		}else if(data){		
+		    console.log('get socket to send data'.green,data);
+            res.send(200,{data:null});			
+		}	
+	})  
+})
+
+app.post('/user/notify/student/read',function(req,res,next){
+	var uid = req.session.uid;   
+	 var index = req.query.index;
+     readAndRemoveUserNotification(uid,index,function(err,data){
+	 
+	 })
+     res.send(200);
+})
+
 /*
    should have callback and try catch to get the exception
 */
@@ -195,10 +224,13 @@ function pushUserNotification(targetUID,UID,verb,msg, type){
 		redisClient.quit();
 		return callback(error,null);
     }
-    redisClient.zadd('noti:'+targetUID+":no",new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg,'t':type}));
-	redisClient.incrby('noti:'+targetUID+':count',1);
+    redisClient.zadd('noti:'+targetUID+":no",new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg,'t':type, 'd':new Date()}));
+	//redisClient.incrby('noti:'+targetUID+':count',1);
 	redisClient.quit();
 }
+
+
+
 /*
 pushUserNotification('a','b','follow','url');
 pushUserNotification('a','c','follow','url');
@@ -211,7 +243,7 @@ pushUserNotification('a','e','follow','url');
 //removeNewUserNotification('a');
 
 //pullUserNotificationCount('a');
-*/
+
 function pullUserNotificationCount(targetUID,callback){
     var redisClient;
     try{ 
@@ -230,6 +262,7 @@ function pullUserNotificationCount(targetUID,callback){
 	})
 	redisClient.quit();	
 }
+*/
 
 function pullUserNotification(targetUID,callback){
     var redisClient;
@@ -263,26 +296,38 @@ function pullUserNotification(targetUID,callback){
 	redisClient.quit();
 }
 
-function removeNewUserNotification(targetUID,callback){
+function readAndRemoveUserNotification(targetUID,index,callback){
     var redisClient;
     try{ 
-        redisClient = redis.createClient(redis_port,redis_ip);
-		redisClient.quit();
+        redisClient = redis.createClient(redis_port,redis_ip);		
 	}
     catch (error)
     {
+	    redisClient.quit();
         console.log('cannnot start redis' + error);
 		callback(error,null);
     }
-    redisClient.zremrangebyrank('noti:'+targetUID+':no',0,-1,function(err,data){
-	    console.log('removeNewUserNotification romve ',data);
+
+			redisClient.zremrangebyrank('noti:'+targetUID+':no',index,index,function(err,data){
+	            console.log('readAndRemoveUserNotification romve ',data);
+				callback(null,data);
+	        })
+	/*	
+    redisClient.zrange('noti:'+targetUID+':no',index,index,function(err,data){
+		console.log('readAndRemoveUserNotification zrange ',data);
+		if(data !=null){
+	 	    redisClient.zadd('noti:'+targetUID+":yes",new Date().getTime(),data[0]);
+		}
 	})
+	*/	
 	
+	redisClient.quit();
+	/*
 	redisClient.get('noti:'+targetUID+':count',function(err,len){
        console.log('removeNewUserNotification get count',len);
 	   redisClient.decrby('noti:'+targetUID+':count',len,function(err,data){
           console.log('remove count:',data);	   
-	      redisClient.quit();
+	      
 		  
 		 if(err) {  console.log('removeNewUserNotification'.red,data); callback(err,null);}
 	     else { 
@@ -290,14 +335,16 @@ function removeNewUserNotification(targetUID,callback){
 		   callback(null,data);
          }		 
 	   })
-    })	
+    })
+    */	
 }
 
 
 
 exports.pushUserNotification = pushUserNotification;
 exports.pullUserNotification = pullUserNotification;
-exports.pullUserNotificationCount = pullUserNotificationCount;
+exports.readAndRemoveUserNotification = readAndRemoveUserNotification;
+//exports.pullUserNotificationCount = pullUserNotificationCount;
 
 
 function notifyTutorOnMilestone(tutorID, studentID, questionSet){   
@@ -317,13 +364,58 @@ function notifyTutorOnHelp(tutorID, studentID, questionID, helpMsg){
     pushUserNotification(tutorID, studentID, 'Help', msg, 'help' );
 }
 
+exports.notifyTutorOnMilestone = notifyTutorOnMilestone;
+exports.notifyTutorOnHelp = notifyTutorOnHelp;
+
+
 function notifyStudentOnSolution(studentID, tutorID, questionSet){
+    var msg = new Array();
+    for(var i=0;i<questionSet.length;i++){
+        msg.push({'que':questionSet[i]});
+    }	
+	console.log('notifyStudentOnSolution '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionSet);
+    pushUserNotification(studentID,tutorID, 'gives solution', msg, 'reply_solution' );
+}
+function notifyStudentOnHelp(studentID, tutorID, questionID, helpMsg){
     var msg = new Object();
     msg.que = questionID;
 	msg.msg = helpMsg;
 	console.log('notifyStudentOnSolution '.green,'tutor:',tutorID, 'student:',studentID, 'questionID:',questionSet);
-    pushUserNotification(tutorID, studentID, 'Solution', msg, 'Solution' );
+    pushUserNotification(studentID,tutorID , 'reply help', msg, 'reply_help' );
 }
-exports.notifyTutorOnMilestone = notifyTutorOnMilestone;
-exports.notifyTutorOnHelp = notifyTutorOnHelp;
+
 exports.notifyStudentOnSolution = notifyStudentOnSolution;
+exports.notifyStudentOnHelp = notifyStudentOnHelp;
+
+
+// http://redis.readthedocs.org/cn/latest/sorted_set/zremrangebyrank.html
+function testNoti(){
+    var redisClient;
+    try{ 
+        redisClient = redis.createClient(redis_port,redis_ip);
+	}
+    catch (error)
+    {
+        console.log('cannnot start redis' + error);
+		redisClient.quit();
+		
+    }
+    //redisClient.zadd('salary',new Date().getTime(),'111');
+    //redisClient.zadd('salary',new Date().getTime()+1000,'222');
+	//redisClient.zadd('salary',new Date().getTime()+2000,'333');
+	//redisClient.zadd('salary',new Date().getTime()+3000,'444');
+    redisClient.zremrangebyrank('salary',0,0,function(err,data){
+	    console.log('remove salary romve '.red,data);
+	})
+	
+    redisClient.zrange('salary',0,-1,function(err,data){
+	     var n = 13;
+	     var lists = _.groupBy(data, function(a, b){
+                return Math.floor(b/n);
+        });
+        lists = _.toArray(lists); //Added this to convert the returned object to an array.
+        console.log('salary '.green, lists);		  
+	})	
+}
+
+//setTimeout(function(){ testNoti();}  , 4000);

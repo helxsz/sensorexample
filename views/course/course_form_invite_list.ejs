@@ -1,36 +1,47 @@
 <table class="table table-condensed table-hover">
   <thead>
     <tr>
-      <th class="span1"><input type="checkbox"></th>
-      <th class="span2">Name</th>
+      <!--<th class="span1"><input type="checkbox"></th>-->
       <th class="span2">Email</th>
+      <th class="span2">Status</th>	  
       <th class="span9">Time</th>
+	  <th class="span2">Reply</th>	  
       <th class="span2"></th>
     </tr>
   </thead>
   <tbody>	
-    <h> afaf</h>
-	
+	<!--  // enum [ email_not_sent 0, email_failed 1, email_sent 2,  not_replyed 3, accpeted 4, refused 5, ]  -->
 	<% if(locals.invitations.length>0){ %>
 	  <% for(var i=0; i<locals.invitations.length; i++) {%>
 	    <tr>
-		    <td><input type="checkbox"> <a href="#"><i class="icon-star-empty"></i></a></td>
+		    <!-- <td><input type="checkbox"> <a href="#"><i ></i></a></td>  -->
 						
             <td><span class="label pull-right"><%= locals.invitations[i].email %></span></td>
+						
+			<% if(locals.invitations[i].status == 1) {%>			    
+				<td><span class="label label-danger">  Email sent failed </span></td>           
+			<% } %>	
+			<% if(locals.invitations[i].status == 2) {%>			    
+				<td><span class="label label-success">  Email sent </span></td>           
+			<% } %>
+			<% if(locals.invitations[i].status == 4) {%>			    
+				<td><span class="label label-info">  Accepted </span></td>           
+			<% } %>			
+			
+			
+			<td><strong> <%= locals.invitations[i].time %>  </strong></td>
 			
 			<% if(locals.invitations[i].reply) {%>
 				<td><span class="label label-success"><%= locals.invitations[i].reply %></span></td>           
 			<% } %>
-			
-			<% if(locals.invitations[i].status) {%>
-				<td><span class="label ">  <%= locals.invitations[i].status%> </span></td>           
-			<% } %>	
-
-			<td><strong> <%= locals.invitations[i].time %>  </strong></td>
+			<% if(!locals.invitations[i].reply) {%>
+				<td><span class="label label-success"></span></td>           
+			<% } %>
 			
             <td>
-               <a href="#editModal" class='edit-modal' data-toggle="modal" data-id="<%= locals.invitations[i]._id %>"><i class="icon-pencil"></i></a>
-               <a href="#deleteModal" class='delete-modal' role="button" data-toggle="modal" data-id="<%= locals.invitations[i]._id %>"><i class="icon-remove"></i></a>
+               <!-- <a href="#editModal" class='edit-modal' data-toggle="modal" data-id="<%= locals.invitations[i]._id %>"><i class="icon-pencil"></i></a>
+                    <a href="#deleteModal" class='delete-modal' role="button" data-toggle="modal" data-id="<%= locals.invitations[i]._id %>"><i class="icon-remove"></i></a>
+			   -->
             </td>				
 		</tr>	
       <% } %>

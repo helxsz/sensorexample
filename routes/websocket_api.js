@@ -10,7 +10,7 @@ http://blog.rstack.cc/post/node_js__using_socket_io_with_cluster_module
 //http://weblog.plexobject.com/?p=1697
 **********************************************/
 var app = require('../app').app;
-var https_server = require('../app').https_server;
+//var https_server = require('../app').https_server;
 var fs = require('fs');
 var logger = require('../logging.js');
 var config = require('../conf/config.js');
@@ -115,17 +115,17 @@ function setStore(io){
 
 
 var sio = require('socket.io');
-init();
-exports.init = init;
+
+exports.initWebsocket = initWebsocket;
 // config  https://github.com/LearnBoost/socket.io/wiki/Authorizing	
-function init(){
+function initWebsocket(https_server){
     //var io = sio.listen(8082);  //,{logger : logger, origins: '*:*', 'log level' : 0, log: false}
     var io = sio.listen(https_server,{  key:fs.readFileSync('./conf/server.key').toString(),
 	                           cert:fs.readFileSync('./conf/server.crt').toString()
 							});
 	//var chatServer = io.of('/chat');
    io.configure(function () {
-        console.log('configure');   
+        console.log('web socket io configure'.green);   
       	io.set('log level', 1);
 	    setStore(io);	
 	    io.enable('browser client minification');  // send minified client
@@ -143,8 +143,10 @@ function init(){
     });
 
 	
-    io.set('authorization', function (handshakeData, callback) {
+    io.set('authorization', function (handshakeData, accept) {
+	            console.log('io authorization'.green, handshakeData);
 	            if(!handshakeData.headers.cookie){
+				    console.log('no cookie , no authorization '.red);
 			        return accept('not authorized', false);
 			    } 
 
@@ -161,13 +163,16 @@ function init(){
                 var signedCookies = require('express/node_modules/cookie').parse(handshakeData.headers.cookie);
                 handshakeData.cookie = require('express/node_modules/connect/lib/utils').parseSignedCookies(signedCookies,config.sessionSecret);
                 //¸ù¾ÝsessionIdÕÒusername
+				console.log('session sid cookie'.green,handshakeData.cookie['express.sid']);
                 sessionStore.get(handshakeData.cookie['express.sid'], function(err,session){
-                    if(err || !session) return callback('socket.io: no found session.', false);
+                    if(err || !session) return accept('socket.io: no found session.', false);
                     handshakeData.session = session;
                     if(handshakeData.session.uid){ 
-                        return callback(null, true);
+					    console.log('socket.io: found session.user'.green,handshakeData.session.uid);
+                        return accept(null, true);
                     }else{
-                        return callback('socket.io: no found session.user', false);
+					    console.log('socket.io: no found session.user'.red);
+                        return accept('socket.io: no found session.user', false);
                     }
                 })	
     });	
@@ -187,39 +192,26 @@ function init(){
 			socket.uid = session.uid;
 			socket.emit('connect',{'id':socket.id,'uid':session.uid});//
 			
+			var socketID = socket.id, userID = socket.uid;
 			//////////////////////
-		    client_io.sadd('sockets', socket.id, function(err, socketAdded){
-		        if(socketAdded) {
-			        console.log('sockets added  '.green,socket.id);
-			        client_io.sadd('users', socket.uid, function(err, userAdded){
-		                if(userAdded) {
-			             console.log('user added  '.green,socket.uid);
-		                } 
-		            });
-		        }
-		    });			
-			
+			setUserSocket(userID, socketID, socket);
+			//////////////////////
+			addSocketAndUserToList(userID, socketID); 
 	    }
-		
-	
-		
+				
         /**/		
 		//////////////////////////////////////////////////////////////////////////////
 		socket.on('disconnect', clientRequestLeave);
 		function clientRequestLeave(){
 		    console.log("leave  ",socket.id,socket.uid);
-		    		   
-			 // remove socket id from socket list
-		    client_io.srem('sockets', socket.id, function(err, removed){
-                console.log('sockets removed '.green, socket.id);			
-		        // remove user id from user list
-			    client_io.srem('users', socket.uid,function(err, userRemoved){
-		            if(userRemoved) {
-			            console.log('user removed  '.green,socket.uid);
-		            } 
-		        });									
-			});
+		    //
+			var socketID = socket.id, userID = socket.uid;
 			
+			
+            removeUserSocket(userID);
+			// remove socket id from socket list
+			removeSocketAndUserFromList(userID, socketID);		
+						
 			io.sockets.in("help").emit('user leave', {
 			    'uid':socket.uid
 			});
@@ -361,7 +353,121 @@ function init(){
 	})
 	
 	
+}
+
+// redis mset, set , get , mget , hset, hget , hmset , hmget
+
+function addSocketAndUserToList(userID, socketID){
+		    client_io.sadd('sockets', socketID, function(err, socketAdded){
+		        if(socketAdded) {
+			        console.log('sockets added  '.green,socketID);
+			        client_io.sadd('users', userID, function(err, userAdded){
+		                if(userAdded) {
+			                console.log('user added  '.green,userID);
+		                } 
+		            });					
+		        }
+		    });	    
+}
+
+function removeSocketAndUserFromList(userID, socketID){
+		    client_io.srem('sockets', socketID, function(err, removed){
+                console.log('sockets removed '.green, socketID);			
+		        // remove user id from user list
+			    client_io.srem('users', userID,function(err, userRemoved){
+		            if(userRemoved) {
+			            console.log('user removed  '.green,userID);
+		            } 
+		        });									
+			});    
+}
+
+/*******************************************************************************
+
+*******************************************************************************/
+
+var socketObjArray = {};
+function getUserSocket(userID,callback){
+    client_io.get('user:'+userID, function(err,data){	
+	    var socketID = data;
+		if(socketID !=null){
+		    var obj = socketObjArray[socketID];
+		    if(obj) { 
+		        console.log('socket Obj found -'.green, userID, '   ');  
+			    //return obj;
+                callback(null,obj);				
+		    }
+		    else {
+			    console.log('not socket Obj found  -'.red,userID);
+				callback({err:'no socket obj'},null);
+			}
+		}else{
+		    console.log('no socketID found -'.red, userID);
+			callback({err:'no socket'},null);
+		}
+	});
 }	
+
+
+
+function setUserSocket(userID, socketID, socketObj){
+    socketObjArray[socketID] = socketObj;
+	client_io.mset('user:'+userID,socketID,redis.print);
+}
+
+function removeUserSocket(userID){
+    client_io.get('user:'+userID, function(err,data){
+	    if(data){
+		    socketID = data;
+		    var socketObj = socketObjArray[socketID];
+			if(socketObj) {
+			   socketObjArray[socketID] = null;
+			   delete socketObj;
+			   console.log('remove user socket success'.green);
+			}
+			client_io.del('user:'+userID,function(err,data){
+			   if(data==1) console.log('delete user id',userID ,' successful ');
+			});
+		}else{
+		    console.log('can not search userID',userID);
+		}	    
+	})
+}
+
+function sendMsgToUserSocket(userID, data, callback){
+
+    getUserSocket(userID,function(err,socket){
+	    if(err){
+		    console.log(' can not get user socket '.red,err);
+			callback('err',null);
+		}else if(data){		
+		    console.log('get user socket',socket.id);
+			// how to ensure socket send out the message
+			socket.emit('noti', JSON.stringify(data));
+			callback(null,'success');
+		}	
+	})
+}
+
+exports.getUserSocket = getUserSocket;
+exports.sendMsgToUserSocket = sendMsgToUserSocket;
+
+
+
+
+var testRedis = function(){
+    for(var i=0;i<100;i++)
+    setUserSocket('user'+i,'socket'+i,'socket'+i+'_Obj');
+	
+	getUserSocket('user'+2,function(err,data){});
+	getUserSocket('user'+99,function(err,data){});
+	getUserSocket('user'+101,function(err,data){});
+    
+	for(var i=0;i<100;i++)
+	removeUserSocket('user'+i);
+}
+
+//setTimeout(function(){ testRedis();}  , 4000);
 
 
 //https://github.com/steffenwt/nodejs-pub-sub-chat-demo

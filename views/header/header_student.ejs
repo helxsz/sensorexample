@@ -426,6 +426,21 @@ color: #0088cc;
 text-decoration: none;
 }
 
+#btn-logout{
+-webkit-font-smoothing: antialiased;
+font-family: 'Helvetica', sans-serif;
+font-weight: bold;
+color: #777;
+cursor: pointer;
+display: block;
+padding: 9px 14px;
+margin: auto;
+font-size: 12px;
+
+  border: 1px solid #F0F0F0;
+  font-weight: bold;
+}
+
 </style>
 
 <div class="navbar navbar-fixed-top">
@@ -458,7 +473,7 @@ text-decoration: none;
 		      <form method="POST" class="form-inline" action="/sessions" enctype="application/x-www-form-urlencoded">
 	             <input type="hidden" name="_csrf" value="<%= token %>"/>
 			     <input type="hidden" name="_method" value="delete" />			 
-			     <li > <a id="btn-logout" type="submit">Sign Out</a></li>			 
+			     <input id="btn-logout" type="submit" value="Sign Out"></input>				 
               </form>
 		    </li>						
           </ul>
@@ -485,6 +500,7 @@ text-decoration: none;
 	            <a class="notifSettings">Edit</a>
             </div>
 			<ul class="notifContent">
+			   <!--
                 <li class="notifItem">
                         <div class="actorImages">
                             <a data-actor-id="313563330214114585" class="actorImage active" href="/isiprinos/">
@@ -507,6 +523,7 @@ text-decoration: none;
                             <span class="timesince">9 weeks ago</span>
                         </p>
                 </li>
+				-->
 			</ul>	
             <div class="notifFooter"></div>			
           </ul>
@@ -595,11 +612,7 @@ box-shadow: 0px 1px 0px #fff;
 
 
 <script>
-/*
-setInterval(function() {
-  $('.ha-header-bottom').toggleClass('ha-header-subshow');
-}, 1500);
-*/
+
 
 var pathname = window.location.pathname;
 console.log(pathname);
@@ -856,37 +869,7 @@ display:none;
 }
 </style>
 
-<script>
-$('#help_msg_btn').click(function(){
-    console.log('help msg clicks',$('#csrf').val());
-	var length = $('.chatter_convo').find('.chatter_msg_item').size();
-	var msg = $('#msg_area').val();	
-	if(msg.length <20) {
-	    // the question should be a lot of more specific
-	    return false;
-	}
-	
-	$.ajax({
-           type: "POST",
-		   url:"/course/"+courseid+"/help?role=0",
-		   data: 'msg='+msg+'&question_id='+current_qid,
-           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           },		   
-           success: function(data)
-           {		        
-                console.log('success  ',data);			   
-			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
-                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
-                        +'  <strong class="chatter_name">Luke Peters</strong>'+msg
-					  +'</span>');	
-                a.appendTo($('.chatter_convo'));
-                $('#msg_area').val('');				
-           }
-        });  
-})
-</script>
+
 
 <div class="modal hide" id="ProgressModal">
     <div class="modal-header">
@@ -925,3 +908,104 @@ $('#help_msg_btn').click(function(){
         		
     </div>	
 </div>
+
+
+<script>
+$('#help_msg_btn').click(function(){
+    console.log('help msg clicks',$('#csrf').val());
+	var length = $('.chatter_convo').find('.chatter_msg_item').size();
+	var msg = $('#msg_area').val();	
+	if(msg.length <20) {
+	    // the question should be a lot of more specific
+	    return false;
+	}
+	
+	$.ajax({
+           type: "POST",
+		   url:"/course/"+courseid+"/help?role=0",
+		   data: 'msg='+msg+'&question_id='+current_qid,
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success  ',data);			   
+			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
+                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
+                        +'  <strong class="chatter_name">Luke Peters</strong>'+msg
+					  +'</span>');	
+                a.appendTo($('.chatter_convo'));
+                $('#msg_area').val('');				
+           }
+        });  
+})
+
+
+addMsgNotifcationToTutor('313563330214114585','http://media-cache-ec0.pinimg.com/avatars/isiprinos_1374959866_75.jpg','Isidoros Prinos','9 weeks ago','abc');
+$('.b-userbar__icons-item-notify').text('11');
+				
+function addMsgNotifcationToTutor(id,img,name, time, set){
+    console.log('addMsgNotifcationToTutor');
+    var noti = $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> finished a milestone.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>' );
+	$('.Notifications ul').prepend(noti);	 
+}
+
+function addHelpNotificationToTutor(id,img,name, time, qid, msg){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> asked a question.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');				
+}
+
+function addMsgNotificationToStudent(id,img,name, time, set){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your tutor'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> gave the solutions.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');
+}
+
+function addHelpNotificationToStudent(id,img,name, time, qid, msg){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your tutor'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> replied your question.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');			
+
+}				
+
+
+</script>

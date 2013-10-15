@@ -434,6 +434,39 @@ form.on('submit',function(e){
          });	
 });
 */	
+
+$('#id_username').focusout(function(e){
+   console.log('username focusout');
+    $.ajax({
+           type: "GET",
+           url: "/validate/username/"+$('#id_username').val(),
+           success: function(data){
+		        console.log(' username valid success',data);
+			    $('#id_username').parent().removeClass('error').addClass('success');
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('username not valid  error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+			   $('#id_username').parent().addClass('error');
+           }
+    });   
+})
+
+$('#id_email').focusout(function(e){
+   console.log('id_email focusout');
+    $.ajax({
+           type: "GET",
+           url: "/validate/email/"+$('#id_email').val(),
+           success: function(data){
+		        console.log('email valid success',data);
+			    email.parent().removeClass('error').addClass('success');
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('email not valid  error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+			   email.parent().addClass('error');
+           }
+    });   
+})
+
  </script>
 
 

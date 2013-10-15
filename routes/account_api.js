@@ -22,7 +22,7 @@ var im = require('imagemagick');
 var mail_api = require('./mail_api');
 var permissionAPI = require('./permission_api');
 // session
-
+var courseModel = require('../model/course_model');
 
 
 /** 
@@ -37,132 +37,35 @@ app.get('/login',loginPage);
 app.post('/sessions',loginUser);
 app.del('/sessions', logoutUser);
 
-app.post('/users/validate/username/', validateName);
-app.post('/users/validate/email/', validateEmail);
+
 
 /**
        login and register with email invitation
 **/
 
-app.post('/signup/invitation/email',sendSignupInvitationEmail);
-function sendSignupInvitationEmail(){
-    var locals = {};
-    var cid = req.params.id; 
-    if( req.session.uid.length < 12) return res.send(404,{'msg':'course id is not valid'});
-    console.log(" inviteStudents".green,req.body.email);
-	
-	var email = req.body.email;
-	/*
-    try {      
-       check(email).isEmail();
-    } catch (e) {
-	   console.log("email  is wrong");
-       res.statusCode = 400;
-       res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
-       return;
-    }
-	*/	
-	var email_status = 0;
-    mail_api.sendInvitationMail(cid, token , locals.course.title, locals.course.summ ,email, function(error, response){
-                        if(error){
-                            console.log("inviteStudents Message sent error ".red,error); // get error message
-					        email_status = 1;
-                            res.json(503,{'meta':503,'data':null,'error':error});
-                            return;							
-                        }else{
-                            console.log("inviteStudents  Message sent: ".green ,response.message);
-					        email_status = 2;
-                            res.json(200,{'meta':200,'data':null});
-                            return;							
-                        }
-				        
-    });	
-}
 
-app.get('/signup/invitation/:token',signupWithInvitation);
+
+app.get('/signup/invitation',signupWithInvitation);
 
 function signupWithInvitation(req,res,next){
-   var token = req.params.token;
-   var locals = {};
-   locals.title = "Invitation Sign up";
+    var token = req.query.token, cid = req.query.cid,  email = req.query.email;
+    var locals = {};
+	locals.email = req.query.email;
+    locals.title = "Invitation Sign up";
    // how to verify the token
-   console.log('signupWithInvitation request');
-   if(true){
+    console.log('signupWithInvitation request',token,email,cid);
+
         // go to welcome register page  , then receive the course notification
-   }else{
-        // go to thank you page   
-   }
+	courseModel.checkUserFromInvitation(cid,token,function(err,data){
+		if(err) next(err);
+        else if(!data) 	res.render('error/403');
+        else if(data){
+		    res.render('first_invitation.html',locals);
+		}		
+	})
+
    
-   res.render('first_invitation.html',locals);
 }
-
-
-/****
-       username and email validation
-
-*****/
-
-function validateName(req, res,next){
-    result = '';
-    var username = req.param('username');
-    var user_id = req.param('user_id');
-    if (username) {
-      userModel.findUserByQuery({_id: {$ne: user_id},username: username}, function (error, user) {
-        if (error) {
-          console.error(error);
-		  next(error);
-        }
-        if (user) {
-          result = 'false';
-        }
-        else {
-          result = 'true';
-        }
-        res.send(result);
-      });
-    }
-    else {
-      result = 'false';
-      res.send(result);
-    }
-}
-
-function validateEmail(req, res){
-    result = '';
-    var email = req.param('email');
-	
-    try {
-       new_email = req.param('email');
-       check(new_email).isEmail();
-    } catch (e) {
-       res.statusCode = 400;
-       return res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
-       return;
-    }	
-	
-    var user_id = req.param('user_id');
-    if (email) {
-      userModel.findUserByQuery({_id: {$ne: user_id}, username: {$ne: null},email: email}, function (error, user) {
-        if (error) {
-          console.error(error);
-		  next(error);
-        }	  
-        if (user) {
-          result = 'false';
-        }
-        else {
-          result = 'true';
-        }
-        res.send(result);
-      });
-    }
-    else {
-      result = 'false';
-      res.send(result);
-    }
-}
-
-
 
 function signupPage(req,res){
     var locals = {};
@@ -246,7 +149,12 @@ function signupUser(req,res,next){
                    res.statusCode = 400;
                    res.end(JSON.stringify({status:"error", errors:[{"message":"email is invalid"}]}));      
                    return;
-     }	     
+     }	 
+
+	if (!/^[a-zA-Z0-9\-\_]+$/.test(username)) {
+		return res.send(400, {status:"error", errors:[{"message":'Username only use letters, numbers, \'-\', \'_\''}]});
+	}
+	 
     username = sanitize(req.body.username).trim(), username = sanitize(username).xss();  	   
     password = sanitize(req.body.password).trim(), password = sanitize(password).xss();
 		
@@ -396,8 +304,7 @@ function loginUser(req, res, next) {
 			        console.log("json");
 			        res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
 					         ,'access_token':data._id});
-			    }				
-		        
+			    }						        
             });
              
 		  }
@@ -434,7 +341,10 @@ function logoutUser(req, res){
            res.send({auth: false, _csrf: req.session._csrf});    
         });	
    });
-   */   
+   */ 
+   if(req.xhr)
+   res.send(200);
+   else   
    res.redirect(req.headers.referer || '/login');
 }
 
@@ -442,88 +352,152 @@ function logoutUser(req, res){
 /****************************************************
                        password
 *******************************************************/
-app.get('/forgot-password', function(req, res, next){
-    res.render('user/forgot-password', {
-      title: 'Forgot Password',
-      passwordSent: req.query.passwordSent,
-      password: '',
-      error: req.query.error
+
+/****
+       username and email validation
+
+*****/
+app.get('/validate/username/:username', validateName);
+app.get('/validate/email/:email', validateEmail);
+
+function validateName(req, res,next){
+    var username = req.params.username;
+    if (!username) {
+	    return res.send(400,{'error':'username should not be empty'});
+	}
+    userModel.findUserByQuery({username: username}, function (error, user) {
+        if (error) {
+            console.error(error);
+		    res.send(500,{'error':error});
+        }
+        else if (user) {
+		    res.send(409,{'error':'username already existed'});
+        }
+        else {
+		   res.send(200,{'data':null});
+        }
+     });
+
+}
+
+function validateEmail(req, res){
+    var email = req.params.email;
+    if (!email) {
+	    return res.send(400,{'error':'email should not be empty'});
+	}	
+    try {
+       check(email).isEmail();
+    } catch (e) {
+	    console.log("email not valid  ".red,email);
+       return res.send(400,{'error':'email format wrong'});
+    }	
+	
+    userModel.findUserByQuery({email: email}, function (error, user) {
+        if (error) {
+            console.error(error);
+		    res.send(500,{'error':error});
+        }	  
+        if (user) {
+		    res.send(409,{'error':'email already existed'});
+        }
+        else {
+		    res.send(200,{'data':null});
+        }
     });
+
+}
+
+app.get('/forgot-password', function(req, res, next){
+    res.render('auth/forget-password', {title: 'Forgot Password' });
 });
 
 app.post('/forgot-password', function(req, res, next){
-    email = req.param('email');
-    if (email) {
-      userModel.findUserByQuery({email: email}, function (error, user) {
-        if (user && user.password) {
-          var name = user.name;
+    var email = req.body.email;
+    if (!email) {
+	    return res.send(400,{'error':'email invalid'});
+	}
+	
+    try {
+       check(email).isEmail();
+    } catch (e) {
+	    console.log("check   email not valid  ".red,email);
+       return res.send(400,{'error':'email invalid'});
+    }
+
+    userModel.findUserByQuery({email: email}, function (error, user) {
+        if(error){
+		    res.send(500,{'error':error});
+		}
+		else if(!user){
+		    res.send(404,{'error':'user account not found'});
+		}
+		else if (user && user.password) {
+          var name = user.username;
           var oldPasswordHash =  encodeURIComponent(user.password);
           var userId = user._id;
-          var resetLink = siteInfo.site_url + "/reset-password/?userId="+userId+"&verify="+oldPasswordHash; 
-          var resetMessage = "Hi " + name + "!<br /> Click to reset your password: <a href=\"" + resetLink + "\">" + resetLink + "</a>!";
-          var resetMessagePlain = "Hi " + name + "! Go to this address to reset your password: " + resetLink;
+          var email = user.email;
 
-		  /*
-          server.send({
-            text:    resetMessagePlain, 
-            from: 'Management <' + siteInfo.site_email  + '>',
-            to: email,
-            subject: 'Password Reset',
-            attachment: 
-            [ {data:resetMessage, alternative:true} ]
-          }, function(err, message) { console.log(err || message); })
-          */
-          res.redirect('/forgot-password/?passwordSent=true');
-        }
-        else {
-          res.redirect('/forgot-password/?error=AccountNotFound');
-        }
-      });
-    }
-    else {
-      res.redirect('/forgot-password/?error=NoEmailGiven');
-    }
-});
-
-app.get('/reset-password',  function(req, res, next){
-    var userId = req.query.userId;
-    var verify = decodeURIComponent(req.query.verify);
-    if (userId && verify) {
-      userModel.findUserByQuery({_id: parseInt(userId)}, function (error, user) {
-        if (user && user.password == verify) {
-          resetPassword(userId, function (error, result) {
-            if (error) {
-              log.error(error);
-              res.redirect('/forgot-password/?error=CouldNotReset');
-            }
-            else {
-              res.render('user/forgot-password', {
-                title: 'Password Reset',
-                passwordSent: '',
-                password: result,
-                error:'' 
-              });
-            }
+          mail_api.sendForgetPasswordMail(name, email , 'token', function(error, response){
+                        if(error){
+                            console.log("sendForgetPasswordMail error ".red,error); // get error message
+                            res.json(503,{'error':error});
+                            return;							
+                        }else{
+                            console.log("sendForgetPasswordMail sent: ".green ,response.message);
+                            res.json(200,{'data':null});
+                            return;							
+                        }				        
           });
         }
-        else {
-          res.redirect('/forgot-password/?error=CouldNotFindUser');
-        }
-      });
-    }
-    else {
-      res.redirect('/forgot-password/?error=noUserIdOrVerify');
-    }
+    });
+
 });
 
 
 
+app.get('/reset-password/:username/:token',  function(req, res, next){
+    var username = req.params.username, token = req.params.token;
+	
+	var errors = [];
+    if (!username) errors.push("username specified")
+    if (!token) errors.push("Missing email")
+    if (errors.length){
+        res.statusCode = 400;
+        res.end(JSON.stringify({errors:errors}));      
+        return;    
+	}	
 
+    userModel.findUserByQuery({username: username,'token':token}, function (error, data) {
+	    if (error || !data) {
+            next(error);
+        }
+        else if (data ) {
+         			  			   
+               res.cookie('usernanme', data.username, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('ip',req.ip, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('last_login',new Date().getTime(), { expires: new Date(Date.now() + 9000001), httpOnly: true });			   
+               res.cookie('auth',signed_auth, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+               res.cookie('uid', signed_uid, { expires: new Date(Date.now() + 9000001), httpOnly: true });
+			   			   	       
+                req.session.regenerate(function(){
+                    req.session.uid = data._id;
+                    req.session.username = data.username;
+				
+				    if(req.accepts('text/html')){
+				       res.redirect('/');
+				    }
+				    else if(req.accepts('application/json')){	
+			             console.log("json");
+			             res.json(200,{ 'user':{'id':data._id,'username':data.username,'profile_picture':"http://www.androidhive.info/wp-content/themes/androidhive/images/ravi_tamada.png"}
+					         ,'access_token':data._id});
+			         }						        
+                });
+			   
+        }
 
-
-
-
-
+    });
+ 
+});
 
 /**
  *    sessions

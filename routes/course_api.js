@@ -199,7 +199,9 @@ function getCourseDetail(req,res,next){
 			    locals.loggedin=false;
                 callback();	
             }
-		},function(callback){
+		}
+		/*
+		,function(callback){
 		    if (req.session.uid){
 		        notification_api.pullUserNotificationCount(req.session.uid,function(err,data){							
 				    if(data&& !err){ 
@@ -211,7 +213,8 @@ function getCourseDetail(req,res,next){
 		    }else{
 			     callback();
 			}
-		},function(callback) {
+		}*/
+		,function(callback) {
             courseModel.findCourseAndTutorById(req.params.id,function(err,data){
 			    if(err) { console.log('error1'.red); return next(err); 	}
 				else if(!data){ console.log("can't find course id".red); return next(null);}
@@ -444,44 +447,5 @@ function loadCourses(option,callback){ //'acti':true
 }
 
 
-/****************************************************
-
-
-*****************************************************/
-function authTutor(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':req.session.uid,'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('authTutor  Courses  not admined'.red);
-				 next(err);
-		      }
-			  else{
-			     console.log('authTutor  find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	}else{
-	    console.log('authTutor:  the user has no session id');
-	    res.redirect('/login');
-	} 
-}
-
-function authAdmin(req,res,next){
-		console.log('authAdmin'.green, req.session.username,req.session.uid);
-	 		     
- 		courseModel.findCoursesByQuery({'tutor.id':req.session.uid,'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		}) 
-}
 
 

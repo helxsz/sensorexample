@@ -19,11 +19,12 @@ function authUser(req,res,next){
 	 signed_auth = deciphterSessionParameter(cookie_auth,config.sessionSecret);
 
 	 if (req.session.uid) {
-		 console.log('authUser middleware'.green, req.session.username,req.session.uid);
+		 //console.log('authUser middleware'.green, req.session.username,req.session.uid);
+		 if( req.session.uid.length < 12) return res.send(400,{'error':'InvalidAuthenticationInfo:user id is not valid'});	
 		 next();
 	 } else {
-		 console.log('retrieve login page  not uid'.red,'go to login page');
-		 res.redirect('/login');
+		 if(req.xhr) return res.send(403,{'error':'InsufficientAccountPermissions'});
+		  res.redirect('/login');
 	 }
 }
 
@@ -38,7 +39,7 @@ function authUser1(req,res,next){
 	 signed_auth = deciphterSessionParameter(cookie_auth,config.sessionSecret);
 
 	 if (req.session.uid) {
-		 console.log('authUser middleware'.green, req.session.username,req.session.uid);
+		 //console.log('authUser middleware'.green, req.session.username,req.session.uid);
 		 userModel.findUserById(req.session.uid,function(err,user){
 		    if(err || !user) {
 			    console.log('user uid not found'.red);
@@ -51,13 +52,13 @@ function authUser1(req,res,next){
             }			
 		 })		 
 	 } else {
-		 console.log('retrieve login page  not uid'.red,'go to login page');
-		 res.redirect('/login');
+		 if(req.xhr) res.send(403);
+		 else res.redirect('/login');
 	 }
 }
 
 function authStudentInCourse(req,res,next){
-		console.log('authStudents'.green, req.session.username,req.session.uid,'cid',req.params.id);
+		//console.log('authStudents'.green, req.session.username,req.session.uid,'cid',req.params.id);
 		 	//	     
  		//courseModel.findCourseByQuery({'_id':req.params.id,'stud.$':req.session.uid},'title',function(err,course){
 		// http://stackoverflow.com/questions/16198429/mongodb-how-to-find-out-if-an-array-field-contains-an-element
@@ -66,7 +67,7 @@ function authStudentInCourse(req,res,next){
 		      if(err || !course) {
 			     console.log('Courses  not admined'.red);
 				 if (req.xhr) {
-				    res.json(403,{'error':'not authenticated, please apply for the course first'});
+				    res.json(403,{'error':'InsufficientAccountPermissions:not authenticated, please apply for the course first'});
 				 }else{
 				    res.render('error/403', { error: 'not authenticated, please apply for the course first' });
 				 }
@@ -80,14 +81,14 @@ function authStudentInCourse(req,res,next){
 }
 
 function authTutorInCourse(req,res,next){
-		console.log('authTutorInCourse'.green, req.session.username,req.session.uid,'cid',req.params.id);
+		//console.log('authTutorInCourse'.green, req.session.username,req.session.uid,'cid',req.params.id);
 
 		var course_id = req.params.id, uid = req.session.uid;
 		courseModel.findCourseByQuery({'_id':course_id,'tutor.id':uid},'title',function(err,course){
 		      if(err || !course) {
-			     console.log('authTutorInCourse , Courses  not admined to you'.red);
+			     console.log('authTutorInCourse , Courses  not admined to you'.red,err);
 				 if (req.xhr) {
-				    res.json(403,{'error':'not authenticated'});
+				    res.json(403,{'error':'InsufficientAccountPermissions: not authenticated to non tutor'});
 				 }else{
 				    res.render('error/403', { error: 'not authenticated' });
 				 }

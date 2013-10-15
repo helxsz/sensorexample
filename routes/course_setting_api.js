@@ -23,7 +23,7 @@ var ObjectId = mongoose.Schema.ObjectId;
 var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
 	
-	var notification_api = require('./notification_api');
+var notification_api = require('./notification_api');
 	
 var errors = require('../utils/errors');
 
@@ -32,23 +32,20 @@ var errors = require('../utils/errors');
 *********************/
 
 app.post('/course/new/guide',createCourseFromGuide);
-app.get('/course/:id/setting/questions',authTutor,getCourseSettingQuestionPage);
-app.get('/course/:id/setting',authTutor,getCourseSettingPage);
+app.get('/course/:id/setting/questions',permissionAPI.authUser,   getCourseSettingQuestionPage);
+app.get('/course/:id/setting',permissionAPI.authUser,permissionAPI.authTutorInCourse,getCourseSettingPage);
 
 
+app.put('/course/:id/setting',permissionAPI.authUser,permissionAPI.authTutorInCourse,updateCourseSetting);
 
 
-
-app.put('/course/:id/setting',authTutor,updateCourseSetting);
-
-
-app.put('/course/:id/setting/image',authTutor,updateImageToGridfs);
-app.get('/course/image/:id',authTutor,getImageFromGrids);
+app.put('/course/:id/setting/image',permissionAPI.authUser,permissionAPI.authTutorInCourse,updateImageToGridfs);
+app.get('/course/image/:id',permissionAPI.authUser,getImageFromGrids);
 
 app.get('/new/course', permissionAPI.authUser,startNewCoursePage);
 app.post('/course/new',permissionAPI.authUser,startNewCourse);
 
-app.del('/course/:id',authTutor,deleteCourse);
+app.del('/course/:id',permissionAPI.authUser,permissionAPI.authTutorInCourse,deleteCourse);
 
 
 function createCourseFromGuide(req,res,next){
@@ -110,7 +107,7 @@ function startNewCoursePage(req,res,next){
 	      res.format({
                     html: function(){
 						locals.title = 'Start New Course Guide';
-                        res.render('course_setting',locals);			
+                        res.render('course/course_setting',locals);			
                     },
                     json: function(){
                         res.send(locals.courses);
@@ -157,32 +154,23 @@ function startNewCourse(req,res,next){
 function getCourseSettingPage(req,res,next){
     var locals = {};
     var id = req.params.id;
-    if( req.session.uid.length < 12) res.send(404,{'msg':'user id is not valid'});	
 	
 	async.parallel([
 	    function(callback) {		
-	       if (req.session.uid) {
-		        console.log('getCourseSettingPage'.green, req.session.username,req.session.uid);
-				if( req.session.uid.length < 12) res.send(404,{'msg':'user id is not valid'});
+
+			loadUserProfileById(req.session.uid,function(err,data){
+				if(err){return callback(err); }
 				else{
-				    loadUserProfileById(req.session.uid,function(err,data){
-				        if(err){return callback(err); }
-				        else{
-					        locals.user = {username: data.username,email: data.email};						
-					    }
-					    callback();
-				    });
+					locals.user = {username: data.username,email: data.email};						
 				}
-			}else{
-                callback();	
-            }
+				callback();
+			});
 		},
 		function(callback) {
             courseModel.getCourseSetting(req.params.id,function(err,data){
                 if(err) next(err);
 	            else{
-	               //console.log('getCourseSettingPage success'.green,data.title,data.city);
-				   console.log(data);
+	               //console.log('getCourseSettingPage success'.green,data.title,data.city, data);
 		           locals.course = data;
 	            }
 				callback();
@@ -193,19 +181,18 @@ function getCourseSettingPage(req,res,next){
                     html: function(){
 						 locals.title = 'Course Setting';
 						 locals.page = 'basic';
-                         res.render('course_setting',locals);			
+                         res.render('course/course_setting',locals);			
                     },
                     json: function(){
                          res.send(locals.courses);
                     }
-                  });
+          });
 	    });		
 }
 
 function getCourseSettingQuestionPage(req,res,next){
     var locals = {};
     var id = req.params.id;
-    if( req.session.uid.length < 12) res.send(404,{'msg':'user id is not valid'});	
 	
 	async.parallel([
 	    function(callback) {		
@@ -253,7 +240,7 @@ function getCourseSettingQuestionPage(req,res,next){
                     html: function(){
 						 locals.title = 'Course Setting';
 						 locals.page = 'question';
-                         res.render('course_setting',locals);			
+                         res.render('course/course_setting',locals);			
                     },
                     json: function(){
                          res.send(locals.courses);
@@ -359,15 +346,20 @@ function updateImageToGridfs(req,res,next){
                         console.log('successfully deleted'.green,file.path);
                     });
 					
-					if(err) return next(err1);
+					if(err1) return next(err1);
 					
 					console.log('save image into gridid'.green,result.fileId,newFileName);
 					course.img = result.fileId;
 					course.save(function (err2) {
-                            if (err) return next(err2); 
-							else console.log('save course image');
-			                res.redirect("/settings/profile");//req.url
-							//res.send(200);
+                            if (err2) {
+							    if(req.xhr) return res.send(500,{'error':err2});
+							    else return next(err2);
+                            }								
+							else {
+							    console.log('save course image');
+								if(req.xhr)  res.send(200,{'img':course.img});
+			                    else res.redirect(req.headers['referer']);
+							}
                     });
 				})
             }			
@@ -427,63 +419,9 @@ function deleteCourse(req,res,next){
 
 /********************************************/
 
-function authTutor(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':req.session.uid,'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('authTutor  Courses  not admined'.red);
-				 next(err);
-		      }
-			  else{
-			     console.log('authTutor  find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	}else{
-	    console.log('authTutor:  the user has no session id');
-	    res.redirect('/login');
-	} 
-}
 
-function authAdmin(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	} 
-}
 
-function authStudents(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	} 
-}
+
 
 
 
@@ -501,7 +439,7 @@ function loadUserProfileById(id,callback){
 		    //callback( new Error("USER NOT FOUND"),null );
 		}
 		else{
-			console.log('find user uid'.green,user._id);
+			//console.log('find user uid'.green,user._id);
             callback(null,user);					
          }           					
 	})			

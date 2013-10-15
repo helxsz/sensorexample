@@ -302,6 +302,35 @@ width:480px;
     // e.type, etc
 	    console.log(e.type);
     });
+
+
+        editor.commands.addCommand({
+            name: 'Submit',
+            bindKey: {win: 'Shift-Enter', mac: 'Shift-Enter'},
+            exec: function(editor){
+                var code = editor.getValue();
+				
+				console.log(' Submit',code);
+      /*          chrome.storage.local.get("all-code", function(data){
+                    if (chrome.runtime.lastError) {
+                        return;
+                    }
+                    chrome.storage.local.set({"all-code": [].concat(data["all-code"], code)});
+                });*/
+                
+            }
+        });
+
+        editor.commands.addCommand({
+            name: 'Enter',
+            bindKey: {win: 'Enter', mac: 'Enter'},
+            exec: function(editor){
+			    console.log(' Enter');
+                //chrome.storage.local.set({"offline-python": editor.getValue()});
+                editor.insert("\n");//hack insert a new line
+            }
+        });
+
 	
 	editor.getSession().selection.on('changeSelection', function(e) {	
 	    console.log(e);
@@ -600,6 +629,35 @@ for c in ['red', 'green', 'yellow', 'blue']:
 
 
 <script>
+$('#help_msg_btn').click(function(){
+    console.log('help msg clicks',$('#csrf').val());
+	var length = $('.chatter_convo').find('.chatter_msg_item').size();
+	var msg = $('#msg_area').val();	
+	if(msg.length <20) {
+	    // the question should be a lot of more specific
+	    return false;
+	}
+	
+	$.ajax({
+           type: "POST",
+		   url:"/course/"+courseid+"/help?role=0",
+		   data: 'msg='+msg+'&question_id='+current_qid,
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success  ',data);			   
+			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
+                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
+                        +'  <strong class="chatter_name">Luke Peters</strong>'+msg
+					  +'</span>');	
+                a.appendTo($('.chatter_convo'));
+                $('#msg_area').val('');				
+           }
+        });  
+})
 
 function getChatsOnQuestion(course_id,question_id){
     
@@ -616,7 +674,8 @@ function getChatsOnQuestion(course_id,question_id){
 				if(data.data==null)  {
 				    return true;
 				}
-                for(var i=0;i<data.data.length;i++){				
+                for(var i=0;i<data.data.length;i++){
+                    console.log('add chat info  ',data.data[i].m);				
 			   	    var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
                         +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
                         +'  <strong class="chatter_name">Luke Peters</strong>'+data.data[i].m
@@ -627,7 +686,4 @@ function getChatsOnQuestion(course_id,question_id){
            }
         });
 }
-
-
-
 </script>

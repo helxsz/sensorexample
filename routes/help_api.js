@@ -111,6 +111,9 @@ function getHelpInfoOnQuestion(req,res,next){
     })
 }
 
+
+
+
  
 /*   Model 1
 helpModel.findHelpByQuery({ 'course':'520db60a8932d7700f000001','user':'520db60a8932d7700f000001','tutor':'520db60a8932d7700f000001','question':'520db60a8932d7700f000001' },function(err,plan){

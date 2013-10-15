@@ -76,3 +76,5 @@ hinge rollIn rollOut
         res.end(JSON.stringify({status:"error", errors:errors}));      
         return;    
 	}
+
+res.redirect(req.headers.referer || '/login');

@@ -172,6 +172,10 @@ width: 320px;
 padding: 0px 0;
 }
 
+.Notifications ul{
+list-style-type: none;
+}
+
 .Notifications .notifHeader {
 -webkit-border-radius: 3px 3px 0 0;
 -moz-border-radius: 3px 3px 0 0;
@@ -191,6 +195,7 @@ height: auto;
 left: 0;
 overflow: auto;
 z-index: 2;
+margin: 0px 0px 0px 4px;
 }
 
 .Notifications .notifContent li:hover {
@@ -338,6 +343,21 @@ color: #0088cc;
 text-decoration: none;
 }
 
+
+#btn-logout{
+-webkit-font-smoothing: antialiased;
+font-family: 'Helvetica', sans-serif;
+font-weight: bold;
+color: #777;
+cursor: pointer;
+display: block;
+padding: 9px 14px;
+margin: auto;
+font-size: 12px;
+
+  border: 1px solid #F0F0F0;
+  font-weight: bold;
+}
 </style>
 <div class="navbar navbar-fixed-top ">
   <div class="navbar-inner">
@@ -346,27 +366,17 @@ text-decoration: none;
 	    <a href="/" class="brand">
             <h1>Feyn<span>labs<small><sup>&trade;</sup></small><span></h1>	  
 	    </a>
-		
+	 <!--	
 		<li class="">
                 <a href="/discover/course" class="menu_item">Discovery</a>
-        </li>
-		
-
+        </li>    
 		<li class="">
             <a href="/new/course"  class="menu_item">Start Course</a>
         </li>
-		<!--
-		<li> 
-		    <h4 class='logo'>Google</h4>
-        </li>
-		-->
-	  </ul>
+	-->		
 
-	 <!--
-      <form class="pull-right" action="">
-        <input type="text" placeholder="Search">
-      </form>http://cs5700.userapi.com/v5700460/8a7/oKC_TqSgWoM.jpg
-	  -->
+
+	  </ul>
 	  
 	  <% if(locals.user) { %>	  
 	  
@@ -377,11 +387,11 @@ text-decoration: none;
 		    <li class="notifItem"><a href="/profile/<%= locals.user.username %>">Dashboard</a></li>
             <li class="notifItem"><a href="/settings/profile">Edit Profile</a></li>
             <li class="notifItem"><a href="/settings/account">Account</a></li>
-		    <li>  
+		    <li class="notifItem">  
 		      <form method="POST" class="form-inline" action="/sessions" enctype="application/x-www-form-urlencoded">
 	             <input type="hidden" name="_csrf" value="<%= token %>"/>
 			     <input type="hidden" name="_method" value="delete" />			 
-			     <li class="notifItem"> <a id="btn-logout" >Sign Out</a></li>			 
+			     <input id="btn-logout" type="submit" value="Sign Out"></input>			 
               </form>
 		    </li>						
           </ul>
@@ -400,7 +410,7 @@ text-decoration: none;
 					<% if(!locals.user.img) { %>
                         <img src="/default_user.jpeg" width="21" height="21" alt="User avatar" class="b-userbar__account-avatar">					
 					<% } %>
-			<span class="b-userbar__icons-item-notify">5</span>		
+			<span class="b-userbar__icons-item-notify"></span>		
          </a>		  
           <ul class="dropdown-menu Notifications">
 		    <div class="notifHeader">
@@ -408,6 +418,7 @@ text-decoration: none;
 	            <a class="notifSettings">Edit</a>
             </div>
 			<ul class="notifContent">
+			   <!--
                 <li class="notifItem">
                         <div class="actorImages">
                             <a data-actor-id="313563330214114585" class="actorImage active" href="/isiprinos/">
@@ -430,6 +441,7 @@ text-decoration: none;
                             <span class="timesince">9 weeks ago</span>
                         </p>
                 </li>
+				-->
 			</ul>	
             <div class="notifFooter"></div>			
           </ul>
@@ -451,28 +463,11 @@ text-decoration: none;
 </div>
 
 <script>
-	
-$(".userbar__account-avatar").click(function() {
-    console.log("Handler for .click() called.",$('.userbar-notify').attr('data-id'));
-	$.ajax({
-           type: "GET",
-           url: '/user/'+$(".userbar-notify").attr('data-id')+'/notify',
-           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#crsf').val() );},
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           },		   
-           success: function(data)
-           {		        
-                console.log('success',data.notifications.length,data.notifications);
-				var data = data.notifications;
-				$('#notify_menu').html(' ');
-				for(var i=0;i<data.length;i++)
-                { 
-				   console.log(data[i]);
-				   var msg = JSON.parse(data[i]);
-				   $('#notify_menu').append('<li>'+ msg.u +'  '+ msg.v +'   '+ msg.m +' </li>');
-                } 				   
-           }
-    });	
-});
+
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+
+
 </script>

@@ -95,25 +95,25 @@ background:rgb(204, 110, 87);
                 <hr>
                 <p id="sub2" class="subheading"></p>
                 <div id="old_password-cg" class="control-group">
-                    <label for="old_password-tf" class="control-label">old password</label>
+                    <label for="old_password" class="control-label">old password</label>
                     <div class="controls pass">
-                        <input id="old_password-tf" type="password" name="old_password" value="" class="input-xlarge">
+                        <input id="old_password" type="password" name="old_password" value="" class="input-xlarge">
                     </div>
                 </div>
                 <div id="password-cg" class="control-group">
-                    <label for="password-tf" class="control-label">new password</label>
+                    <label for="new_password" class="control-label">new password</label>
                     <div class="controls  pass">
-                        <input id="password-tf" type="password" name="password" value="" class="input-xlarge">
+                        <input id="new_password" type="password" name="new_password" value="" class="input-xlarge">
                     </div>
                 </div>
                 <div id="new_password-cg" class="control-group">
-                    <label for="new_password-tf" class="control-label">repeate password</label>
+                    <label for="new_password2" class="control-label">repeate password</label>
                     <div class="controls pass">
-                        <input id="new_password-tf" type="password" name="new_password" value="" class="input-xlarge">
+                        <input id="new_password2" type="password" name="new_password2" value="" class="input-xlarge">
                     </div>
                 </div>	  
                  <div >
-                      <input type="submit" id="account-form-btn2"  value="Update Setting"></input>
+                      <input type="submit" id="account-form-btn"  value="Update Setting"></input>
                 </div>
              </fieldset>
         </form>
@@ -125,4 +125,78 @@ background:rgb(204, 110, 87);
             <h3>Delete Account</p>
 	        <input type="submit"  value="Delete Account" class="del_btn"></input>	
         </form>	
-      </div>
+</div>
+
+ <script src="/assets/js/jquery.complexify.js"></script>
+ <script>
+
+ var oldpass = $('#old_password'),
+		newpass = $('#new_password'),
+		newpass2 = $('#new_password2'),
+		form = $('#account-form'),
+		btn = $('#account-form-btn');
+		
+newpass2.attr('disabled','true');
+btn.attr('disabled','true');
+var pass_good = false;
+
+
+// Use the complexify plugin on the first password field
+newpass.complexify({minimumChars:6, strengthScaleFactor:0.2}, function(valid, complexity){
+		if(valid){
+			newpass2.removeAttr('disabled');			
+			newpass.parent()
+					.removeClass('error')
+					.addClass('success');
+			
+		}
+		else{
+			newpass2.attr('disabled','true');			
+			newpass.parent()
+					.removeClass('success')
+					.addClass('error');
+		}		
+		var calculated = (complexity/100)*268 - 134;
+		var prop = 'rotate('+(calculated)+'deg)';
+	});
+
+	// Validate the second password field
+newpass2.on('keydown input',function(){	
+		// Make sure its value equals the first's
+	if(newpass2.val() == newpass.val()){
+		newpass2.parent()
+					.removeClass('error')
+					.addClass('success');
+		console.log('console pass right');
+		pass_good = true;
+		if(pass_good && oldpass.val().length > 0){
+		    console.log('btn all good');
+		    btn.removeAttr("disabled");  
+		}			
+	}
+	else{
+		newpass2.parent()
+					.removeClass('success')
+					.addClass('error');
+	} 
+});	
+
+
+
+ // Handle form submissions
+
+form.on('submit',function(e){
+    console.log('click');		
+    e.preventDefault();
+    $.ajax({
+           type: "POST",
+           url: "",
+           data: $(this).serialize(), 
+           success: function(data)
+           {
+               console.log(data);
+           }
+         });	
+});
+	
+ </script>

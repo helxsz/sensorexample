@@ -117,11 +117,10 @@ padding: 15px 15px 10px;
 
 
 .navbar ul li a
-{
-   color:#afafaf;
+{  
    transition: color .3s ease;  
    font-size:11px;
-   text-shadow:0px 1px 2px rgba(0,0,0,0.3);
+
 }
 .navbar ul li a:hover{
   color:#222;  
@@ -175,6 +174,160 @@ padding: 0 30px;
 line-height: 36px;
 }
 
+.Notifications,  .User-menu, .Course-menu {
+-webkit-border-radius: 3px 3px 0 0;
+-moz-border-radius: 3px 3px 0 0;
+-ms-border-radius: 3px 3px 0 0;
+-o-border-radius: 3px 3px 0 0;
+border-radius: 3px 3px 0 0;
+background-color: #F0F0F0;
+width: 320px;
+padding: 0px 0;
+}
+
+
+
+.Notifications .notifHeader, .Course-menu .courseHeader {
+-webkit-border-radius: 3px 3px 0 0;
+-moz-border-radius: 3px 3px 0 0;
+-ms-border-radius: 3px 3px 0 0;
+-o-border-radius: 3px 3px 0 0;
+border-radius: 3px 3px 0 0;
+-webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+-moz-box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+padding: 10px;
+background-color: #f5f5f5;
+}
+
+.Notifications .notifContent {
+bottom: 20px;
+height: auto;
+left: 0;
+overflow: auto;
+z-index: 2;
+}
+
+.Notifications .notifContent li:hover {
+background-color: #f5f5ff;
+}
+
+.Notifications .notifFooter {
+-webkit-border-radius: 0 0 3px 3px;
+-moz-border-radius: 0 0 3px 3px;
+-ms-border-radius: 0 0 3px 3px;
+-o-border-radius: 0 0 3px 3px;
+border-radius: 0 0 3px 3px;
+-webkit-box-shadow: 0 -1px 0 rgba(0,0,0,0.1),0 -2px 3px rgba(0,0,0,0.05);
+-moz-box-shadow: 0 -1px 0 rgba(0,0,0,0.1),0 -2px 3px rgba(0,0,0,0.05);
+box-shadow: 0 -1px 0 rgba(0,0,0,0.1),0 -2px 3px rgba(0,0,0,0.05);
+bottom: 0;
+height: 20px;
+}
+
+.Notifications .notifTitle, .Course-menu .courseTitle {
+font-size: 13px;
+font-weight: 700;
+margin-left: 10px;
+line-height: 0px;
+}
+
+.Notifications .notifSettings , .Course-menu .courseSettings{
+color: #777;
+cursor: pointer;
+font-size: 12px;
+position: absolute;
+right: 10px;
+top: 11px;
+z-index: 3;
+}
+
+.Notifications .notifItem{
+overflow: hidden;
+border-bottom: 1px solid #ddd;
+color: #666;
+cursor: pointer;
+}
+
+.User-menu li a:hover, .Course-menu li a:hover{
+background: #E9E9E9;
+}
+
+.Notifications .notifItem:last-child {
+border: none;
+}
+
+.actorImages {
+left: 0;
+padding: 10px 5px;
+position: absolute;
+}
+
+.notifMessage {
+float: left;
+font-size: 12px;
+font-weight: 500;
+margin: 10px 52px;
+line-height: 15px;
+}
+
+span img {
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+-ms-border-radius: 3px;
+-o-border-radius: 3px;
+border-radius: 3px;
+height: 33px;
+width: 33px;
+}
+
+.notifMessage .timesince {
+color: #a2a2a2;
+display: block;
+font-size: 11px;
+font-weight: 700;
+white-space: nowrap;
+}
+
+
+
+.User-menu ul a, .Course-menu ul a{
+font-size: 12px;
+padding: 6px 47px;
+}
+
+.User-menu li , .Course-menu li{
+overflow: hidden;
+color: #777;
+display: block;
+font-size: 12px;
+text-align: center;
+}
+
+.User-menu li a, .Course-menu li a {
+-webkit-font-smoothing: antialiased;
+font-family: 'Helvetica', sans-serif;
+font-weight: bold;
+color: #777;
+cursor: pointer;
+display: block;
+padding: 9px 14px;
+}
+
+#btn-logout{
+-webkit-font-smoothing: antialiased;
+font-family: 'Helvetica', sans-serif;
+font-weight: bold;
+color: #777;
+cursor: pointer;
+display: block;
+padding: 9px 14px;
+margin: auto;
+font-size: 12px;
+
+  border: 1px solid #F0F0F0;
+  font-weight: bold;
+}
 </style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -206,14 +359,14 @@ line-height: 36px;
 		<form class='search ' action="">
                 <input type="text" />              
         </form>	  
-        -->
+        
 		
 		<ul class=" pull-right row specialFeatures">
 		    <div class="navButton" style="font-size:12px;">SPECIAL FEATURES</div>
 			<li class="dropdown1 ">
                 <ul class="dropdown-menu">
                     <li style="-webkit-transform-origin: 50% 0% 0px; opacity: 0; -webkit-transform: matrix3d(1, 0, 0, 0, 0, 0, -1, 0.00125, 0, 1, 0, 0, 0, 0, 0, 1);">
-					    <!-- <a href="#/experience" style="background-image:url(http://gravitymovie.warnerbros.com/assets/images/epk/downloads/wallpapers/thumbs/keyart_desktop_thumb.jpg);" target="_self"> -->
+					    <a href="#/experience" style="background-image:url(http://gravitymovie.warnerbros.com/assets/images/epk/downloads/wallpapers/thumbs/keyart_desktop_thumb.jpg);" target="_self">
 						<img src="http://gravitymovie.warnerbros.com/assets/images/epk/downloads/wallpapers/thumbs/keyart_desktop_thumb.jpg" />
 						<div class="overlay">
 						</div>
@@ -222,44 +375,68 @@ line-height: 36px;
                 </ul>
             </li>		
 		</ul>
+		-->
 		
-	    <!-- include ../widget/power -->
+		
 	  <% if(locals.user) { %>
 	  
-       <ul class="nav pull-right row">
-	    <li>
-	        <a href="/profile/<%= locals.user.username %>" class="b-userbar__icons-item"> 
-                <img src="http://commondatastorage.googleapis.com/johnius/anchor.png" width="25" height="25" alt="Userbar icon"> 
-                <span class="b-userbar__icons-item-notify">5</span> 
-            </a>
-		</li>	
-	    <li>
-	     <a href="#" class="b-userbar__account ">
+       <ul class="nav pull-right row"> 
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= locals.user.username %></a>		  
+          <ul class="dropdown-menu  User-menu" style="width:160px;">
+		    <li class="notifItem"><a href="/profile/<%= locals.user.username %>">Dashboard</a></li>
+            <li class="notifItem"><a href="/settings/profile">Edit Profile</a></li>
+            <li class="notifItem"><a href="/settings/account">Account</a></li>
+		    <li class="notifItem">  
+		      <form method="POST" class="form-inline" action="/sessions" enctype="application/x-www-form-urlencoded">
+	             <input type="hidden" name="_csrf" value="<%= token %>"/>
+			     <input type="hidden" name="_method" value="delete" />			 
+			     <input id="btn-logout" type="submit" value="Sign Out"></input>				 
+              </form>
+		    </li>						
+          </ul>
+        </li>
+       </ul>
+
+
+
+	  <ul class="nav pull-right row">
+        <li class="dropdown ">
+		  
+	     <a href="#" class="b-userbar__account class="dropdown-toggle" data-toggle="dropdown"">
 		            <% if(locals.user.img) { %>
                         <img src="/images/<%= locals.user.img %>" width="21" height="21" alt="User avatar" class="b-userbar__account-avatar">
 					<% } %>
 					<% if(!locals.user.img) { %>
                         <img src="/default_user.jpeg" width="21" height="21" alt="User avatar" class="b-userbar__account-avatar">					
 					<% } %>
-         </a>
-		</li> 
-        <li class="dropdown ">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= locals.user.username %></a>
-          <ul class="dropdown-menu">
-		    <li><a href="/profile/<%= locals.user.username %>">Dashboard</a></li>
-            <li><a href="/settings/profile">Edit Profile</a></li>
-            <li><a href="/settings/account">Account</a></li>
-            <li class="divider"></li>			
-		    <li>  
-		      <form method="POST" class="form-inline" action="/sessions" enctype="application/x-www-form-urlencoded">
-	             <input type="hidden" name="_csrf" value="<%= token %>"/>
-			     <input type="hidden" name="_method" value="delete" />			 
-			     <button id="btn-logout" class="btn btn-primary"><i class="icon-lock icon-white"></i>Sign Out</button>			 
-              </form>
-		    </li>						
+			<span class="b-userbar__icons-item-notify">5</span>		
+         </a>		  
+          <ul class="dropdown-menu Notifications">
+		    <div class="notifHeader">
+	            <h1 class="notifTitle">Notifications</h1>
+	            <a class="notifSettings">Edit</a>
+            </div>
+			<ul class="notifContent">
+			    <!--
+                <li class="notifItem">
+                        <div class="actorImages">
+                            <a data-actor-id="313563330214114585" class="actorImage active" href="/isiprinos/">
+                                <span><img src="http://media-cache-ec0.pinimg.com/avatars/isiprinos_1374959866_75.jpg"></span>
+                            </a>
+                        </div>
+                        <p class="notifMessage">
+                            Your Facebook friends <a href="/isiprinos/" data-actor-id="313563330214114585">Isidoros Prinos</a> and <a href="/kevin7363881/" data-actor-id="303641337285062950">Kai Liu</a> joined Pinterest.
+                            <span class="timesince">9 weeks ago</span>
+                        </p>
+                </li>
+				-->
+			</ul>	
+            <div class="notifFooter"></div>			
           </ul>
-        </li>
-       </ul>	 
+        </li>	  
+	  </ul>
+	   
 	  <% } %>
 
     </div>
@@ -280,7 +457,48 @@ line-height: 36px;
   
 </div>
 
+<div class="modal hide" id="HelpModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">x</button>
+        <h3>Ask the tutor question</h3>
+    </div>
+    <div class="modal-body" style="text-align:left;">
+        <div class="row-fluid">
+            <div class="chatter">  
+                <div class="chatter_convo">
+                </div>
+            </div>				
+	        <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/> 
+            <input type="hidden" id="modal-qid"  value=""/>
+            <input type="hidden" id="modal-sid"  value=""/>			
+            <textarea name="msg" style="height:400px;" placeholder="Type your message here..." class="chatter_field chatter_message" id="msg_area"></textarea>
+            <button id="help_msg_btn" class="btn btn-primary" value="Submit"> Submit	</button>
+            				
+        </div>
+    </div>
+    <div class="modal-footer">
+    </div>	
+</div>
 
+<div class="modal hide" id="SubmitModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3>Submit the answers</h3>
+    </div>
+    <div class="modal-body" style="text-align:left;">
+        <p>	
+            Submit the Answers		
+        </p>      		
+    </div>
+    <div class="modal-footer">
+        <form method="post" style="margin: 0 0 0px;"  action="/course/"+ courseid +"/disjoin" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="_csrf" value="<%= token %>">
+					<a href="#" data-dismiss="modal" class="btn">Cancel</a> 
+                    <a href="#" type="submit" id="confirmBtn" class="btn btn-danger">Confirm</a>
+        </form> 
+        		
+    </div>	
+</div>
 
 
 <style>
@@ -434,9 +652,377 @@ letter-spacing: 3px;
 </style>
 
 <script>
-/*
-setInterval(function() {
-  $('.ha-header-bottom').toggleClass('ha-header-subshow');
-}, 1500);
-*/
+
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+
+$('.b-userbar__account').click(function(e){
+    console.log('click account');
+    getSocketNoti();
+})
+
+function getSocketNoti(){
+    $.ajax({
+           type: "GET",
+           url: "/user/notify/socket",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        //console.log('get socket notifications success ',data);			   
+           },error: function(jqXHR, textStatus, errorThrown){
+               console.error('get socket notifications error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });
+}
+
+getNotification();
+function getNotification(){
+    console.log('get notifications');
+    $.ajax({
+           type: "GET",
+           url: "/user/notify",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        console.log('get notifications success ',data, data.notifications.length);
+				$('.b-userbar__icons-item-notify').text(data.notifications.length);
+			    for(var i=0;i<data.notifications.length;i++){	
+				    var noti = data.notifications[i];
+					noti = JSON.parse(noti);
+                    console.log('abc',noti, noti.u, noti.v, noti.t, noti.m.length);		        
+					if(noti.t=='finish'){
+					    //console.log('Finish');
+						var sid = noti.u;
+						var ids = '';
+					    for(var j=0;j<noti.m.length;j++){					
+					        //console.log(noti.m[j].que);
+							ids += noti.m[j].que
+							if(j != (noti.m.length-1) )
+							ids+=',';
+					    }
+						
+						console.log(ids);
+						if(i==0){
+						    //getQuestionArray(ids);
+						    
+						
+						}
+						addMsgNotifcationToTutor(noti.u,'http://media-cache-ec0.pinimg.com/avatars/isiprinos_1374959866_75.jpg','Isidoros Prinos'+i,'9 weeks ago',ids);
+					}
+					else if(noti.t=='help'){
+					    console.log('help  ',noti.m.que, noti.m.msg);
+					   addHelpNotificationToTutor(noti.u,'http://media-cache-ec0.pinimg.com/avatars/isiprinos_1374959866_75.jpg','Isidoros Prinos'+i,'9 weeks ago', noti.m.que, noti.m.msg);
+					}
+			   }
+			   
+           },error: function(jqXHR, textStatus, errorThrown){
+               console.error('get notifications error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });    
+ }
+ 
+function getQuestionArray(ids){
+
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ courseid +"/exam/group?"+ids,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data){
+		        console.log(' getQuestionArray  success',data.questions);
+				var questions = data.questions;
+				for(var i=0;i<data.questions.length;i++){
+				    console.log(questions[i].que,questions[i].tip,questions[i]._id);
+				}
+				
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('getQuestionArray error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    }); 
+}
+
+var aa = {};
+var dd = {};
+
+function getQuestionArrayAndAnswer(sid, ids){
+    console.log('getQuestionArrayAndAnswer');
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ courseid +"/exam/qestion_answer?"+ids+"&sid="+sid,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data){
+				console.log('get answers ', data.answers);
+				/*
+				var questions = data.questions;				
+				for(var i=0;i<questions.length;i++){
+				    console.log(questions[i].que,questions[i].tip,questions[i]._id);
+				}
+				*/
+				
+				aa = {}, dd = {};
+				
+				var answers = data.answers;
+				// all the [{question, answers}] in the milestone
+				for(var i=0;i<answers.length;i++){
+				    //console.log(answers[i].qid.que);
+				    console.log(answers[i].qid.que, answers[i].qid._id, answers[i].anw.length, answers[i].debug.length , answers[i].verified, answers[i].right);
+					////////////////////////////////////////////////
+                    aa[ answers[i].qid._id ] = answers[i].anw;
+					dd[ answers[i].qid._id ] = answers[i].debug;
+					////////////////////////////////////////////////
+					var finish_class = '';
+					if(answers[i].verified){
+					    if(answers[i].right == true)  finish_class = 'right';
+						else if(answers[i].right==false) finish_class = 'wrong';
+					}
+					
+					var s = $( '<section class="box group ui-droppable '+ finish_class  +'  " id="'+  answers[i].qid._id  +'"  que="'+  answers[i].qid.que +'" >'
+						            //+'<section class="color-left grapefruit-light"></section>'
+						            //+'<section class="color-right grapefruit-dark"></section>'
+						                +'<h1>Question ' +  (i+1) +'</h1>'
+										+'<div class="answer"></div>'
+										+'<div class="debug"></div>'
+					           +'</section>');
+					s.bind('click',clickUserQuestion);
+					$('.plans ul').append(s);
+				}				
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('getQuestionArray error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    }); 
+}
+				
+function addMsgNotifcationToTutor(id,img,name, time, set){
+    console.log('addMsgNotifcationToTutor');
+    var noti = $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> finished a milestone.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>' );
+	$('.Notifications ul').prepend(noti);
+
+	var s = $(
+			'<li class="user-info span2 members ui-draggable"  id="'+ id +'" data-id="'+ id +'"  data-set="'+ set +'">'			      	
+                +'<img src="'+ img  +'"> </img>'			
+				+'<p>'+ name +'</p>'
+				//+'<span class="loc">Liverpool, UK</span>'
+			+'</li>'
+	);			   
+	s.appendTo( $(".student_list ul") );
+	s.bind("click",clickUserQuestionsSet);
+	
+}
+
+var clickUserQuestion = function(e){
+		console.log('section questions click', $(this).attr('id'));
+		var id = $(this).attr('id');
+		$('.wrap .content').html( aa[id][0] );   // show question
+		$('.plans h3').text( $(this).attr('que'));		// show user's answer
+		//////////////////////////
+		$('.plans ul').find('section').each(function(e){
+		    $(this).removeClass('question_click');
+		})
+		$(this).addClass('question_click');
+		//////////////////////////
+		
+}
+
+var clickUserQuestionsSet = function(e1){ 
+	    console.log('click info', $(this).attr('id'), $(this).attr('data-set'));
+		var sid = $(this).attr('id'), ids = $(this).attr('data-set');
+		getQuestionArrayAndAnswer(sid,'ids='+ids);
+		////////////////////////////////////
+		$('.student_list ul').find('li').each(function(e){
+		    console.log('remove set click');
+		    $(this).removeClass('question_set_click');
+		})		
+		$(this).addClass('question_set_click');
+		///////////////////////////////////
+		
+		$('.plans').find('section').each(function(){
+		    $(this).unbind('click',clickUserQuestion);		
+		});
+		$('.plans ul').html('');
+}
+
+
+function addHelpNotificationToTutor(id,img,name, time, qid, msg){
+    var noti =  $( '<li class="notifItem">'
+                        +'<div class="actorImages">'
+                            +'<a data-actor-id="' +  id  +'" class="actorImage active" href="#">'
+                                +'<span><img src="'+ img  +'"></span>'
+                            +'</a>'
+                        +'</div>'
+                        +'<p class="notifMessage">Your student'
+                            +' <a href="#" data-actor-id="' +  id  +'">'+  name +'</a> asked a question.'
+                            +'<span class="timesince">'+ time +'</span>'
+                        +'</p>'
+                +'</li>');
+	noti.prepend('.notifContent');	
+
+	var s = $(
+			'<li class="user-info span2 members ui-draggable" data-toggle="modal" class="modal-btn" href="#HelpModal" sid="'+ id +'" data-sid="'+ id +'"  data-qid="'+ qid +'">'			      	
+                +'<img src="'+ img  +'"> </img>'			
+				+'<p>'+ name +'</p>'
+				//+'<span class="loc">Liverpool, UK</span>'
+			+'</li>'
+	);			   
+	s.appendTo( $(".student_list ul") );
+	s.bind("click",clickUserHelp);
+
+			
+}
+
+var clickUserHelp = function(){
+	console.log(  $(this).attr('data-sid'),$(this).attr('data-qid') );
+	var sid = $(this).attr('data-sid'), qid = $(this).attr('data-qid');
+	console.log('clickUserHelp   qid',qid,'sid',sid);
+	$('#modal-qid').val(qid);
+	$('#modal-sid').val(sid);	
+	$('.chatter_convo').html('');
+	
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ courseid +"/tutor/help?qid="+qid+"&sid="+sid,
+           success: function(data){
+		        console.log(' get help chats success',data, data.data.length);
+
+	            for(var i=0;i<data.data.length;i++){
+				     var obj = data.data[i];
+			   	    var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
+                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
+                        +'  <strong class="chatter_name">'+  obj._id  +'</strong>'+obj.m
+						+' <span> '+  obj.t +' </span>'
+					  +'</span>');	
+                    a.appendTo($('.chatter_convo'));
+				}
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('getQuestionArray error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });	
+}
+
+
+
+
+$('#help_msg_btn').click(function(){
+    console.log('help msg clicks',$('#csrf').val());
+	var length = $('.chatter_convo').find('.chatter_msg_item').size();
+	var msg = $('#msg_area').val();	
+	if(msg.length <20) {
+	    // the question should be a lot of more specific
+	    return false;
+	}
+	
+	var qid =$('#modal-qid').val() , sid = $('#modal-sid').val();
+	console.log('qid',qid,'sid',sid,'msg',msg);
+	$.ajax({
+           type: "GET",
+		   url: "/course/"+ courseid +"/tutor/replyhelp?qid="+qid+"&sid="+sid+"&msg="+msg,
+		   //data: 'msg='+msg+'&question_id='+current_qid,
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('submitHelp success  ',data);			   
+			   	var a = $(   '<span class="chatter_msg_item chatter_msg_item_admin">'
+                        +' <a href="" class="chatter_avatar"><img src="https://si0.twimg.com/profile_images/3003485948/349f8da7e56d9abc30f5f405a6ab76c4_bigger.jpeg" /></a> '
+                        +'  <strong class="chatter_name">Luke Peters</strong>'+msg
+					  +'</span>');	
+                a.appendTo($('.chatter_convo'));
+                $('#msg_area').val('');				
+           }
+        });  
+})
+
+function submitHelp(sid, qid, msg){
+
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ courseid +"/tutor/help/reply?qid="+qid+"&sid="+sid+"&msg="+msg,
+           success: function(data){
+		        console.log(' submitHelp success',data);
+			
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('getQuestionArray error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });
+
+}
+
+
+
+			
 </script>
+
+
+<script>
+var pathArray = window.location.href.split( '/' );
+var protocol = pathArray[0];
+var host = pathArray[2];
+var url = protocol + '://' + host;
+console.log('host ',host);
+
+initWebsocket(url);
+
+
+var socket;
+var socket_id, uid;
+function initWebsocket(url){
+            console.log('init parking socket');
+			socket = io.connect(url, {secure: true,"connect timeout": 1000});
+						
+            socket.on('connect', onConnectSuccessCallback);
+			
+			socket.on('disconnect',onDisconnectCallback);
+			socket.on('error', onErrorCallback);
+
+            socket.on('noti', onNotificationCallback);			
+}
+
+function onErrorCallback(reason){
+    console.error('Unable to connect Socket.IO', reason);
+}
+
+function onConnectSuccessCallback(message) {
+	console.info('successfully established a working connection');
+    console.log('on connect',message);
+	if(message !=null){
+	    console.log(message.id,message.uid);
+	    uid = message.uid, socket_id = message.id;
+		room = "help:"+uid;
+	}
+}
+
+function onDisconnectCallback(message){
+      console.log( 'onDisconnectCallback' );
+      setTimeout(function() {
+        $('.navigation').remove();
+        $('#content').empty();
+        $('#content').append('<h1>503</h1><h2>I\'m sorry Dave, i\'m afraid i have lost the connection to the server.</h2><p><a href="/login"><h3>Back to Login</h3></a></p>');
+      }, 1000);
+}
+
+function onNotificationCallback(msg){
+
+    console.log('onwebsocket notfi callback', msg);
+}
+</script>
+

@@ -21,28 +21,29 @@ var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
 	
 var notification_api = require('./notification_api');
+var permissionAPI = require('./permission_api');
 	
 var errors = require('../utils/errors');
 
 // tutor goes to the invitation
-app.get('/course/:id/setting/invitation',authTutor,getCourseInvitationPage);
+app.get('/course/:id/setting/invitation',permissionAPI.authUser,  permissionAPI.authTutorInCourse, getCourseInvitationPage);
 
 // tutor send a email invitation
-app.put('/course/:id/setting/invite',authTutor,inviteStudents);
-app.post('/course/:id/setting/invite',authTutor,inviteStudents);
+app.put('/course/:id/setting/invite',permissionAPI.authUser, permissionAPI.authTutorInCourse, inviteStudents);
+app.post('/course/:id/setting/invite',permissionAPI.authUser,permissionAPI.authTutorInCourse, inviteStudents);
 
 // tutor get a list of invitation
-app.get('/course/:id/invitation',authTutor,getInvitationsFromCourse);
+app.get('/course/:id/invitation',permissionAPI.authUser,permissionAPI.authTutorInCourse,getInvitationsFromCourse);
 
 // tutor deletes a invitation
-app.delete('/course/:id/invitation/:invitation_id',authTutor,deleteInvitationOfCourse);
+app.delete('/course/:id/invitation/:invitation_id',permissionAPI.authUser,permissionAPI.authTutorInCourse,deleteInvitationOfCourse);
 function deleteInvitationOfCourse(cid,invitation_id,callback){
 
 
 }
 
 // tutor updates a invitation
-app.put('/course/:id/invitation',authTutor,updateInvitationsOfCourse);
+app.put('/course/:id/invitation',permissionAPI.authUser,updateInvitationsOfCourse);
 function updateInvitationsOfCourse(cid,invitation_id,callback){
 
 
@@ -56,73 +57,46 @@ function getCourseInvitationPage(req,res,next){
 
     var locals = {};
     var cid = req.params.id;
-    if( req.session.uid.length < 12) res.send(404,{'msg':'user id is not valid'});	
-	
+    	
 	async.parallel([
 	    function(callback) {		
-	       if (req.session.uid) {
-		        console.log('getCourseSettingPage'.green, req.session.username,req.session.uid);
-				if( req.session.uid.length < 12) res.send(404,{'msg':'user id is not valid'});
-				else{
-				    loadUserProfileById(req.session.uid,function(err,data){
-				        if(err){return callback(err); }
-				        else{
-					        locals.user = {username: data.username,email: data.email};						
-					    }
-					    callback();
-				    });
-				}
-			}else{
-                callback();	
-            }
+				loadUserProfileById(req.session.uid,function(err,data){
+				    if(err){return callback(err); }
+				    else{
+					    locals.user = {username: data.username,email: data.email, img:data.img};						
+					}
+					callback();
+				});
 		},
-		function(callback) {
-            courseModel.getCourseSetting(cid,function(err,data){
-                if(err) next(err);
-	            else{
-	               //console.log('getCourseSettingPage success'.green,data.title,data.city);
-				   console.log(data);
-		           locals.course = data;
-	            }
-				callback();
-            })
-		},
-		/*
-		function(callback){	           		
-            courseModel.findCourseInvitationById(cid,function(err,data){
-		        if(err) next(err);
-	            else{
-				   console.log("course invitation length".green, data.length);
-		           locals.invitations = data;
-	            }
-                callback();				
-	        })
-		
-		}*/
 		function(callback){	 
 	        courseModel.findCourseInvitation(cid,function(err,data){
-		        if(err) next(err);
+		        if(err)  next(err);
 	            else{
 			        //console.log("getInvitationsFromCourse ",data);
 		            locals.invitations = data.invitations;
+					for(var i=0;i<data.invitations.length;i++){
+					    locals.invitations[i].time = moment( locals.invitations[i].time ).fromNow();
+					}
+					locals.course = {'_id':data._id};
 	            }
                 callback();				
 	        })		
 		}
 		],function(err) {
 	      if (err) return next(err); 
-	      res.format({
+		  
+		  if(req.xhr) return res.send({'data':null},200);
+		  else res.format({
                     html: function(){
-					     console.log("course setting students");
-						 locals.title = 'Course Setting';
-						 locals.page = 'students';
-                         res.render('course_setting',locals);			
+						 locals.title = 'Course Setting - Invitation';
+						 locals.page = 'invitation';
+                         res.render('course/course_setting',locals);			
                     },
                     json: function(){
-                         res.send(locals.courses);
+                         res.send(locals);
                     }
-                  });
-	    });	
+          });
+	});	
 
 }
 
@@ -130,20 +104,19 @@ function inviteStudents(req,res,next){
 
     var locals = {};
     var cid = req.params.id; 
-    if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
     console.log(" inviteStudents".green,req.body.email);
 	
 	var email = req.body.email;
-	/*
+	email = sanitize(email).trim();
     try {      
        check(email).isEmail();
     } catch (e) {
-	   console.log("email  is wrong");
+	   console.log("email  is wrong".red);
        res.statusCode = 400;
-       res.end(JSON.stringify({status:"error",errors:[{"message":"email is invalid"}]}));
+       res.end(JSON.stringify({"error":"email is invalid"}));
        return;
     }
-	*/
+	
 	
 	console.log(email+"  is right ".green);
 	async.series([
@@ -162,12 +135,12 @@ function inviteStudents(req,res,next){
 	        if (err) return next(err); 
 			// enum [ email_not_sent 0, email_failed 1, email_sent 2,  not_replyed 3, accpeted 4, refused 5, ]
 		    var email_status = 0;
-		    var token = mongoose.Types.ObjectId();  // a new objectID in mongoose
-    
+		    //var token = mongoose.Types.ObjectId();  // a new objectID in mongoose
+            var token = (100000000000).toString(36);
             async.series([ 			
 			    function(callback){
 				    var reply_link = "/invitation/token/"+token;
-					var sign_link = "/signup/invitation/"+token;
+					var sign_link = "/signup/invitation/?token="+token+"&email="+email+'&cid='+cid;
                     mail_api.sendInvitationMail(sign_link, locals.course.title, locals.course.summ ,email, function(error, response){
                         if(error){
                             console.log("inviteStudents Message sent error ".red,error); // get error message
@@ -209,8 +182,8 @@ function inviteStudents(req,res,next){
 					})
 		        }				
 				],function(err) {
-				    if(!email_status) res.json(504,{"meta":504});
-					else  res.json(200,{"meta":200});				
+				    if(!email_status) res.json(504);
+					else  res.json(200);				
 				})               				
 	    });		
 	
@@ -219,18 +192,14 @@ function inviteStudents(req,res,next){
 function getInvitationsFromCourse(req,res,next){
 
     var cid = req.params.id; 
-    if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-	/*
-    courseModel.findCourseInvitationById(cid,function(err,data){
-		if(err) next(err);
-	    else{
-			console.log("getInvitationsFromCourse ",data);
-		    res.json(200,data);
-	    }	    	
-	})
-	*/
+
 	courseModel.findCourseInvitation(cid,function(err,data){
-		if(err) next(err);
+		if(err) {
+		   res.send(500,{'errors':err});
+		   next(err);
+		}else if(data==null){
+		    res.send(404);
+		}
 	    else{
 			console.log("getInvitationsFromCourse ",data);
 		    res.json(200,data);
@@ -246,7 +215,6 @@ function replyToCourseInvitation(req,res,next){
     var id = req.params.id;
 	var token = req.params.token;
 	var uid = req.session.uid;
-    if( req.session.uid.length < 12) res.send(400,{'msg':'course id is not valid'});	    
     var action = req.query["action"],extra = req.query["extra"];
 	console.log('replyToCourseInvitation',id,token,uid);
 	courseModel.addStudentByInvitation(id,token,uid,function(err,data){
@@ -279,67 +247,6 @@ function getRegisterInvitationPage(req,res,next){
 
 /********************************************/
 
-function authTutor(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':req.session.uid,'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('authTutor  Courses  not admined'.red);
-				 next(err);
-		      }
-			  else{
-			     console.log('authTutor  find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	}else{
-	    console.log('authTutor:  the user has no session id');
-	    res.redirect('/login');
-	} 
-}
-
-function authAdmin(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	} 
-}
-
-function authStudents(req,res,next){
-	if (req.session.uid) {
-		 console.log('authAdmin'.green, req.session.username,req.session.uid);
-		 if( req.session.uid.length < 12) res.send(404,{'msg':'course id is not valid'});
-         else{		 		     
- 		     courseModel.findCoursesByQuery({'tutor.id':{'$in':req.session.uid},'_id':req.params.id},{'limit':20,'skip':0},function(err,course){
-		      if(err) {
-			     console.log('Courses  not admined'.red);
-		      }
-			  else{
-			     console.log('find course uid'.green,course._id);
-			     next();
-              }			
-		    })
-		}
-	} 
-}
-
-
-
-
 /********************************************/
 
 function loadUserProfileById(id,callback){
@@ -353,7 +260,6 @@ function loadUserProfileById(id,callback){
 		    //callback( new Error("USER NOT FOUND"),null );
 		}
 		else{
-			console.log('find user uid'.green,user._id);
             callback(null,user);					
          }           					
 	})			

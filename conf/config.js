@@ -2,12 +2,13 @@ module.exports = {
     name:'Feynlabs',
     sessionStore:'mongodb://localhost/sessionStore/session',
 	sessionSecret: '076ee61d63aa10a125ea872411e433b9',
-	port: 8080,
+	port: 80,
 	uri: 'http://localhost:8080', // Without trailing /
 	host: 'localhost',
     redis: {
         host: 'localhost',
-        port: 6379
+        port: 6379,
+		auth:''
     },
     mongodb_production: 'mongodb://localhost/fablab_production',
     mongodb_development: 'mongodb://localhost/fablab_development',
@@ -50,6 +51,9 @@ module.exports = {
         ,pass:"newstartup"
         ,name:"Feynlabs"	
 	},
+    admin:{
+	    user:"helxsz@gmail.com"
+	},	
     /*
 	github: {
        clientID: '30c930492a8218b78db8',
@@ -61,19 +65,19 @@ module.exports = {
 	github: {
        clientID: '536f1716d3af679c69c4',
        clientSecret: '26d5ba1d833552bf2acabe4b02db99a79142daec',
-	   callbackURL:'http://127.0.0.1:3000/auth/github/callback'
+	   callbackURL:'http://127.0.0.1:80/auth/github/callback'
     },	
 	// https://developers.facebook.com/apps/663584603654022/summary?save=1
 	facebook: {
        clientID: '663584603654022',
        clientSecret: '9e3e97b6b5d4135312bb5e9696ac8467',
-	   callbackURL:'http://127.0.0.1:3000/auth/facebook/callback'
+	   callbackURL:'http://127.0.0.1:80/auth/facebook/callback'
     },
 	// https://dev.twitter.com/apps/5133885/show
     twitter: {
        clientID: 'k5xM8PXGt9W8WaJTXuSBHw',
        clientSecret: 'ccin9xCcVTUTDk7ptHOr22IrfLYgpubYltUnJWW2Vk',
-	   callbackURL:'http://127.0.0.1:3000/auth/twitter/callback'
+	   callbackURL:'http://127.0.0.1:80/auth/twitter/callback'
     },
     google: {
        clientID: 'APP_ID',
@@ -84,7 +88,7 @@ module.exports = {
     dropbox:{
        clientID: 'hzgdwykknvbpiyz',
        clientSecret: 'obxt2nq1r09ue6s',
-	   callbackURL:'http://127.0.0.1:3000/auth/dropbox/callback'	
+	   callbackURL:'http://127.0.0.1:80/auth/dropbox/callback'	
 	}	
 };
 

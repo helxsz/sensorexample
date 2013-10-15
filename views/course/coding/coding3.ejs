@@ -14,7 +14,10 @@
     <div class='codepen'></div>
   </div>
   <div class='footer'>
-    <span>Edit this pen</span><span>Report Abuse</span>
+    <span style="color:green;" id="rightBtn">Right</span>  
+    
+    
+	<span style="color:red" id="wrongBtn">Wrong</span>
   </div>
 </div>
 
@@ -176,3 +179,82 @@ h2 {
   color: #bdc3c7;
 }
 </style>
+
+<script>
+$('#rightBtn').bind('click',function(e){
+   console.log('click right');
+   $('.question_click').addClass('right');
+   $('.question_click').addClass('finish');
+   
+   check()
+})
+
+$('#wrongBtn').bind('click',function(e){
+   console.log('click wrong');
+   $('.question_click').addClass('wrong');
+   $('.question_click').addClass('finish');
+   
+   check()   
+})
+
+function check(){
+    console.log($('.plans').find('.box').length, $('.plans').find('.finish').length);
+    if( $('.plans').find('.box').length == $('.plans').find('.finish').length  ){
+       console.log('could send to web   ',$('.plans').find('.box').length);	   
+	   $('#SubmitModal').modal('show');
+	   
+   
+	   return true;
+    }
+    return false;
+}
+
+$('#confirmBtn').bind('click',tutorSubmit);
+
+function tutorSubmit(){
+	   var sid = $('.question_set_click').attr('id');
+	   var content = '';
+	   $('.plans').find('.finish').each(function(){
+	        
+		    var id = $(this).attr('id');
+            if($(this).hasClass('right')){
+			    id += '_1';
+			}else if($(this).hasClass('wrong')){
+			    id += '_0';			
+			}
+            content +=id+','			
+		});
+		content = content.substring(0,content.length-1);
+		
+		console.log(content);
+		console.log(sid);
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ courseid +"/tutor/permit?"+'content='+content+'&sid='+sid,
+           success: function(data){
+		        console.log(' submit verify  success');
+				$('.clickUserQuestionsSet').unbind('click',clickUserQuestionsSet);
+                $('.question_set_click').remove();
+				$('.plans').find('section').each(function(){
+		            $(this).unbind('click',clickUserQuestion);
+                    $(this).remove();					
+		        });
+		        //$('.plans ul').html('');
+				
+				
+				$('#SubmitModal').modal('hide');
+				
+				if($(".student_list ul").find('li').length==0){
+				    getNotification();				
+				}
+				
+				
+				
+		   },
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('getQuestionArray error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });	
+
+}
+</script>

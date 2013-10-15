@@ -268,12 +268,12 @@ border: 1px solid #CCC;
 			<img src="/images/<%= locals.tutor.img %>" >
         <% } %>
 	    <% if(!locals.tutor.img) {%> 
-            <img src="https://static.squarespace.com/static/ta/5134cbefe4b0c6fb04df8065/6291/assets/tour/rand-fishkin.jpg?format=100w">
+            <img src="/default_user.jpeg">
         <% } %>	    		
     </div>
 	
     <div class="info">
-        <span class="name">   <a href="/profile/<%= locals.tutor.name %>"> <%= locals.tutor.name %> </a>  , CEO   </span>
+        <span class="name">   <a href="/profile/<%= locals.tutor.name %>"> <%= locals.tutor.name %> </a> </span>
     </div>
 			  
 	<blockquote class="quote">
@@ -281,190 +281,41 @@ border: 1px solid #CCC;
 			locals.tutor.about
         <% } %>
 	    <% if(!locals.tutor.about) {%> 
-            The Squarespace team has put together a remarkable platform. Every aspect of the product - user experience, featureset, SEO friendliness, design and more - all work together to create one of the few content management systems I'm proud to recommend.
+            
         <% } %>		
     </blockquote>
 
 
 
-  <div class="widget span3 animated flipInX ">
+  <div class="widget span3   ">
     
     <div class=" section-graph">
       <div class="graph-info">
-        <i class="graph-arrow"></i>
-        <span class="graph-info-big">634.39</span>
-        <span class="graph-info-small">+2.18 (3.71%)</span>
-		
-		<form id="heart" >
-		   	<input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>			           
-			<button id="like_btn" class="outline" type="submit" ></button>
-			<% if(locals.course.like) {%> 
-                <input type="hidden" id='like' name="like" value="1"/>				
-            <% } %>
-			<% if(!locals.course.like) {%> 
-				<input type="hidden" id='like' name="like" value="0"/>
-            <% } %>			
-        </form>
-
-		<form id="follow" >
-		    <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
-            <input type="hidden" id="tutor_id" value="<%= locals.tutor.id %>">			
-			<% if(locals.tutor.follow) {%> 
-			    <button id="follow_btn" class="outline" type="submit" >  unfollow </button>
-			    <input type="hidden" id='follow_input' name="follow" value="1"/> 				     
-            <% } %>
-	        <% if(!locals.tutor.follow) {%> 
-			    <button id="follow_btn" class="outline" type="submit" >  follow </button>
-			    <input type="hidden" id='follow_input' name="follow" value="0"/> 				     				    
-            <% } %>						
-        </form>        		
-        
-      </div>
-      <div class="highcharts-container" id="highcharts-0" style="position: relative; overflow: hidden; width: 283px; height: 151px; text-align: left; line-height: normal; z-index: 0; font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, Arial, Helvetica, sans-serif; font-size: 12px;">
-	  </div>
-    </div>
-    
-    <div class=" section-info">
-      <span class="info-time">Today 2:25 PM</span>
-      <h3 class="info-title">Salt Lake City, Utah</h3>
-      
-      <div class="info-block">
-        <dl>
-          <dt>13.5 M</dt>
-          <dd>Shares Traded</dd>
-        </dl>			
-      </div>
-      
-      <div class="info-block last">
-        <dl>
-          <dt>28.44</dt>
-          <dd>Market Cap</dd>
-        </dl>
-      </div>
-      
-      <div class="info-aapl">
-        <h4>AAPL</h4>
-        <ul>
-          <li><span class="orange" style="height: 37.5%"></span></li>
-          <li><span class="orange" style="height: 47.5%"></span></li>
-          <li><span class="orange" style="height: 70%"></span></li>
-          <li><span class="orange" style="height: 85%"></span></li>
-          <li><span class="orange" style="height: 40%"></span></li>
-          <li><span class="green" style="height: 75%"></span></li>
-          <li><span class="green" style="height: 50%"></span></li>
-          <li><span class="green" style="height: 15%"></span></li>
-          <li><span class="green" style="height: 25%"></span></li>
-        </ul>
-      </div>
-      
-      <div class="yearly-change">
-        <h4>Yearly Change</h4>
-        <span><em>+</em> 127.01</span>
-      </div>
-    </div>
-  </div>
-  
-  
-  
+ 
     <% if(locals.loggedin) { %> 	
 		<div class="span3">
 		    <% if(!locals.user.isStudent) { %> 			
-                <form method="post" id="login-form" class="well  " action="/course/<%= locals.course._id %>/join" enctype="application/x-www-form-urlencoded">
+                <form method="post" id="login-form" l  " action="/course/<%= locals.course._id %>/join" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="_csrf" value="<%= token %>"/>
-                    <h1>Hello!!!</h1>
-                    <p class="subheading">join</p>
-
-                    <button type="submit" id="btn-login" class="btn"><i class="icon-lock icon-white"></i>Sign in</button>
+                    <button type="submit" id="btn-login" class="btn"><i class="icon-white"></i>Join The Course</button>
                 </form> 
 	        <% } %>	
 	
              <% if(locals.user.isStudent) { %> 			
-                <form method="post" id="login-form" class="well  " action="/course/<%= locals.course._id %>/disjoin" enctype="application/x-www-form-urlencoded">
+                <form method="post" id="login-form" action="/course/<%= locals.course._id %>/disjoin" enctype="application/x-www-form-urlencoded">
                     <input type="hidden" name="_csrf" value="<%= token %>"/>
-                    <h1>Hello!!!</h1>
-                    <p class="subheading">out</p>
-
-                    <button type="submit" id="btn-login" class="btn"><i class="icon-lock icon-white"></i>out</button>
+                    <button type="submit" id="btn-login" class="btn"><i class="icon-white"></i>Sign Out</button>
                 </form> 
-	        <% } %>
-		  
-            <% if(locals.user.isTutor) { %> 
-                <ul class="nav">			
-                    <li><a href="/course/<%= locals.course._id %>/setting"> Course Setting </a></li>
-				    <li><a href="/course/<%= locals.course._id %>/manage/posts"> Post Setting </a></li>
-				    <li><a href="/course/<%= locals.course._id %>/manage/students"> Student Setting </a></li>
-				    <li><a href="/course/<%= locals.course._id %>/manage/questions"> Question Setting </a></li>
-				</ul>
-
-            <form method="post" action="/course/<%= locals.course._id %>" id="account-form" class="form-horizontalspan6" >
-                <input type="hidden" name="_csrf" value="<%= token %>"/>
-	            <input type="hidden" name="_method" value="delete" />  
-                <p id="sub1" class="subheading">delete course.</p>
-	            <button id="btn-logout" class="btn btn-primary"><i class="icon-lock icon-white"></i>delete course</button>	
-            </form>	
-
-				
-	        <% } %>		  
-		  
+	        <% } %>	  
 		</div>  
-    <% } %>	
-  
-  
-  
-  
-	
+    <% } %>
+ 
+     
+      </div>
+      <div class="highcharts-container" id="highcharts-0" style="position: relative; overflow: hidden; width: 283px; height: 151px; text-align: left; line-height: normal; z-index: 0; font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, Arial, Helvetica, sans-serif; font-size: 12px;">
+	  </div>
+    </div>
+
+    </div>
+  </div>
 </div>
-
-<script>
-				   
-if( $('#like').val() ==0 ) $('#heart .outline').css('background','grey');
-if( $('#like').val() ==1 ) $('#heart .outline').css('background','#d53423');
-
-$("#heart").on('submit',function(e){
-    console.log('click heart support');		
-    e.preventDefault();
-    $.ajax({
-           type: "POST",
-           url: "/course/"+$('#course_id').val()+"/like",
-           data: $(this).serialize(), 
-           success: function(data){
-               console.log('like data',data,data.like);
-               if(data.like == 0){
-				   $('#heart .outline').css('background','grey');
-				   $('#like').val(0);
-			   }
-			   else if(data.like ==1){
-				   $('#heart .outline').css('background','#d53423');
-				   $('#like').val(1);
-			   }
-           },
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           }
-         });	
-});
-
-$("#follow").on('submit',function(e){
-    console.log('click follow support',$('#tutor_id').val());		
-    e.preventDefault();
-    $.ajax({
-           type: "POST",
-           url: "/follow/"+$('#tutor_id').val(),
-           data: $(this).serialize(), 
-           success: function(data){
-               console.log('follow data',data,data.follow);
-               if(data.follow == 0){
-				   $('#follow_input').val(0);
-				   $('#follow_btn').text('follow');
-			   }
-			   else if(data.follow ==1){
-				   $('#follow_input').val(1);
-				   $('#follow_btn').text('unfollow');
-			   }
-           },
-		   error: function(jqXHR, textStatus, errorThrown){
-               console.log('error',jqXHR.status,jqXHR.responseText);
-           }
-         });	
-});
-</script>

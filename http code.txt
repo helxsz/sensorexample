@@ -32,3 +32,26 @@ what is the http code for update successsful? 201 or
 		if(req.xhr) return res.send({'meta':200,'data':null},200);
 		res.redirect(req.url);
 	  }	
+
+
+http://msdn.microsoft.com/en-us/library/windowsazure/dd179357.aspx
+UnsupportedHeader  400
+MissingRequiredHeader 400
+InvalidHeaderValue 400
+MissingRequiredQueryParameter 400
+UnsupportedQueryParameter 400
+InvalidQueryParameterValue 400
+OutOfRangeQueryParameterValue 400
+RequestUrlFailedToParse 400
+InvalidUri 400
+
+Md5Mismatch 400
+InvalidAuthenticationInfo 400
+
+AccountAlreadyExists
+AccountBeingCreated
+
+
+RequestBodyTooLarge  413
+
+InvalidRange  416

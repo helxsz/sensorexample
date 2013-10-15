@@ -214,10 +214,13 @@ border-radius: 40px;
 .form-actions input[type="submit"]:hover{
 background-color: #409f89;
 }
+
+
 </style>
 
-<div class="row-fluid">
 
+
+<div class="row-fluid">	
     <div class="board"> 
 	    <div class="board-description">
             <h2 class="board-title">Question Detail</h2> 
@@ -233,11 +236,11 @@ background-color: #409f89;
 			<input type="hidden" id="course_id" name="course_id" value="<%= locals.course._id %>" />
 
             <fieldset>
-                <div id="description-cg" class="control-group ">
-                    <label for="description-tf" class="control-label"><strong>Email</strong></label>
+                <div id="email-cg" class="control-group ">
+                    <label for="email-tf" class="control-label"><strong>Email</strong></label>
                     <div class="controls control span9">
-						<textarea id="description-tf" type="text" name="email" value=""  style="margin-bottom: 5px; height: 68px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">130</span>/130</span>
+						<textarea id="email-tf" type="text" name="email" value=""  style="margin-bottom: 5px; height: 68px; width: 400px;"> </textarea>
+                        
 					</div>	
                     <span class="tip" >Email</span>																			
       		    </div>
@@ -258,10 +261,7 @@ background-color: #409f89;
 		
 		<div class="span4"   >
 
-		     <div class='search'>
-                <input type="text" />
-                    <button><i class='icon-search'></i></button>
-            </div>
+
 			
 			
 		</div>
@@ -301,18 +301,37 @@ box-shadow: 0 5px 10px rgba(0,0,0,.2);
 </style>
 
 <script>
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+
+function successLoad(){
+    $('.update-status').show();
+    $('.update-status h1').text('SUCCESS');
+	//$('.update-status').addClass('animated fadeIn');
+	setTimeout(function(){
+	    //$('.update-status').addClass('animated fadeOut');
+		$('.update-status').hide();
+	},1500);
+}
 
 $("#invite_form").on('submit',function(e){
-    console.log('click');		
+    console.log('click  ',courseid);		
     e.preventDefault();
     $.ajax({
            type: "POST",
-           url: "/course/"+   $('#course_id').val() +"/setting/invite",
+           url: "/course/"+   courseid +"/setting/invite",
            data: $(this).serialize(), 
            success: function(data)
            {
                console.log(data);
-           }
+			   successLoad();
+			   $('#email-tf').val('');
+			   
+           },error:function(){
+		       console.log('error');
+		   }
          });	
 });
 

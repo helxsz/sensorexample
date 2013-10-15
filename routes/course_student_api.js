@@ -64,7 +64,21 @@ function getCourseTestPage(req,res,next){
 	
 	async.parallel([
 		function(callback) {
-            callback();		    
+		    userModel.findUserById(uid,function(err,user){
+		       if(err || !user) {
+			       console.log('user uid not found'.red);
+                    return res.json(404);
+		       }
+			   else{
+			        console.log('find user uid'.green,user._id);
+                    locals.user = {
+                       username : user.username, 
+					   email : user.email,
+					   img:user.img
+                    };
+					callback();
+                }			
+		    })		    
 		}],function(err) {
 	      if (err) return next(err); 
 	      res.format({
@@ -86,7 +100,22 @@ function getCourseTestPage2(req,res,next){
 	
 	async.parallel([
 		function(callback) {
-            callback();		    
+		 // first check user login 
+		    userModel.findUserById(uid,function(err,user){
+		       if(err || !user) {
+			       console.log('user uid not found'.red);
+                    return res.json(404);
+		       }
+			   else{
+			        console.log('find user uid'.green,user._id);
+                    locals.user = {
+                       username : user.username, 
+					   email : user.email,
+					   img:user.img
+                    };
+					callback();
+                }			
+		    })
 		}],function(err) {
 	      if (err) return next(err); 
 	      res.format({
@@ -157,25 +186,43 @@ function joinCourse(req,res,next){
    var course_id = req.params.id, uid = req.session.uid;
    
    var locals = {};
-
-    studentPlanModel.createPlanAndAddMilestone(course_id,uid,[],function(err,data1){
-		if(err) next(err);
-		else if (!data1) res.send(404);
-		else res.send(data);
-	})   
    
+   courseModel.findCourseById2(course_id,'tutor',function(err,data){
+        if(err) console.log('could not find the tutur'.red);
+        else {
+		    console.log('find the tutor  ',data, data.tutor.id);
+			var tutor_id = data.tutor.id;
+			studentPlanModel.getMilestonesByCourseAndTutor(course_id,tutor_id,function(err,data1){
+				console.log('getMilestonesByCourseAndTutor  '.green, data1);
+				if(err) console.log(err);
+				else if(!data1) console.log('no milestones'.red);
+				else{
+			        var myplan = new Object();
+			        myplan.plan = data1.plan;
+					myplan.count = data1.count;
+				    console.log(myplan);
+			        studentPlanModel.copyPlan(course_id,uid,myplan,function(err,data){
+                        if(err) {console.log('error in assigning the plan to students'.red, err); }
+				        else if(data==0) {console.log('cant update assigning the plan'.red); }
+                        else { console.log('  assigning the plan to the student'.green);   }
+                    })					
+				}				
+			})			
+		}
+   })
+
    courseModel.joinCourse(course_id,uid,function(err,course){
 		if(err) {
-		         console.log('course uid not found'.red,err);
-		         next(err);
+            if(req.xhr) return res.send({"error":err}, 500);	
+		    next(err);
 		}else if(!course || course ==0){
-			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			if(req.xhr) return res.send({"data":null},406);
 			res.redirect("/course/"+req.params.id);		
 		}else{
 			console.log('join courses successfully'.green,course);
 			if(req.xhr) {
                 console.log('req.xhr  ',req.xhr);			
-			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			    return res.send({"data":null}, 200);
 			}else
 			res.redirect("/course/"+req.params.id);
         }    
@@ -200,16 +247,16 @@ function disJoinCourse(req,res,next){
    var locals = {};
    courseModel.disJoinCourse(req.params.id,req.session.uid,function(err,course){
 		if(err) {
-		         console.log('course uid not found'.red,err);
-		         next(err);
+            if(req.xhr) return res.send({"error":err}, 500);		    
+		    next(err);
 		}else if(!course || course ==0){
-			if(req.xhr) return res.send({"meta": 204,"data":null}, {'Content-Type': 'application/json'}, 204);
+			if(req.xhr) return res.send({"data":null}, 406);
 			res.redirect("/course/"+req.params.id);		
 		}else{
 			console.log('disjoin courses succesfully'.green,course);
 			if(req.xhr) {
                 console.log('send ajax sucess to user');			
-			    return res.send({"meta": 200,"data":null}, {'Content-Type': 'application/json'}, 200);
+			    return res.send({"data":null} ,200);
 			}
 			res.redirect("/course/"+req.params.id);
         }    
@@ -271,6 +318,11 @@ function answerSimpleQuestion(req,res,next){
 		    }
 		],function(err) {			
 	    });	
+	}else{
+	     studentPlanModel.updateStudentPlans(cid,uid,1,1 ,function(err,data){
+		     console.log('update user s milestone');
+		 })
+	
 	}
     answerModel.addAnswerResultToQuestion(uid,question_id, answer, debug, function(err, data){
             if(err) next(err);
@@ -282,8 +334,7 @@ function answerSimpleQuestion(req,res,next){
 		        console.log("good submit answer this is good ".green,data);
 		        res.json(200,{'meta':200,'data':null});
 		    }			
-	})
-			
+	})			
 }
 
 app.get('/course/:courseid/answers/:question_id',getAnswerOnQuestion);
@@ -337,3 +388,84 @@ function removeAnswerResultToQuestion(req, res, next){
 	})
 }
 */
+
+
+
+/**************************************************************
+
+       course test user submit
+
+***************************************************************/
+app.get('/course/:id/exam/group',getQuestionByGoup);
+app.get('/course/:id/exam/qestion_answer',getQuestionAndAnswerByGoup);
+function getQuestionByGoup(req,res,next){
+    console.log('getQuestionByGoup',req.query.ids);
+    var ids = req.query.ids;
+    var locals = {};
+	var idarray = ids.split(',');
+	console.log(idarray.length);
+	async.parallel([
+	    function(callback) {
+            questionModel.findQuestionsInGroup(idarray,'que tip',{},function(err,data){
+			    if(err) { next(err); callback();	}
+	            else{				    				    
+                    locals.questions = data;	
+                    callback();	
+				}
+			})           
+		}],function(err){
+	        if (err) return next(err);
+		    console.log(req.accepted);
+			
+			if(req.accepts('application/json')){	
+                console.log("'application/json'");			
+			    res.json(200,locals);
+			}
+			else if(req.accepts('text/html')){
+			    console.log("accepts('text/html')");
+				locals.page = 'posts';					
+                res.render('course/course_page_questions.ejs', locals.questions);
+			}
+	    });
+}
+
+function getQuestionAndAnswerByGoup(req,res,next){
+    console.log('getQuestionAndAnswerByGoup',req.query.ids, req.query.sid);
+    var ids = req.query.ids, sid = req.query.sid;
+    var locals = {};
+	var idarray = ids.split(',');
+	console.log(idarray.length);
+	async.parallel([
+	    /*
+	    function(callback) {
+            questionModel.findQuestionsInGroup(idarray,'que tip',{},function(err,data){
+			    if(err) { next(err); callback();	}
+	            else{				    				    
+                    locals.questions = data;	
+                    callback();	
+				}
+			})           
+		},
+		*/
+	    function(callback) {
+            answerModel.getAnswersInGroup(sid,idarray,'anw debug qid verified right',function(err,data){
+			    if(err) { next(err); callback();	}
+	            else{				    				    
+                    locals.answers = data;
+                    console.log('answers'.green, data);					
+                    callback();	
+				}
+			})           
+		}
+		],function(err){
+	        if (err) return next(err);
+		    //console.log(req.accepted);
+			
+			if(req.accepts('application/json')){	
+                console.log("'application/json'");			
+			    res.json(200,locals);
+			}
+
+	    });
+}
+

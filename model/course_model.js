@@ -47,7 +47,6 @@ var CourseSchema = mongoose.Schema({
 		 
 		 //invitations: [{ type: ObjectId, ref: 'Invitation' }],
          invitations: [InvitationSchema],
-         plans:[ {type:ObjectId, ref: 'StudentPlan'}]		 
            
 });
 //http://stackoverflow.com/questions/11304739/how-to-store-threaded-comments-using-mongodb-and-mongoose-for-node-js
@@ -344,7 +343,7 @@ function findCourseStudentsById(id,callback){
 //////////////////////////////////          Qeustions           //////////////////////////////////////
 
 
-function findCourseQuestionsById(id,callback){
+function findCourseQuestionsById(id,fields,callback){ 
 
     var id;
     try {
@@ -353,7 +352,7 @@ function findCourseQuestionsById(id,callback){
         return callback(e, null);
     }
 	
-	CourseModel.findById(id).populate('ques').exec(function(err, course) { 
+	CourseModel.findById(id).populate( {path: 'ques',select:fields} ).exec(function(err, course) { 
 		if(err){callback(err, null);}
 		else{
 			//console.log("findCourseQuestionsById".green,course.ques.length,course.ques);
@@ -581,10 +580,8 @@ function addPlanToList(cid,plan_id,callback){
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'plans':plan_id}},options,function(err,ref){
 		if(err) {
-			//console.log('update addInvitationToList'.red,err);
 			callback(err, null);
 		}else{
-			//console.log('update addInvitationToList  '.green+ref);				  
 		    callback(null,ref);
 		}
 	})
@@ -634,22 +631,13 @@ exports.findCoursePlansById = findCoursePlansById;
 /************************************  invitation with ObjectId  not used anymore********************************/
 
 function addInvitationToList(cid,invitation_id,callback){
-
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
 		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'invitations':invitation_id}},options,function(err,ref){
 		if(err) {
-			//console.log('update addInvitationToList'.red,err);
 			callback(err, null);
 		}else{
-			//console.log('update addInvitationToList  '.green+ref);				  
 		    callback(null,ref);
 		}
 	})
@@ -657,20 +645,12 @@ function addInvitationToList(cid,invitation_id,callback){
 }
 
 function removeInvitationFromList(cid,invitation_id,callback){
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
-	
+
  	var options = { new: false ,select:'_id'};	
 	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'invitations':invitation_id}},options,function(err,ref){
 		if(err) {
-			//console.log('update removeInvitationFromList'.red,err);
 			callback(err, null);
 		}else{
-			//console.log('update removeInvitationFromList'.green+ref);				  
 		    callback(null,ref);
 		}
 	}) 
@@ -678,13 +658,6 @@ function removeInvitationFromList(cid,invitation_id,callback){
 
 function findCourseInvitationById(id,callback){
 
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-
-	
 	CourseModel.findById(id).populate('invitations','name email time status reply valid').exec(function(err, invis) { 
 		if(err){callback(err, null);}
 		else{
@@ -692,16 +665,6 @@ function findCourseInvitationById(id,callback){
 			callback(null, invis.invitations);
 		}	   
 	})
-	
-/*	
-	CourseModel.findById(id,'invitations',function(err, invis){
-		if(err){callback(err, null);}
-		else{
-		    console.log('findCourseInvitationById',invis,invis.length);
-			callback(null, invis);
-		}	
-	});
-*/
 }
 exports.addInvitationToList = addInvitationToList;
 exports.removeInvitationFromList = removeInvitationFromList;
@@ -726,7 +689,7 @@ exports.findCourseInvitation = findCourseInvitation;
 exports.addStudentByInvitation = addStudentByInvitation;
 
 //{'email':email,'_id':token,'status':email_status}
-function addInvitation(cid,email,token,status,callback){		
+function addInvitation(cid,email,token,status,callback){
 	var options = { new: false , select:'_id'};		
 	CourseModel.update({'_id':cid},{'$addToSet':{'invitations':{'email':email,'token':token,'status':status,'time':new Date()}}},options,function(err,ref){
 		if(err) {
@@ -754,7 +717,6 @@ function findCourseInvitation(cid,callback){
 	CourseModel.findById(cid,'invitations', function(err,data) { 
 		if(err){callback(err, null);}
 		else{
-		    //console.log('findCourseInvitation',data);
 			callback(null, data);
 		}	   
 	})
@@ -762,11 +724,6 @@ function findCourseInvitation(cid,callback){
 
 function addStudentByInvitation(cid,token,uid,callback){
 
-    try {
-         uid = mongoose.Types.ObjectId(uid);
-    } catch(e) {
-        return callback(e, null);
-    }
     var options = { new: false , select:'_id'};	
     //	InvitationModel.findOneAndUpdate({'_id':id},{'$set':{'status':5,'reply.extra':goal}},options,function(err,ref){
 	//CourseModel.update({'_id':cid,'invitations.token':token},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}}, function(err,data) {
@@ -781,8 +738,19 @@ function addStudentByInvitation(cid,token,uid,callback){
 			callback(null, data);
 		}	   
 	})
-
 }
+
+function checkUserFromInvitation(cid,token,callback){
+ 	CourseModel.findOne({'_id':cid,'invitations.token': token },'_id', function(err,data) { 
+ 	    if(err){callback(err, null);}
+		else{
+		    console.log('checkUserFromInvitation'.green,data);
+			callback(null, data);
+		}	   
+	})   
+}
+
+exports.checkUserFromInvitation = checkUserFromInvitation;
 /*
 function joinCourse(cid,uid,callback){
     try {
