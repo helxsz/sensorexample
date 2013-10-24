@@ -56,15 +56,42 @@ function getCourses(req,res,next){
 		    console.log(err);
 		    next(err);
 			return;
-          }				   
-			if(req.accepts('text/html')){
-				res.redirect('/');
-			}
-			else if(req.accepts('application/json')){
-			    res.json(locals.courses);
-			}
+          }	
+
+          if(req.xhr){
+		       res.send(200,locals.courses);
+		  }else{
+			   if(req.accepts('text/html')){
+				   res.redirect('/');
+			   }
+			   else if(req.accepts('application/json')){
+			       res.json(locals.courses);
+			   }	  
+		  }		  
+
 	});	 
 	
+}
+
+
+app.get('/course/:id/json',getCourseSimpleDetail);
+function getCourseSimpleDetail(req,res,next){
+    console.log('getCourseDetail',req.params.id);   
+    var locals = {};
+	async.series([
+         function(callback) {
+            courseModel.findCourseAndTutorById2(req.params.id,function(err,data){
+			    if(err) { console.log('error1'.red); return next(err); 	}
+				else if(!data){ console.log("can't find course id".red); return next(null);}
+	            else{
+					locals.course = data;
+                    callback();	
+				}
+			})           			            
+		}],function(err){
+	      if (err) { console.log('err3'.red);return next(err); }	 		  
+          res.send(200,locals);
+	    });	
 }
 
 

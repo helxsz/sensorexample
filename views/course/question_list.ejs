@@ -1,7 +1,7 @@
 <div class="questions ">
 	    <% if( locals.ques) {%>
           <% for(var i=0; i<locals.ques.length; i++) {%>
-            <li class="question" id="<%= locals.ques[i]._id %>" data-content="<%= locals.ques[i].que %>">
+            <li class="question" id="<%= locals.ques[i]._id %>" question="<%= locals.ques[i].que %>">
 			        <%= locals.ques[i].que %>
 		    </li>
           <% } %>
@@ -49,9 +49,3 @@
 }
 
 </style>
-
-<!--
-.questions{
-min-height: 450px;
-}
--->

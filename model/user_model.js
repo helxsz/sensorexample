@@ -4,9 +4,12 @@ var crypto = require('crypto'),
     Schema = mongoose.Schema,
 	uuid = require('node-uuid');
 var color = require('colors');
+var _ = require('underscore');
+
 
 var UserSchema = mongoose.Schema({ 
 								// auth  
+								uid:{ type:Number, unique:true, index: true },
                                 username:{type:String, required:true, unique:true,display:{help:'This must be a unique name'}},
                         		email: { type: String, required: true, index: { unique: true }, validate: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/ },
 								password: { type: String, required: true },
@@ -33,7 +36,8 @@ var UserSchema = mongoose.Schema({
 								   twitter:{id:String,avatar:String,name:String,token:String},
 								   github:{id:String,avatar:String,name:String,token:String},
 								   google:{id:String,avatar:String,name:String,token:String}
-								}
+								},
+								cr:[]
 								// other 
 								/*
 								activation: {
@@ -49,7 +53,9 @@ var UserSchema = mongoose.Schema({
 		                            highSchool: String,
 	                            }
 								*/
-                            });
+                            }
+							//, { _id: false }
+						);
 
 						  
 
@@ -58,6 +64,7 @@ exports.UserModel = UserModel;
 
 /**
     middleware
+
 */
 
 UserSchema.pre('save', function(next) {
@@ -65,16 +72,31 @@ UserSchema.pre('save', function(next) {
     console.log('pre  save',this.username,this.password,this.email);
     if (this._doc.password == '_default_' ){    //this._doc.password&& this._doc.password != '_default_'
 	    //console.log('old',this._doc.password,this.password);
-
 		//console.log('new',this._doc.password,this.password);
     }
     if (this.isNew){
         this.cdate = Date.now();
 		console.log('change the password'.red);
 		this.password = hash(this.password, this.salt);
+		
+		// automentid
+		this.uid = require('./counter_model').getNextSequence('uid',function(err,data){
+		     if(err && err.code) console.log('err on counter'.red,err);
+			 else {
+			     user.uid = data.c;
+				 this.uid = data.c;
+				 next();
+			 }
+		});
+		// 16 chars ID  http://sebastian.formzoo.com/2012/04/12/mongodb-shorten-the-objectid/
+		// encode
+		var b64 = new Buffer('47cc67093475061e3d95369d', 'hex').toString('base64').replace('+','-').replace('/','_');
+	
 	}
-    else
-        this.mdate = Date.now();  
+    else{
+        this.mdate = Date.now();
+        next();		
+    }		
 /*  http://stackoverflow.com/questions/13582862/mongoose-pre-save-async-middleware-not-working-as-expected
     http://stackoverflow.com/questions/11872556/what-am-i-doing-wrong-in-this-mongoose-unique-pre-save-validation
     model.findOne({email : this.email}, 'email', function(err, results) {
@@ -89,7 +111,7 @@ UserSchema.pre('save', function(next) {
         }
     });
 */		
-    next();
+    
 });
 
 /* private encryption & validation methods */
@@ -261,12 +283,6 @@ function findUserByQuery(condition,callback){
 
 function findUserById(id,callback){
 
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return  callback(err, null);
-    }
 	
 	UserModel.findById(id,function(err, doc){
 		if(err){callback(err, null);}
@@ -316,14 +332,7 @@ function updateUser(condition,update,callback){
 }
 
 
-function deleteUserById(id,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(err, null);
-    }
-	
+function deleteUserById(id,callback){	
 	if(UserModel){
 		UserModel.findByIdAndRemove(id,function(err){
 			  if(err){console.log('err remove');callback(err, null);}	
@@ -435,3 +444,134 @@ function randomToken() {
 exports.generateCookieToken = generateCookieToken;
 exports.authenticateFromToken = authenticateFromToken;
 exports.removeToken =removeToken;
+
+/***********************************************************************
+            notification criteria
+for example :
+userModel.addNotiCriterialValueToKey(5,'abc','111',function(err,data){
+    if(err) console.log(err);
+	else console.log('addNotiCriterialValueToKey',data);
+})
+        or 
+		
+userModel.addNotiCriteriaKey( 5, ['111','222','333'], function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('addNotiCriteriaKey',data);		
+	}
+})	
+
+userModel.removeNotiCriterialValueFromKey(5,'abc','111',function(err,data){
+    if(err) console.log(err);
+	else console.log('removeNotiCriterialValueFromKey',data);
+})	
+
+userModel.removeNotiCriterialValueFromKey(5,'abc',[{'key':'111'}],function(err,data){
+    if(err) console.log(err);
+	else console.log('removeNotiCriterialValueFromKey',data);
+})	
+
+ $sort: { score: 1 },  $slice: -3
+ 
+ http://mongoosejs.com/docs/guide.html
+ autoIndex
+capped
+collection
+id
+_id
+read
+safe
+shardKey
+strict
+toJSON
+toObject
+versionKey
+                                        
+************************************************************************/
+
+UserSchema.index({ 'cr.key': 1 });
+
+function addNotiCriteriaKey(id,key,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {
+        UserModel.update({'uid':id},{'$addToSet':{'cr':{'key':key}}},options,function(err,data){
+	       if(err) callback(err,null);
+	       else callback(null,data);
+	    })
+	}else if( typeof key == 'object' && (key instanceof Array) ){	 
+        // 1  doesn't work
+		// ['111','222','333']
+        //_.map(key, function(element){ return {'key':element}; });	
+        //console.log(key);
+        // 2  seem to work
+        // 	[ {key:'111'},{'key':'222'},{'key':'333'}]	
+        UserModel.update({'uid':id},{'$addToSet':{'cr':{ '$each': key}}},options,function(err,data){
+	       if(err) callback(err,null);
+	       else callback(null,data);
+	    })		
+	}	
+}
+
+function removeNotiCriteriaKey(id,key,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {	
+        UserModel.update({'uid':id},{'$pull':{'cr':{'key':key}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+		//_.map(key, function(element){ return {'key':element}; });
+		UserModel.update({'uid':id},{'$pull':{'cr':{ '$each': key}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })       		
+	}	
+}
+
+function addNotiCriterialValueToKey(id,key,value,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {		
+        UserModel.update({'uid':id,'cr.key':key},{'$addToSet':{'cr.$.val':value}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+	    // still having problem and error
+        //_.map(value, function(element){ return {'val':element}; });		
+        UserModel.update({'uid':id,'cr.key':key},{'$addToSet':{'cr.$':{ '$each': value}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}	
+}
+
+function removeNotiCriterialValueFromKey(id, key,value,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {	
+        UserModel.update({'uid':id,'cr.key':key},{'$pull':{'cr.$.val':value}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+	    // still having problem and error
+        //_.map(value, function(element){ return {'val':element}; });			  
+        UserModel.update({'uid':id,'cr.key':key},{'$pull':{'cr.$':{ '$each': value}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+      		
+	}	
+}
+exports.addNotiCriteriaKey = addNotiCriteriaKey;
+exports.removeNotiCriteriaKey = removeNotiCriteriaKey;
+exports.addNotiCriterialValueToKey = addNotiCriterialValueToKey;
+exports.removeNotiCriterialValueFromKey = removeNotiCriterialValueFromKey;
+
+
+function queryCriteria(criteria,option,callback){
+    UserModel.find(criteria,'uid _id',option, function(err,data){
+	    if(err) callback(err,null);
+		else callback(null,data);
+	})
+}
+exports.queryCriteria = queryCriteria;

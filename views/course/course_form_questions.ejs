@@ -225,77 +225,91 @@ background-color: #409f89;
         </div>        
     </div>
 	 
-    <div class="form_container row">
-      <div class="span8" style="border-right: 1px dotted #d0d5cb;">
+
 	
-        <form method="post" action="/course/<%= locals.course._id %>/questions" id="question_form" class="form-horizontal " enctype="multipart/form-data" >
-            <input type="hidden" name="_csrf" value="<%= token %>"/>
-			<input type="hidden" id="course_id" name="course_id" value="<%= locals.course._id %>" />
+		
+	<div class="form_container row">
+	
+      <div class="span8" style="border-right: 1px dotted #d0d5cb;">  
+        <ul class="nav nav-tabs marginBottom" id="myTab">
+               <li class="active "><a href="#home" class="backgroundRed">Edit </a></li>             
+               <li><a href="#profile">Detail</a></li>        
+        </ul>
+        <div class="tab-content">    
+		    <div class="tab-pane active" id="home"> 
+                <form method="post" action="/course/<%= locals.course._id %>/questions" id="question_form" class="form-horizontal " enctype="multipart/form-data" >
+                    <input type="hidden" name="_csrf" value="<%= token %>"/>
+			        <input type="hidden" id="course_id" name="course_id" value="<%= locals.course._id %>" />
 
-            <fieldset>
-                <div id="description-cg" class="control-group ">
-                    <label for="description-tf" class="control-label"><strong>Description</strong></label>
-                    <div class="controls control span9">
-						<textarea id="description-tf" type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">1000</span>/1000</span>
-					</div>	
-                    <span class="tip" >Describe your questions in either text or code</span>																			
-      		    </div>
+                    <fieldset>
+                         <div id="description-cg" class="control-group ">
+                            <label for="description-tf" class="control-label"><strong>Description</strong></label>
+                            <div class="controls control span9">
+						        <textarea id="description-tf" type="text" name="description" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
+                                <span ><span class="character_counter">1000</span>/1000</span>
+					        </div>	
+                            <span class="tip" >Describe your questions in either text or code</span>																			
+      		             </div>
 
-                <div id="tip-cg" class="control-group ">
-                    <label for="tip-tf" class="control-label"><strong>Tip</strong><small>(optional)</small></label>
-                    <div class="controls control span9">
-						<textarea id="tip-tf" type="text" name="tip" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">1000</span>/1000</span>
-					</div>
-                    <span class="tip" >Give your tip in either text or code</span>																								
-      		    </div>
+                        <div id="tip-cg" class="control-group ">
+                            <label for="tip-tf" class="control-label"><strong>Tip</strong><small>(optional)</small></label>
+                                <div class="controls control span9">
+						            <textarea id="tip-tf" type="text" name="tip" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
+                                    <span ><span class="character_counter">1000</span>/1000</span>
+					            </div>
+                                <span class="tip" >Give your tip in either text or code</span>																								
+      		                </div>
 
-                <div id="solution-cg" class="control-group ">
-                    <label for="solution-tf" class="control-label"><strong>Solution</strong></label>
-                    <div class="controls control span9">
-						<textarea id="solution-tf" type="text" name="solution" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
-                        <span ><span class="character_counter">1000</span>/1000</span>
-					</div>					
-      		    </div>
+                        <div id="solution-cg" class="control-group ">
+                             <label for="solution-tf" class="control-label"><strong>Solution</strong></label>
+                             <div class="controls control span9">
+						            <textarea id="solution-tf" type="text" name="solution" value="" class="mdm-input" style="margin-bottom: 5px; height: 148px; width: 400px;"> </textarea>
+                                    <span ><span class="character_counter">1000</span>/1000</span>
+					        </div>					
+      		            </div>
 								
-                <div id="level-cg" class="control-group ">
-                    <label for="level-tf" class="control-label"><strong>Level</strong></label>
-                    <div class="controls control span9">				
-                        <select class="required select"  name="level">
-                                <option name="level" value="0">Easy</option>
-							    <option name="level" value="1">InterMediate</option>
-								<option name="level" value="2">Tricky</option>
-                                <option name="level" value="3">Hard</option>								
-						</select>				
-					</div>						
-      		    </div>								
+                        <div id="level-cg" class="control-group ">
+                            <label for="level-tf" class="control-label"><strong>Level</strong></label>
+                                <div class="controls control span9">				
+                                    <select class="required select"  name="level">
+                                        <option name="level" value="0">Easy</option>
+							            <option name="level" value="1">InterMediate</option>
+								        <option name="level" value="2">Tricky</option>
+                                        <option name="level" value="3">Hard</option>								
+						            </select>				
+					            </div>						
+      		            </div>								
 				
-                <div id="tags-cg" class="control-group ">
-                    <label for="tags-tf" class="control-label"><strong>Tags</strong><small>(optional)</small></label>
-                    <div class="controls control span9">         
-						<input name="tags" id="tags-tf" value="" />
-                    </div>
-                </div>
+                        <div id="tags-cg" class="control-group ">
+                            <label for="tags-tf" class="control-label"><strong>Tags</strong><small>(optional)</small></label>
+                                <div class="controls control span9">         
+						            <input name="tags" id="tags-tf" value="" />
+                                </div>
+                        </div>
 								
-                 <div class="form-actions">
-                      <input type="submit" id="form_btn" value="Add Question"></input>					  
-                </div>
-             </fieldset>
-         </form>
+                        <div class="form-actions">
+                            <input type="submit" id="form_btn" value="Add Question"></input>					  
+                        </div>
+                    </fieldset>
+                </form>
+		    </div> 
+		
+		    <div class="tab-pane" id="profile">    
+			    <div>
+				    <div id="que">  </div>
+					<div id="tip">  </div>
+					<div id="lev">  </div>
+			    </div>
+			</div>
+		  </div>
 		</div>
 		
-		
-		<div class="span4"   >
-
-		     <div class='search'>
-                <input type="text" />
-                    <button id="question_btn"><i class='icon-search' ></i></button>
-            </div>
-			
+	    <div class="span4"   >			
 			<% include question_list %>
 		</div>
+		
 	</div>	
+		
 </div>
 
 
@@ -359,6 +373,67 @@ margin-bottom:20px;
 
 
 <script>
+
+var currentTab;
+
+
+
+
+$("#myTab").on("click", "a", function (e) {
+    e.preventDefault();
+    console.log('get tab',$(this).html());
+    $(this).tab('show');
+    $currentTab = $(this);
+	registerCloseEvent();
+});
+
+//shows the tab with passed content div id..paramter tabid indicates the div where the content resides
+function showTab(tabId) {
+    $('#myTab a[href="#' + tabId + '"]').tab('show');
+}
+//return current active tab
+function getCurrentTab() {
+    return currentTab;
+}
+
+//This function will create a new tab here and it will load the url content in tab content div.
+function craeteNewTabAndLoadUrl(parms, url, loadDivSelector) {
+
+    $("" + loadDivSelector).load(url, function (response, status, xhr) {
+        if (status == "error") {
+            var msg = "Sorry but there was an error getting details ! ";
+            $("" + loadDivSelector).html(msg + xhr.status + " " + xhr.statusText);
+            $("" + loadDivSelector).html("Load Ajax Content Here...");
+        }
+    });
+}
+
+//to take care this situation we need get the element from current tab.
+function getElement(selector) {
+    var tabContentId = $currentTab.attr("href");
+    return $("" + tabContentId).find("" + selector);
+}
+
+
+function removeCurrentTab() {
+    var tabContentId = $currentTab.attr("href");
+    $currentTab.parent().remove(); //remove li of tab
+    $('#myTab a:last').tab('show'); // Select first tab
+    $(tabContentId).remove(); //remove respective tab content
+}
+
+
+function registerCloseEvent() {
+    $(".closeTab").click(function () {
+
+        //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
+        var tabContentId = $(this).parent().attr("href");
+        $(this).parent().parent().remove(); //remove li of tab
+        $('#myTab a:last').tab('show'); // Select first tab
+        $(tabContentId).remove(); //remove respective tab content
+    });
+}
+
 function successLoad(){
     $('.update-status').show();
     $('.update-status h1').text('SUCCESS');
@@ -379,12 +454,18 @@ $("#question_form").on('submit',function(e){
            success: function(data)
            {
                console.log(data);
-			   $('#description-tf').val(''):
-			   $('#tip-tf').val(''):
-			   $('#solution-tf').val(''):
-			   $('#tags-tf').val(''):
 
-			   successLoad();
+
+			   successLoad(); 
+			    var con = $('#description-tf').val();
+			    var s = $('<li class="question" id="'+ data.question_id+  '" question="'+  con +'"> '+  con + '  </li>');
+			    s.appendTo($('.questions'));    
+		       
+			   
+			   $('#description-tf').val('');
+			   $('#tip-tf').val('');
+			   $('#solution-tf').val('');
+			   $('#tags-tf').val('');			   
            }
          });	
 });
@@ -407,7 +488,23 @@ $('#question_btn').click(function(){
 })
 
 $('.question').click(function(){
-    console.log("clicked " +$(this).text());
+    console.log("clicked " +$(this).text()+"  "+$(this).attr('id'));
+	var qid = $(this).attr('id');
+	$('#myTab a:last').tab('show');
+    $.ajax({
+           type: "GET",
+           url: "/course/"+   $('#course_id').val() +"/questions/"+qid, 
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",
+           success: function(data){
+               console.log(data, data.que,data.tip, data._id, data.tags, data.lev);
+
+					$('#que').text(data.que);
+					$('#tip').text(data.tip);
+					$('#lev').text(data.lev);
+			   successLoad();
+           }
+    });	
 })
 
 </script>	

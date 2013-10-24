@@ -98,17 +98,31 @@ function getHelpInfoOnQuestion(req,res,next){
     var course_id = req.params.id, student_id = req.session.uid;
 	var question_id = req.query.question;
     console.log('callTutorForHlep',course_id,student_id, question_id );
-    helpModel.findHelpByQuery({ 'course':course_id,'user':student_id,'question':question_id },function(err,data){
-        if(err) next(err);
-        else {
-		   console.log('findHelpByQuery',data);
-           if(data == null){
-		       res.send(404,{ "meta": { "code": 404} });
-		   }else{
-		       res.send(200,{ "meta": { "code": 200},"data":data.chats });
-		   }
-		}
-    })
+	if(question_id!=null){
+        helpModel.findHelpByQuery({ 'course':course_id,'user':student_id,'question':question_id },function(err,data){
+            if(err) next(err);
+            else {
+		        console.log('findHelpByQuery',data);
+                if(data == null){
+		            res.send(404,{ "meta": { "code": 404} });
+		        }else{
+		            res.send(200,{ "data":data.chats });
+		        }
+		    }
+       })
+	}else {
+        helpModel.findHelpsByQuery({ 'course':course_id,'user':student_id },function(err,data){
+            if(err) next(err);
+            else {
+		        console.log('findHelpByQuerys',data);
+                if(data == null){
+		            res.send(404,{ "meta": { "code": 404} });
+		        }else{
+		            res.send(200,{ "data":data });
+		        }
+		    }
+       })	    
+	}
 }
 
 

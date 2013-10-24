@@ -100,6 +100,8 @@ exports.locale = "Liverpool";
 exports.commonName = "Feynlabs";
 exports.subjectAltName = "127.0.0.1";
 
+exports.logRESTRequests = false;
+
 if (module.exports.environment == 'production') {
 	module.exports.port = process.env.PORT || 80; // Joyent SmartMachine uses process.env.PORT
     module.exports.uri = 'http://localhost:'+module.exports.port;

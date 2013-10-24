@@ -27,8 +27,11 @@
 <style>
 body {
   text-align: center;
+  <!--
   background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
   background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+  -->
+  background: #edece4;
 }
 .container{
 position: relative;
@@ -43,9 +46,8 @@ margin: 0 auto !important;
 
 #sidebar{
 margin-bottom: 20px;
-padding: 20px;
 background: #fff;
-border: 1px solid #DEDEDE;
+border: 1px solid #EEEEEE;
 border-radius: 4px;
 box-shadow: 0 2px 2px -1px rgba(0,0,0,.055);
 }
@@ -53,13 +55,33 @@ box-shadow: 0 2px 2px -1px rgba(0,0,0,.055);
 #sidebar ul li {
 border-bottom: 1px solid #eee;
 line-height: 28px;
-width: 160px;
 }
+
+#sidebar ul li {
+
+}
+
+#sidebar  li a {
+display: block;
+padding: 10px 15px;
+color: #9e9d95;
+border-bottom: #edece4 1px solid;
+}
+
+#sidebar  li a:hover{color:#1D1C1B;text-decoration:none}
 
 .portlet-decoration {
 border-bottom: 1px solid #CCC;
-margin-bottom: 15px;
 padding-bottom: 5px;
+}
+
+.content {
+padding: 20px;
+background: #fff;
+border: 1px solid #F1F1F1;
+border-radius: 5px;
+box-shadow: 0 0 3px #EEEEEE;
+overflow: hidden;
 }
 
 </style>  
@@ -80,10 +102,9 @@ padding-bottom: 5px;
 	        <ul class="nav">
                 <li><a href="/settings/account" >Account</a></li>
                 <li><a href="/settings/profile" >Profile</a></li>
-				<!--
                 <li><a href="/settings/social" class="active">Social</a></li>				
                 <li><a href="/settings/notification" >Notifications</a></li>
-				-->
+				
             </ul>
 	    </div>	  
 	

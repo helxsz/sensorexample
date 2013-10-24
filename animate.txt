@@ -5,3 +5,26 @@
 @-webkit-keyframes fade-moment-in{0%{opacity:.0;-webkit-transform:scale(0.9) translate3d(0,-40px,0)}100%{opacity:1.0;-webkit-transform:scale(1) translate3d(0,0,0)}}
 
 @-moz-keyframes   @-o-keyframes  @-ms-keyframes   @keyframes
+
+
+box-shadow: 0px 1px 14px rgba(0,0,0,0.6);
+  animation-fill-mode: both;
+  animation-duration: 1s;
+  animation-name: bounceInDown;
+  border-radius: 3px;
+
+  
+ /////////////////////////////////////////////////////////////////// 
+  animation-fill-mode: both;
+  animation-duration: 1s;
+  animation-name: bounceInDown;	
+  
+  -webkit-animation-name:bounceInDown;	
+  -webkit-animation-fill-mode: both;
+  -webkit-animation-duration: 1s;    
+@keyframes bounceInDown{
+0% {opacity: 0;	transform: translateY(-2000px);}
+60% {opacity: 1;transform: translateY(30px);}
+80% {transform: translateY(-10px);}
+100% {transform: translateY(0);}
+

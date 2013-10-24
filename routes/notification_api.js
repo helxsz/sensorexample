@@ -210,6 +210,104 @@ app.post('/user/notify/student/read',function(req,res,next){
      res.send(200);
 })
 
+/*******************************************************
+
+*******************************************************/
+function listenCourseEvent(pattern){
+
+    var redis_ip= config.redis.host;  
+    var redis_port= config.redis.port; 
+    var redisClient = redis.createClient(redis_port,redis_ip); 
+    /*
+    redisClient.auth(config.opt.redis_auth, function(result) {
+	    console.log("Redis authenticated.");  
+    })
+    */ 
+    redisClient.on("error", function (err) {  
+        console.log("redis Error " + err.red,err);  
+        return false;  
+    });    
+
+    redisClient.on('connect',function(err){
+	    console.log('redis connect success');
+    })
+	
+    redisClient.psubscribe(pattern);
+    redisClient.on('pmessage', function(pattern, channel, message){	    
+	    console.log('on publish / subscribe   ',  pattern+"   "+channel+"    " );
+	    if(pattern == course_pattern){
+		    console.log('course_pattern');
+	        try {
+    		    var data = JSON.parse(message);   		
+    		    //var channelName = channel.split(':')[1].replace(/-/g, ' ');				
+				var array = channel.split('/');
+				var cid = array[1], type = array[2],uid = array[3], op = array[4];
+				console.log("received published message:".green, cid+  "   " + type   +"    "+uid+"    "+op);
+                if(type == 'user'){
+				    console.log('to notify the student');
+				
+				}else if(type == 'tutor'){
+				    console.log('to notify the tutor');
+				
+				
+				}				
+	        } catch (e) {
+			    console.log('course_pattern'.red); 
+	            return;
+	        }
+	    }
+    });	   
+}
+
+
+/**
+tutor interests in 
+
+course/:id/user/:id/join
+course/:id/user/:id/disjoin
+
+course/:id/user/:id/submit/   Question/:id
+course/:id/user/:id/submit/   Milestone/:id
+course/:id/user/:id/submit/   Help
+
+course/:id/update/module
+
+only himself
+course/:id/tutor/badge/   user/:id
+course/:id/tutor/reply/   Help/user/:id
+course/:id/tutor/reply/   Question/user/:id  
+course/:id/tutor/update/   module/:id
+course/:id/
+**/
+
+// course/course_id/(tutor/user)/uid/operation/
+var course_pattern = 'course/*/*/*';
+
+listenCourseEvent(course_pattern);
+
+function publishMsg( channel , mssage,callback){
+    var redis_ip= config.redis.host;  
+    var redis_port= config.redis.port; 
+    var redisClient = redis.createClient(redis_port,redis_ip);   
+    redisClient.publish(channel,JSON.stringify(mssage),function(err,data){
+	    if(err) callback(err,null)
+	    else callback(null,data);
+		redisClient.quit();
+	});
+	
+}
+
+exports.publishMsg = publishMsg;
+
+setTimeout(function(){ 
+    publishMsg('course/1/user/b/submit','',function(err,data){});
+    publishMsg('course/1/user/c/submit','',function(err,data){});
+    publishMsg('course/2/user/b/submit','',function(err,data){});
+    publishMsg('course/2/user/c/submit','',function(err,data){});
+}  , 4000);
+
+
+
 /*
    should have callback and try catch to get the exception
 */
@@ -225,44 +323,8 @@ function pushUserNotification(targetUID,UID,verb,msg, type){
 		return callback(error,null);
     }
     redisClient.zadd('noti:'+targetUID+":no",new Date().getTime(),JSON.stringify({'u':UID,'v':verb,'m':msg,'t':type, 'd':new Date()}));
-	//redisClient.incrby('noti:'+targetUID+':count',1);
 	redisClient.quit();
 }
-
-
-
-/*
-pushUserNotification('a','b','follow','url');
-pushUserNotification('a','c','follow','url');
-pushUserNotification('a','d','follow','url');
-pushUserNotification('a','e','follow','url');
-
-//pullUserNotification('a');
-//pullUserNotificationCount('a');
-
-//removeNewUserNotification('a');
-
-//pullUserNotificationCount('a');
-
-function pullUserNotificationCount(targetUID,callback){
-    var redisClient;
-    try{ 
-        redisClient = redis.createClient(redis_port,redis_ip);
-	}catch (error){
-        console.log('cannnot start redis' + error);
-		redisClient.quit();
-		return callback(error,null);
-    }
-	redisClient.get('noti:'+targetUID+':count',function(err,data){
-	    if(err) {  console.log('pullUserNotificationCount'.red,data); callback(err,null);}
-	    else { 
-		   console.log('pullUserNotificationCount noti count'.green,data);
-		   callback(null,data);
-        }		   
-	})
-	redisClient.quit();	
-}
-*/
 
 function pullUserNotification(targetUID,callback){
     var redisClient;
@@ -284,7 +346,7 @@ function pullUserNotification(targetUID,callback){
 	     var lists = _.groupBy(data, function(a, b){
                 return Math.floor(b/n);
         });
-        lists = _.toArray(lists); //Added this to convert the returned object to an array.
+        lists = _.toArray(lists); 
         console.log(lists);
 
         if(err) {  console.log('pullUserNotification'.red,data); callback(err,null);}
@@ -308,35 +370,13 @@ function readAndRemoveUserNotification(targetUID,index,callback){
 		callback(error,null);
     }
 
-			redisClient.zremrangebyrank('noti:'+targetUID+':no',index,index,function(err,data){
-	            console.log('readAndRemoveUserNotification romve ',data);
-				callback(null,data);
-	        })
-	/*	
-    redisClient.zrange('noti:'+targetUID+':no',index,index,function(err,data){
-		console.log('readAndRemoveUserNotification zrange ',data);
-		if(data !=null){
-	 	    redisClient.zadd('noti:'+targetUID+":yes",new Date().getTime(),data[0]);
-		}
+	redisClient.zremrangebyrank('noti:'+targetUID+':no',index,index,function(err,data){
+	    console.log('readAndRemoveUserNotification romve ',data);
+		callback(null,data);
 	})
-	*/	
-	
+		
 	redisClient.quit();
-	/*
-	redisClient.get('noti:'+targetUID+':count',function(err,len){
-       console.log('removeNewUserNotification get count',len);
-	   redisClient.decrby('noti:'+targetUID+':count',len,function(err,data){
-          console.log('remove count:',data);	   
-	      
-		  
-		 if(err) {  console.log('removeNewUserNotification'.red,data); callback(err,null);}
-	     else { 
-		   console.log('removeNewUserNotification noti count'.green,data);
-		   callback(null,data);
-         }		 
-	   })
-    })
-    */	
+	
 }
 
 
@@ -344,7 +384,6 @@ function readAndRemoveUserNotification(targetUID,index,callback){
 exports.pushUserNotification = pushUserNotification;
 exports.pullUserNotification = pullUserNotification;
 exports.readAndRemoveUserNotification = readAndRemoveUserNotification;
-//exports.pullUserNotificationCount = pullUserNotificationCount;
 
 
 function notifyTutorOnMilestone(tutorID, studentID, questionSet){   

@@ -21,6 +21,7 @@ var Hashids = require("hashids"),
 
 var courseModel = require('../model/course_model');	
 var studentPlanModel = require('../model/student_plan_model');
+var studentAnswerModel = require('../model/student_answer_model');
 var permissionAPI = require('./permission_api');
 
 var notifyAPI = require('./notification_api');
@@ -56,11 +57,12 @@ function getStudentDashboardPage(req,res,next){
 app.get('/course/:id/test' , permissionAPI.authUser, getCourseTestPage);
 app.get('/course/:id/test2', permissionAPI.authUser, getCourseTestPage2);
 app.get('/course/:id/test3',  permissionAPI.authUser, permissionAPI.authStudentInCourse,  getCourseTestPage3);
-
+app.get('/course/:id/test4', permissionAPI.authUser, getCourseTestPage4);
 
 function getCourseTestPage(req,res,next){
     var locals = {};
     var id = req.params.id;
+	var uid = req.session.uid;
 	
 	async.parallel([
 		function(callback) {
@@ -97,7 +99,7 @@ function getCourseTestPage(req,res,next){
 function getCourseTestPage2(req,res,next){
     var locals = {};
     var id = req.params.id;
-	
+	var uid = req.session.uid;
 	async.parallel([
 		function(callback) {
 		 // first check user login 
@@ -172,9 +174,112 @@ function getCourseTestPage3(req,res,next){
 	});	 
 }
 
+function getCourseTestPage4(req,res,next){
+    var locals = {};
+    var id = req.params.id;
+	var uid = req.session.uid;
+	async.parallel([
+		function(callback) {
+		 // first check user login 
+		    userModel.findUserById(uid,function(err,user){
+		       if(err || !user) {
+			       console.log('user uid not found'.red);
+                    return res.json(404);
+		       }
+			   else{
+			        console.log('find user uid'.green,user._id);
+                    locals.user = {
+                       username : user.username, 
+					   email : user.email,
+					   img:user.img
+                    };
+					callback();
+                }			
+		    })		            	    
+		},
+		function(callback) {
+		 //  then check user is in the course list
+		    
+		    callback();        	    
+		}		
+		],function(err) {
+	      if (err) return next(err); 
+	      res.format({
+                    html: function(){
+						 locals.title = 'Course Test';
+                         res.render('course_test5',locals);			
+                    },
+                    json: function(){
+                         res.send(locals.courses);
+                    }
+                  });
+	});	 
+}
+
 /***********************************************************
 
 **************************************************************/
+// for the student
+app.get('/course/:id/plan',permissionAPI.authUser, getPlanForStudent);
+function getPlanForStudent(req,res,next){
+    var uid = req.session.uid, cid = req.params.id;
+    console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
+    if(uid == null || cid == null)
+    return res.send(400,{'meta':400,"status":"error"});
+    var locals = {};
+	
+    async.series([
+		function(callback) {
+            studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
+                if(err) {
+				    if(xhr) return res.send(500,{'error':err});
+				    return next(err);
+			    }
+                else{
+		            //console.log('getPlanForStudent2'.green, data.plan, data.count);
+			        for(var i=0;i<data.plan.length;i++){
+			            //console.log(data.plan[i].goal,data.plan[i].ques.length,data.plan[i].ques,data.plan[i]);
+			        }
+			        var milestone_index = data.count.m_now, total_milestone = data.count.m_all;
+			        locals.plan = data.plan[milestone_index];
+			        locals.milestone_num = total_milestone;
+			        locals.milestone_index = milestone_index;
+                    callback();					
+		        }
+            })				                       		    
+		},
+		function(callback) {
+            questionModel.findQuestionsInGroup(locals.plan.ques,'que tip','',function(err,data){                   		
+                if(err) {
+				    if(xhr) return res.send(500,{'error':err});
+				    return next(err);
+			    }
+                else{
+		            console.log('findQuestionsInGroup'.green, data);
+					locals.plan.ques = data;
+                    callback();					
+		        }
+            })				                       		    
+		}		
+		],function(err) {
+	        if (err) return next(err); 
+            else{
+			    studentAnswerModel.getAnswersInGroup(uid, locals.plan.ques, 'anw debug verified right qid',function(err,data){
+                    if(err) {
+				         if(xhr) return res.send(500,{'error':err});
+				         return next(err);
+			        }
+					locals.answers = data;
+                    //console.log('getAnswersInGroup'.green,data);					
+			        if(data == null){
+                        res.send(404);				
+			        }
+                    else res.send(200,locals); 					
+				})
+			}
+	});
+}
+
 
 
 app.post('/course/:id/join', permissionAPI.authUser, joinCourse);
@@ -210,6 +315,9 @@ function joinCourse(req,res,next){
 			})			
 		}
    })
+   
+   notifyAPI.publishMsg('course/'+course_id+'/user/'+uid+'/join',{},function(err,data){});
+   
 
    courseModel.joinCourse(course_id,uid,function(err,course){
 		if(err) {
@@ -245,6 +353,9 @@ function joinCourse(req,res,next){
 function disJoinCourse(req,res,next){
    console.log('disJoinCourse',req.params.id,req.session.uid);   
    var locals = {};
+   
+   notifyAPI.publishMsg('course/'+course_id+'/user/'+uid+'/join',{},function(err,data){});
+   
    courseModel.disJoinCourse(req.params.id,req.session.uid,function(err,course){
 		if(err) {
             if(req.xhr) return res.send({"error":err}, 500);		    
@@ -313,7 +424,10 @@ function answerSimpleQuestion(req,res,next){
 				 })        		
 		    },	
 		    function(callback) {
-	             if(tutorID)  notifyAPI.notifyTutorOnMilestone(tutorID,uid, JSON.parse(queArray));	        		
+	             if(tutorID)  {
+				        notifyAPI.notifyTutorOnMilestone(tutorID,uid, JSON.parse(queArray));
+                 }	
+                  notifyAPI.publishMsg('course/'+cid+'/user/'+uid+'/submit',{'questions':queArray},function(err,data){});				 
                  callback();		    
 		    }
 		],function(err) {			

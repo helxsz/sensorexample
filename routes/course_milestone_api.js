@@ -22,7 +22,8 @@ var Hashids = require("hashids"),
 
 var courseModel = require('../model/course_model');	
 var studentPlanModel = require('../model/student_plan_model');
-
+var studentAnswerModel = require('../model/student_answer_model');
+var questionModel = require('../model/question_model');
 
 app.get('/course/:id/setting/milestone',permissionAPI.authUser, permissionAPI.authTutorInCourse,getMilestonePage)
 function getMilestonePage(req,res,next){
@@ -105,8 +106,7 @@ function createTutorPlans(req,res,next){
 // for tutor to use	
 app.post('/course/:id/plan/:student_id',permissionAPI.authUser, permissionAPI.authTutorInCourse,assignPlanToStudent);
 app.get('/course/:id/plan/:student_id,',permissionAPI.authUser, permissionAPI.authTutorInCourse,getStudentPlanForTutor);
-// for the student
-app.get('/course/:id/plan',permissionAPI.authUser, getPlanForStudent);
+
 // for the tutor
 app.del('/course/:id/plan',permissionAPI.authUser, deletePlanForStudent);
 
@@ -160,23 +160,7 @@ function getStudentPlanForTutor(req,res,next){
    })
 }
 
-function getPlanForStudent(req,res,next){
-    var uid = req.session.uid, cid = req.params.id;
-    console.log('getPlanForStudent'.green,'cid:',cid,'uid',uid);
-    if(uid == null || cid == null)
-    return res.send(400,{'meta':400,"status":"error"});
 
-    studentPlanModel.getOneStudentPlan(cid,uid,function(err,data){
-        if(err) next(err);
-        else{
-		    console.log('getPlanForStudent2'.green, data);
-			res.send(200,data); 
-			if(data == null){
-                res.send(404);				
-			}		    
-		}
-    })
-}
 
 function deletePlanForStudent(req,res,next){
    var uid = req.session.uid, cid = req.params.id;
@@ -185,7 +169,6 @@ function deletePlanForStudent(req,res,next){
    return res.send(400,{'meta':400,"status":"error"});
    else if(answer == null || debug == null)
    return res.send(400,{'meta':400,"status":"error"});
-
 }
 
 /********************************************************

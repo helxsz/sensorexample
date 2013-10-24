@@ -11,6 +11,7 @@ var uuid = require('node-uuid');
 
 //enum: [ 'sub', 'poster', 'blocked' ]
 var CourseSchema = mongoose.Schema({
+         cid:{ type:Number,  unique:true, index: true},
          tutor:{id:{ type: ObjectId, ref: 'User' },name:String},
 		 title:String,
 		 summ:String,
@@ -47,8 +48,11 @@ var CourseSchema = mongoose.Schema({
 		 
 		 //invitations: [{ type: ObjectId, ref: 'Invitation' }],
          invitations: [InvitationSchema],
+		 cr:[]
            
-});
+}
+//, { _id: false }
+);
 //http://stackoverflow.com/questions/11304739/how-to-store-threaded-comments-using-mongodb-and-mongoose-for-node-js
 //http://blog.mongodb.org/post/29140593886/designing-mongodb-schemas-with-embedded-non-embedded
 //http://stackoverflow.com/questions/5224811/mongodb-schema-design-for-blogs
@@ -80,12 +84,22 @@ exports.CourseModel = CourseModel;
 
 
 CourseSchema.pre('save', function(next) {
-    var user = this;
-    if (this.isNew)
-    this.cdate = Date.now();
-    else
-    this.mdate = Date.now();  		
-    next();
+    var course = this;
+    if (this.isNew){
+        this.cdate = Date.now();
+		this.cid = require('./counter_model').getNextSequence('cid',function(err,data){
+		     if(err && err.code) console.log('err on counter'.red,err);
+			 else {
+				 this.cid = data.c;
+				 next();
+			 }
+		});		
+	}
+    else{
+        this.mdate = Date.now();
+		next();
+    }	
+    
 });
 
 function createNewCourse(data,callback){
@@ -150,12 +164,6 @@ function findCourseByQuery(condition,fields,callback){
 }
 
 function findCourseById(id,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
 
 	CourseModel.findById(id,'tutor title desc city sdate edate img tags',function(err, doc){
 		if(err){callback(err, null);}
@@ -167,12 +175,6 @@ function findCourseById(id,callback){
 }
 
 function findCourseById2(id,fields,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
 
 	CourseModel.findById(id,fields,function(err, doc){
 		if(err){callback(err, null);}
@@ -187,30 +189,26 @@ function findCourseById2(id,fields,callback){
 //http://stackoverflow.com/questions/10568281/mongoose-using-populate-on-an-array-of-objectid
 
 function findCourseAndTutorById(id,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-
 	CourseModel.findById(id).populate('tutor.id','username img about').exec(function(err, users) { 
 		if(err){callback(err, null);}
 		else{
 			callback(null, users);
 		}	   
 	})
-
 }
 
+function findCourseAndTutorById2(id,callback){
+	CourseModel.findById(id,'tutor title desc city sdate edate tags img').populate('tutor.id','username img about').exec(function(err, users) { 
+		if(err){callback(err, null);}
+		else{
+			callback(null, users);
+		}	   
+	})
+}
+
+exports.findCourseAndTutorById2 = findCourseAndTutorById2;
+
 function deleteCourseById(id,callback){
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
 	if(CourseModel){
 		CourseModel.findByIdAndRemove(id,function(err){
 			  if(err){console.log('err remove');callback(err, null);}	
@@ -260,14 +258,6 @@ function updateCourseSetting(condition,update,callback){
 
 
 function findCoursePostsById(id,callback){
-
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-
 	CourseModel.findById(id).populate('post').exec(function(err, posts) { 
 		if(err){callback(err, null);}
 		else{
@@ -283,12 +273,6 @@ function findCoursePostsById(id,callback){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // should record when the student join in the course
 function joinCourse(cid,uid,callback){
-    try {
-         uid = mongoose.Types.ObjectId(uid);
-    } catch(e) {
-        return callback(e, null);
-    }	
-		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id  findOneAndUpdate  */
 	CourseModel.update({'_id':cid},{'$addToSet':{'stud':uid},'$inc':{'stat.s_count':1}},options,function(err,ref){
@@ -304,12 +288,6 @@ function joinCourse(cid,uid,callback){
 } 
 //,'$inc':{'stat.s_count':-1}
 function disJoinCourse(cid,uid,callback){
-    try {
-         uid = mongoose.Types.ObjectId(uid);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
  	var options = { new: false ,select:'_id'};	
 	CourseModel.update({'_id':cid},{'$pull':{'stud':uid},'$inc':{'stat.s_count':-1}},options,function(err,ref){
 		if(err) {
@@ -323,14 +301,6 @@ function disJoinCourse(cid,uid,callback){
 }
 
 function findCourseStudentsById(id,callback){
-
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-
 	CourseModel.findById(id).populate('stud','username img').exec(function(err, users) { 
 		if(err){callback(err, null);}
 		else{
@@ -344,14 +314,6 @@ function findCourseStudentsById(id,callback){
 
 
 function findCourseQuestionsById(id,fields,callback){ 
-
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
 	CourseModel.findById(id).populate( {path: 'ques',select:fields} ).exec(function(err, course) { 
 		if(err){callback(err, null);}
 		else{
@@ -363,13 +325,6 @@ function findCourseQuestionsById(id,fields,callback){
 }
 
 function addQuestion(cid,qid,callback){
-    try {
-         qid = mongoose.Types.ObjectId(qid);
-    } catch(e) {
-        return callback(e, null);
-    }	
-	
-	
 	var options = { new: false ,select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'ques':qid},'$inc':{'stat.q_count':1}},options,function(err,ref){
@@ -386,12 +341,6 @@ function addQuestion(cid,qid,callback){
 
 
 function removeQuestion(cid,qid,callback){
-    try {
-         qid = mongoose.Types.ObjectId(qid);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
  	var options = { new: false ,select:'_id'};	
 	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'ques':qid},'$inc':{'stat.q_count':-1}},options,function(err,ref){
 		if(err) {
@@ -408,13 +357,7 @@ function removeQuestion(cid,qid,callback){
 
 function findCourseCommentsById(id,option,callback){
 
-    var id;
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
-      /// problem sort by date doesn't work and return me full documents rather than the comments itself
+      // problem sort by date doesn't work and return me full documents rather than the comments itself
 	CourseModel.findById(id,{'com':{ $slice: [ option.skip ,option.limit] }},function(err, comm) { 
 		if(err){callback(err, null);}
 		else{
@@ -450,12 +393,7 @@ function addComment(cid,name,img,text,callback){
 } 
 
 function removeComment(cid,mid,callback){
-    try {
-         mid = mongoose.Types.ObjectId(mid);
-    } catch(e) {
-        return callback(e, null);
-    }
-	
+
  	var options = { new: false, select: '_id' };	
 	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'com._id':mid},'$inc':{'stat.c_count':-1}},options,function(err,ref){
 		if(err) {
@@ -486,12 +424,7 @@ or
 just add class
  ***************************************/
 function addClass(uid, title,type,requirements,duration,scores,status, callback){
-
-    try {
-         uid = mongoose.Types.ObjectId(uid);
-    } catch(e) {
-        return callback(e, null);
-    }		
+	
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'type':type,'title':title,'req':requirements,'duration':duration,'scores':scores,'status':status}}
@@ -507,11 +440,7 @@ function addClass(uid, title,type,requirements,duration,scores,status, callback)
 }
 
 function disableClassShown(cid,classId, callback){
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }		
+	
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':0}}
@@ -527,11 +456,7 @@ function disableClassShown(cid,classId, callback){
 }
 
 function enableClassShown(cid, classId, callback){
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }		
+		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':1}}
@@ -547,12 +472,7 @@ function enableClassShown(cid, classId, callback){
 }
 
 function removeClass(cid,classId,callback){
-
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }		
+		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
 	CourseModel.findOneAndUpdate({'_id':cid},{'$addToSet':{'classes':{'status':1}}
@@ -569,12 +489,6 @@ function removeClass(cid,classId,callback){
 
 /************************************  plan  *************************************/
 function addPlanToList(cid,plan_id,callback){
-
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }
 		
 	var options = { new: false , select:'_id'};		
 	/*	$ne:self._id */
@@ -589,11 +503,6 @@ function addPlanToList(cid,plan_id,callback){
 }
 
 function removePlanFromList(cid,plan_id,callback){
-    try {
-         cid = mongoose.Types.ObjectId(cid);
-    } catch(e) {
-        return callback(e, null);
-    }
 	
  	var options = { new: false ,select:'_id'};	
 	CourseModel.findOneAndUpdate({'_id':cid},{'$pull':{'plans':plan_id}},options,function(err,ref){
@@ -608,12 +517,6 @@ function removePlanFromList(cid,plan_id,callback){
 }
 
 function findCoursePlansById(id,callback){
-
-    try {
-         id = mongoose.Types.ObjectId(id);
-    } catch(e) {
-        return callback(e, null);
-    }
 	
 	CourseModel.findById(id).populate('plans','cid sid plan count').exec(function(err, plans) { 
 		if(err){callback(err, null);}
@@ -671,10 +574,11 @@ exports.removeInvitationFromList = removeInvitationFromList;
 exports.findCourseInvitationById = findCourseInvitationById;
 
 /******************   invitation with embedded document  *******************************/
+
 var InvitationSchema = new mongoose.Schema({
     token: { type:String, required: true},
-    name: { type:String, required: false},   // optional
-	email: { type:String, required: true},  // compulsory
+    name: { type:String, required: false, sparse: true },   // optional
+	email: { type:String, required: true, unique:true},  // compulsory
 	time: { type: Date, default: Date.now },
 	status: { type: Number, default: 0 , required: true, enum:[0, 1,2,3,4,5]},  // enum [ email_not_sent 0, email_failed 1, email_sent 2,  not_replyed 3, accpeted 4, refused 5, ]
 	//_id:String  // id as the token,
@@ -682,6 +586,7 @@ var InvitationSchema = new mongoose.Schema({
 	valid:{ type: Boolean, default: true },
 });
 
+CourseSchema.index({ 'invitations.email': 1 });
 
 exports.addInvitation = addInvitation;
 exports.removeInvitation = removeInvitation;
@@ -808,4 +713,94 @@ exports.removeComment = removeComment;
 exports.addClass = addClass;
 exports.removeClass = removeClass;
 exports.disableClassShown;
+
+
+
+
+CourseSchema.index({ 'cr.key': 1 });
+
+function addNotiCriteriaKey(id,key,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {
+        CourseModel.update({'cid':id},{'$addToSet':{'cr':{'key':key}}},options,function(err,data){
+	       if(err) callback(err,null);
+	       else callback(null,data);
+	    })
+	}else if( typeof key == 'object' && (key instanceof Array) ){	 
+        // 1  doesn't work
+		// ['111','222','333']
+        //_.map(key, function(element){ return {'key':element}; });	
+        //console.log(key);
+        // 2  seem to work
+        // 	[ {key:'111'},{'key':'222'},{'key':'333'}]	
+        CourseModel.update({'cid':id},{'$addToSet':{'cr':{ '$each': key}}},options,function(err,data){
+	       if(err) callback(err,null);
+	       else callback(null,data);
+	    })		
+	}	
+}
+
+function removeNotiCriteriaKey(id,key,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {	
+        CourseModel.update({'cid':id},{'$pull':{'cr':{'key':key}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+		//_.map(key, function(element){ return {'key':element}; });
+		CourseModel.update({'cid':id},{'$pull':{'cr':{ '$each': key}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })       		
+	}	
+}
+
+function addNotiCriterialValueToKey(id,key,value,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {		
+        CourseModel.update({'cid':id,'cr.key':key},{'$addToSet':{'cr.$.val':value}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+	    // still having problem and error
+        //_.map(value, function(element){ return {'val':element}; });		
+        CourseModel.update({'cid':id,'cr.key':key},{'$addToSet':{'cr.$':{ '$each': value}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}	
+}
+
+function removeNotiCriterialValueFromKey(id, key,value,callback){
+ 	var options = { new: false ,select:'_id'};
+	if( typeof key === 'string' ) {	
+        CourseModel.update({'cid':id,'cr.key':key},{'$pull':{'cr.$.val':value}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+	}else if(  typeof key == 'object' && (key instanceof Array) ){
+	    // still having problem and error
+        //_.map(value, function(element){ return {'val':element}; });			  
+        CourseModel.update({'cid':id,'cr.key':key},{'$pull':{'cr.$':{ '$each': value}}},options,function(err,data){
+	        if(err) callback(err,null);
+	        else callback(null,data);
+	    })
+      		
+	}	
+}
+exports.addNotiCriteriaKey = addNotiCriteriaKey;
+exports.removeNotiCriteriaKey = removeNotiCriteriaKey;
+exports.addNotiCriterialValueToKey = addNotiCriterialValueToKey;
+exports.removeNotiCriterialValueFromKey = removeNotiCriterialValueFromKey;
+
+
+function queryCriteria(criteria,option,callback){
+    CourseModel.find(criteria,'cid _id',option, function(err,data){
+	    if(err) callback(err,null);
+		else callback(null,data);
+	})
+}
+exports.queryCriteria = queryCriteria;
 exports.enableClassShown;

@@ -16,6 +16,85 @@ var account_api = require('./account_api');
 var mongoose = require('../app').mongoose;
 var ObjectId = mongoose.Schema.ObjectId;
 
+/* step first works 
+userModel.addNotiCriteriaKey( 5, 'abc', function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('addNotiCriteriaKey',data);
+		// step 2 works 
+		userModel.addNotiCriterialValueToKey(5,'abc','111',function(err,data){
+            if(err) console.log(err);
+	        else console.log('addNotiCriterialValueToKey',data);
+        })	
+
+		userModel.addNotiCriterialValueToKey(5,'abc','222',function(err,data){
+            if(err) console.log(err);
+	        else console.log('addNotiCriterialValueToKey',data);
+        })
+		userModel.addNotiCriterialValueToKey(5,'abc','333',function(err,data){
+            if(err) console.log(err);
+	        else console.log('addNotiCriterialValueToKey',data);
+        })
+		
+		// step 3 works 
+		userModel.removeNotiCriterialValueFromKey(5,'abc','111',function(err,data){
+            if(err) console.log(err);
+	        else console.log('removeNotiCriterialValueFromKey',data);
+        })			
+	}
+})
+
+userModel.addNotiCriteriaKey( 5, [ {key:'111'},{'key':'222'},{'key':'333'}], function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('addNotiCriteriaKey',data);
+        userModel.removeNotiCriteriaKey( 5, '222', function(err,data){
+            if(err) console.log(err);
+	        else console.log('removeNotiCriteriaKey',data);
+        })		
+	}
+})
+*/
+
+// doesn't work as well, very strange error
+/*
+        userModel.addNotiCriterialValueToKey( 5, '111',['444','333'] ,function(err,data){
+            if(err) console.log(err);
+	        else console.log('removeNotiCriteriaKey',data);
+        })
+*/ 
+
+/*   doesn't work if _.map(value, function(element){ return {'val':element}; });	
+userModel.addNotiCriteriaKey( 5, ['111','222','333','444','555'], function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('addNotiCriteriaKey',data);	    		
+	}
+})
+*/
+
+
+/**/
+// step three
+// {'cr.key':'aaa'}
+// {'cr.key':{'$in':['aaa']}
+userModel.queryCriteria({'cr.key':{'$in':['111','222']}},function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('queryCriteria in  ',data);	
+    }
+})
+
+userModel.queryCriteria({'cr.key':'abc','cr.val':'444'},function(err,data){
+    if(err) console.log(err);
+	else {
+	    console.log('queryCriteria  == ',data);	
+    }
+})
+
+
+
+
 //http://creatary.com/documentation/getting-started/tutorials/7-nodejs-parking-app
 //https://github.com/IshaiJaffe/nodejs-admin/blob/master/permissions.js
 /*********************************************************

@@ -7,7 +7,7 @@ var https = require('https');
 var passport = require('passport');
 var app = express();
 var ejs =  require('ejs');
-
+var winston = require('winston');
 var config = require('./conf/config.js');
 var colors = require('colors');
 var webdir = '/web';
@@ -93,7 +93,7 @@ var allowCrossDomain = function(req, res, next) {
 		 ¡«www.eit.uni-kl.de/koenig/gemeinsame_seiten/projects/ROSIG/PAC4PT_ROSIG_16012013.pdf
 **********************************************/
 app.configure(function(){
-
+	
     app.engine('.html', ejs.__express);
     app.set('view engine', 'html');
 	app.set('views',__dirname+'/views');
@@ -126,7 +126,16 @@ app.configure(function(){
     }));
 
 	//app.use(express.logger({stream:access_logfile,format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms'}));
-
+    winston.remove(winston.transports.Console);
+    winston.add(winston.transports.Console, {'timestamp':true});
+    if (config.logRESTRequests) {
+        app.use(function(req, res, next){
+                winston.info(req.method + ' ' + req.url);
+                next();
+        });
+    }
+	
+	
     //app.use(express.csrf()); 
 	app.use(conditionalCSRF);
     app.use(function(req, res, next){
@@ -273,6 +282,7 @@ function logErrors(err, req, res, next) {
 }
 
 function clientErrorHandler(err, req, res, next) {
+  winston.error(err.stack);
   if (req.xhr) {
     console.log('send error to the client in json'.red,err);
 	/*
@@ -488,6 +498,7 @@ var util = require("util");
 process.on("uncaughtException", function(error) {
   util.log("uncaught exception: ".red + error);
   util.log(error.stack);
+  winston.error(error.stack.toString());
 });
 
 /*********************************************
@@ -500,17 +511,32 @@ process.on("uncaughtException", function(error) {
 var mongoose = require('mongoose');
 //mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
 //mongoose.createConnection('localhost', 'database', port, opts);
-//var opts = { server: { auto_reconnect: false,poolSize: 10 }, user: 'username', pass: 'mypassword',replset: { strategy: 'ping', rs_name: 'testSet' } }
-mongoose.connect(config.mongodb_development,function(err){
+
+
+var opts = { server: { auto_reconnect: false,poolSize: 10 }, user: '', pass: '',replset: { strategy: 'ping', rs_name: 'testSet' } }
+var database_error = null;
+
+mongoose.connect(config.mongodb_development,opts,function(err){
 	if(err) { 
-		connectMongoError(err);
+	    console.log('connect mongodb error'.red,err);
+		database_error = err;
+		if(err.name == 'MongoError' && err.code == 18 && err.errmsg == 'auth fails'){
+		/*
+	        mongoose.connection.db.authenticate(config.mongodb.user, config.mongodb.password, function(err) {
+	            
+	        } )
+	     */   		   
+		}else{
+		    onConnectUnexpected(err);
+		}	
 	}
 	else console.log('mongodb connect success');
 });
 
 mongoose.connection.on('open', function (err) {
       if (reconnTimer) { clearTimeout(reconnTimer); reconnTimer = null; }
-      
+      console.log('connection opening');
+	  /*
 	  if(!err){
 	    //http://stackoverflow.com/questions/18688282/handling-timeouts-with-node-js-and-mongodb
          mongoose.connection.db.on('close', function() {
@@ -542,12 +568,12 @@ mongoose.connection.on('open', function (err) {
 	          process.exit(1);
 	      };
 
-          //setTimeout(connectWithRetry, 5000);	      
 	    }
 	    else{
 	    	console.log('mongod db open success',mongoose.connection.readyState);
 	    }
 	  });
+	  */
 });
 
 
@@ -556,35 +582,26 @@ mongoose.connection.on('open', function (err) {
    https://gist.github.com/taf2/1058819
 ****************************/
 var reconnTimer = null;
- 
+ /*  tryReconnect -> onConnectUnexpected  -> disconnected callback  */
 function tryReconnect() {
     reconnTimer = null;
     console.log("try to connect: %d".grey, mongoose.connection.readyState);
     db = mongoose.connect(config.mongodb_development,function(err){
 	    if(err) {
-	        console.log('connect mongodb error'.red);
-		    connectMongoError(err);
+	        console.log('connect mongodb error'.red,err);
+		    onConnectUnexpected(err);
 	    }
 	    else console.log('mongodb connect success'.green,mongoose.connection.readyState);
   });
 }
 
 
-function connectMongoError(error){
-	    console.log('connect mongodb error');
+function onConnectUnexpected(error){
 		var reportAPI = require('./routes/report_api');
 		reportAPI.reportToAdmin('cannot connect to mongodb '+error,function(err,data){
 	           if(err) { console.log('can not send problem report mail ',err); }
 	           else { console.log('send problem report mail successfully'.green); }		
 		})
-		
-        if (reconnTimer) {
-             console.log("already trying");
-        }
-        else {
-             reconnTimer = setTimeout(tryReconnect, 60000); // try after delay
-        }
-
 }
 
 mongoose.connection.on('opening', function() {
@@ -596,23 +613,25 @@ mongoose.connection.on('connecting', function (err) {
 });
 
 mongoose.connection.on('disconnecting', function (err) {
-
+   console.log('mongodb disconnecting'.red,err);
 });
 
 mongoose.connection.on('disconnected', function (err) {
-
+    console.log('mongodb disconnected'.red,err);
+	if(err == null)  err = database_error;
+    if(err){
+        if(err.name == 'MongoError' && err.code == 18 && err.errmsg == 'auth fails'){
+        
+		}else{
+		    reconnTimer = setTimeout(tryReconnect, 5000); 
+		}
+    }
 });
 
 mongoose.connection.on('close', function (err) {
   mongoose.connection.readyState = 0; // force...
   mongoose.connection.db.close(); // removeAllListeners("reconnect");
- 
-  if (reconnTimer) {
-    console.log("already trying");
-  }
-  else {
-    reconnTimer = setTimeout(tryReconnect, 500); // try after delay
-  }
+   
 });
 
 mongoose.connection.on('reconnected', function (err) {
@@ -665,7 +684,7 @@ function bootControllers(app) {
 
 function bootController(app, file) {
 	var name = file.replace('.js', '');
-	console.log(__dirname + '/routes/'+ name);
+	//console.log(__dirname + '/routes/'+ name);
 	require(__dirname + "/routes/"+ name);				
 }
 

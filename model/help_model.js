@@ -36,10 +36,12 @@ var HelpSchema = mongoose.Schema({
     course:{type: ObjectId, ref: 'Course'},
 	question:{type: ObjectId, ref: 'Question'}, 
 	chats:[ {t:Date,m:String,r:0 }]	
-});
+},{ _id: false });
 
 var HelpModel = mongoose.model('Help',HelpSchema);
 exports.HelpModel = HelpModel;
+
+HelpSchema.index({ course: 1, user: 1,question:1 });
 
 function createNewHelp(data,callback){
 	console.log(data);
@@ -76,6 +78,15 @@ function findHelpByQuery(condition,callback){
 	})	
 }
 
+function findHelpsByQuery(condition,field,option, callback){
+	HelpModel.find(condition,field,option,function(err, doc){
+		if(err){callback(err, null);}
+		else{
+			callback(null, doc);
+		}
+	})
+}
+
 function updateHelp(query,update,callback){
 	var options = { upsert: true };	
 
@@ -94,3 +105,4 @@ exports.createNewHelp = createNewHelp;
 exports.findHelpHistory = findHelpHistory;
 exports.findHelpByQuery = findHelpByQuery;
 exports.updateHelp = updateHelp;
+exports.findHelpsByQuery = findHelpsByQuery;

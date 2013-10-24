@@ -33,6 +33,7 @@ function createStudentPlan(cid,sid,callback){
 	})
 }
 
+/*  [{'goal':'goal'},{'goal':'goal2'},{'goal':'goal3'}]  */
 function createPlanAndAddMilestone(cid,sid,goals,callback){
  	var options = { upsert: true };
 	// {'$addToSet':{'plan':{'goal':goal}},'$inc':{'count.m_all':1}}
@@ -93,7 +94,6 @@ exports.updateStudentPlans =updateStudentPlans;
 
 
 function getOneStudentPlan(cid,sid,callback){
-
 	StudentPlanModel.findOne({'sid':sid,'cid':cid},'plan count',function(err, doc){
 		if(err){callback(err, null);}
 		else{
@@ -101,6 +101,17 @@ function getOneStudentPlan(cid,sid,callback){
 		}
 	})
 }
+
+
+function getOneStudentPlanWithQuestion(cid,sid, callback){
+	StudentPlanModel.findOne({'cid':cid,'sid':sid},'plan count plan.ques').populate({path:'plan.ques',select:'que'}).exec(function (err, doc){
+		if(err){callback(err, null);}
+		else{
+			callback(null, doc);
+		}
+	})
+}
+exports.getOneStudentPlanWithQuestion = getOneStudentPlanWithQuestion;
 
 exports.copyPlan = copyPlan;
 exports.getOneStudentPlan =getOneStudentPlan;
@@ -144,6 +155,9 @@ function getMilestones2(cid,sid, callback){
 		}
 	})
 }
+
+
+
 
 exports.addMilestone2 = addMilestone2;
 exports.removeMilestone2 = removeMilestone2;

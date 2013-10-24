@@ -12,7 +12,7 @@ var answerSchema = new mongoose.Schema({
  
 var AnswerModel = mongoose.model('Answer',answerSchema);
 exports.AnswerModel = AnswerModel; 
-
+answerSchema.index({ sid: 1, qid: 1 });
 
 function addAnswerResultToQuestion( sid, qid, answer,debug,callback){
 	var options = { upsert:true};		 //  new: true,
@@ -44,8 +44,7 @@ function verifyAnswer(sid, qid, right,callback){
 }
 
 /*
-function verifyAnswers(sid, qid, right){
-    
+function verifyAnswers(sid, qid, right){   
 	AnswerModel.update({'sid':sid,'qid':qid},{'$set':{'verified':true,'right':right}},function(err,answer){
 		if(err) {
 			callback(err, null);
@@ -114,8 +113,8 @@ exports.removeAnswerResultByIndex = removeAnswerResultByIndex;
 
 function getAnswersInGroup(sid, qidGroup, fields, callback){  //'anw debug'
 
-	//AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields,function(err,ref){ //aws
-	AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields).populate({path:'qid',select:'que'}).exec(function (err, ref){
+	AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields,function(err,ref){ //aws
+	//AnswerModel.find({'sid':sid,'qid': { $in: qidGroup }},fields).populate({path:'qid',select:'que'}).exec(function (err, ref){
 		if(err) {
 			callback(err, null);
 		}else{
