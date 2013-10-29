@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> -->
+<script src="/assets/js/jquery/jquery-1.10.2.min.js "></script> 
+<script src="/assets/js/jquery/jquery-ui 1.9.2.min.js"></script> 
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/typeahead.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>	
+    <script src="/assets/js/socket.io.js"></script>		
+  </head>
+  
+  
+<style>
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,600,700);
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
+/* fontawesome */
+[class*="fontawesome-"]:before {
+  font-family: 'FontAwesome', sans-serif;
+}
+
+body {
+ <!--  
+  background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
+  background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+ -->
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+.popover {
+	max-width: 800px;
+	width: auto;
+}	
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+a { text-decoration: none; }
+</style>
+
+				
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">                
+		    <span id="loading" class="folding">Loading...</span> 
+            <% include header/header_tutor %>
+
+			
+<div class='container row'>
+  
+  <div class='nav_sidebar span2'>
+    <button>Compose</button>
+    <ul>
+      <li class='open'>Inbox</li>
+      <li>Sent</li>
+      <li>Drafts</li>
+      <li>Trash</li>
+    </ul>
+   </div>
+  
+  <div class='in_box span4'>
+    <header>
+      <h1>Inbox</h1>
+    </header>
+    
+    <ul class='sort'>
+      <li class='sort'>Alphabetically</li>
+      <li class='sort'>Recent</li>
+    </ul>
+    
+    <div class='mail_slot'>
+    <div class='message'>
+      <div class='sender'>Ricky Eckhardt</div>
+      <div class='title'><span class='work'>work</span>Awesome Job</div>
+      <div class='date'>Today 4:49pm</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Bob Fish</div>
+      <div class='title'>Cant Wait for Sunday</div>
+      <div class='date'>Today 4:49pm</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Heather Bean</div>
+      <div class='title'><span class='family'>family</span>Great Party!</div>
+      <div class='date'>Sun 4:49pm</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Zip Little</div>
+      <div class='title'>Yey! For Tuesday!</div>
+      <div class='date'>Fri 14:49pm</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Bryce Johnson</div>
+      <div class='title'>Meeting Cancelled</div>
+      <div class='date'>Thur 2:49pm</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Hello There</div>
+      <div class='title'>Make the Next Food Meet</div>
+      <div class='date'>Feb 28</div>
+    </div>
+    
+    <div class='message'>
+      <div class='sender'>Hello There</div>
+      <div class='title'><span class='junk'>junk</span>Crappy Junk Mail</div>
+      <div class='date'>Jan 14</div>
+    </div>
+    </div>
+  </div>
+  
+  <div class='mail_box span5'>
+    <h1>Awesome Job</h1>
+    <h2>Ricky Eckhardt - Today 4:49pm</h2>
+    <p>Hey Bryce,</p><br>
+    <p>Hello, how is it going! You did an awesome job on the project the other day! just wanted to say you are welcome back anytime! Give me a call if you want to talk.
+    </p><br>
+    <p>-Ricky</p>
+    <textarea></textarea>
+    <button class='reply'>Reply</button>
+  </div>
+</div>			
+			
+			
+			
+
+		</div>
+	</div>
+  </body>
+  
+<style>
+.container {
+width: 100%;
+margin: 10px auto;
+background: white;
+overflow: hidden;
+margin-top: 50px;
+min-height: 550px;
+height: 550px;
+}
+
+.nav_sidebar {
+  float: left;
+  height: 100%;
+  background: #1E2426;
+  margin-left: 0px;
+}
+
+.in_box {
+  float: left;
+  height: 100%;
+  padding: 20px 25px;
+}
+
+
+.mail_box {
+  float: left;
+  height: 100%;
+  padding: 20px 25px;
+}
+
+button {
+  margin: 20px 25px;
+  display: block;
+  width: 100px;
+  border: none;
+  border-radius: 5px;
+  height: 25px;
+  line-height: 20px;
+  color: #ecf0f1;
+  background: #C86242;
+  font-size: .75em;
+  transition: all ease-in-out .1s;
+}
+
+button:hover {
+  background: #c0392b;
+}
+
+.nav_sidebar ul {
+  margin-top: 20px;
+}
+
+.nav_sidebar ul li {
+  padding-left: 25px;
+  height: 30px;
+  line-height: 30px;
+  color: #A6A9A9;
+  font-size: .75em;
+  transition: all ease-in-out .1s;
+}
+
+.nav_sidebar ul li:hover {
+  background: #ecf0f1;
+  color: #1E2426;
+}
+
+.nav_sidebar ul li.open {
+  background: #ecf0f1;
+  color: #1E2426;
+}
+
+header {
+  height: 25px;
+  line-height: 25px;
+}
+
+h1 {
+  font-size: 18px;
+  color: #1E2426;
+  display: inline-block;
+}
+
+input[type=search] {
+  height: 23px;
+  border-radius: 5px;
+  border: 2px solid #A6A9A9;
+  display: inline-block;
+  float: right;
+}
+
+input:focus {
+  outline: none;
+}
+
+ul.sort {
+  height: 24px;
+  border-bottom: 1px solid #A6A9A9;
+}
+  
+
+ul.sort li{
+  float: right;
+  text-align: right;
+  font-size: 10px;
+  height: 24px;
+  line-height: 24px;
+  margin-left: 10px;
+  padding: 0;
+  display: inline-block;
+}
+
+ul.sort li:hover {
+  background: none;
+  border-bottom: 1px solid black;
+}
+
+.mail_slot {
+  margin: 25px 0;
+}
+
+.message {
+  height: 25px;
+  line-height: 25px;
+  color: #A6A9A9;
+}
+
+.sender, .title, .date {
+  float: left;
+  font-size: 10px;
+  height: 25px;
+  line-height: 25px;
+}
+
+.sender {
+  width: 100px;
+}
+
+.title {
+  width: 150px;
+}
+
+.date {
+  width: 70px;
+  text-align: right;
+}
+
+.work {
+  height: 20px;
+  background: #3498db;
+  padding: 2.5px 5px;
+  border-radius: 2px;
+  margin-right: 5px;
+  color: white;
+}
+
+.family {
+  height: 20px;
+  background: #2ecc71;
+  padding: 2.5px 5px;
+  border-radius: 2px;
+  margin-right: 5px;
+  color: white;
+}
+
+.junk {
+  height: 20px;
+  background: #f1c40f;
+  padding: 2.5px 5px;
+  border-radius: 2px;
+  margin-right: 5px;
+  color: white;
+}
+
+
+.mail_box h1 {
+  font-size: 2em;
+  color: #1E2426;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 10px;
+  margin-bottom: 25px;
+}
+
+p {
+  font-size: 12px;
+  line-height: 18px;
+  color: #A6A9A9;
+}
+
+textarea {
+  margin-top: 25px;
+  width: 320px;
+  height: 38px;
+  border: 2px solid #A6A9A9;
+  border-radius: 5px;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+button.reply {
+  margin: 10px 0;
+  float: right;
+  display: block;
+  width: 75px;
+  border: none;
+  border-radius: 5px;
+  height: 25px;
+  line-height: 20px;
+  color: #ecf0f1;
+  background: #C86242;
+  font-size: .75em;
+  transition: all ease-in-out .1s;
+}
+
+button.reply:hover {
+  background: #c0392b;
+}
+</style>  
+  
+  
+<script>
+
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+console.log( '#'+Math.floor(Math.random()*16777215).toString(16)  );   //http://www.paulirish.com/2009/random-hex-color-code-snippets/
+
+var uid ;
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+;  
+
+
+
+
+
+ 
+</script>
+ 
+	
+
+
+
+
+</html>

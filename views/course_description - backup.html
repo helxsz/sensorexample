@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.course.title %></title>
+	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+    <link href="/assets/css/animate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/avgrund.css">	
+   <script src="/assets/js/jquery-1.9.1.min.js"></script>   
+   <script src="/assets/js/underscore.js"></script>
+   <script src="/assets/js/backbone-min.js"></script>
+<script src="/assets/js/avgrund.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/assets/js/socket.io.js"></script>
+	
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">		
+
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-tab.js"></script>								   
+  </head>
+<style>
+
+body {
+  text-align: center;
+  <!--
+  background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
+  background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+  -->
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+  background: -webkit-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -moz-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+  background: -o-radial-gradient(center 0px, cover, white 0%,#ededed 100%);
+
+}
+
+
+
+.tp-title {
+position: absolute;
+background: #fff;
+line-height: 20px;
+color: #333;
+top: 40%;
+width: 75%;
+padding: 10px;
+font-weight: 700;
+text-align: right;
+left: -100%;
+box-shadow: 1px 1px 1px rgba(0,0,0,0.1), 5px 0 5px -3px rgba(0,0,0,0.4), inset 0 0 5px rgba(0,0,0,0.04);
+}
+.tp-title {
+padding: 10px 35px 10px 10px;
+left: 0px;
+}
+
+.tp-title span:nth-child(2) {
+color: #aaa;
+padding: 0 5px;
+background: #F7F7F7;
+right: 0px;
+height: 100%;
+line-height: 40px;
+top: 0px;
+position: absolute;
+display: block;
+}
+
+
+
+
+
+
+
+
+
+
+.page-title:after {
+content: 'beta';
+font-size: 0.17em;
+font-weight: 400;
+background: #62c98f;
+letter-spacing: 1px;
+border-radius: 100%;
+width: 44px;
+height: 44px;
+display: inline-block;
+line-height: 47px;
+position: relative;
+top: -45px;
+color:#ffffff;
+}
+
+
+
+.notesite {
+display: inline-block;
+position: relative;
+width: 1em;
+height: 1em;
+font-size: 5.4em;
+cursor: default;
+-moz-border-radius: 0.5em;
+-webkit-border-radius: 0.5em;
+border-radius: 0.5em;
+}
+
+
+.notesite:before {
+content: "";
+display: block;
+position: absolute;
+width: 1em;
+height: 1em;
+-moz-border-radius: 0.5em;
+-webkit-border-radius: 0.5em;
+border-radius: 0.5em;
+opacity: 0.5;
+z-index: 0;
+}
+
+.notesite>.percent {
+position: absolute;
+top: 20px;
+left: 0;
+width: 100%;
+font-size: 25px;
+text-align: center;
+z-index: 2;
+}
+
+.notesite>#slice.gt50 {
+clip: rect(auto,auto,auto,auto);
+}
+
+.notesite>#slice {
+position: absolute;
+width: 1em;
+height: 1em;
+clip: rect(0px,1em,1em,0.5em);
+}
+
+.notesite>#slice>.pie {
+position: absolute;
+border: 0.1em solid #444;
+width: 0.8em;
+height: 0.8em;
+clip: rect(0em,0.5em,1em,0em);
+-moz-border-radius: 0.5em;
+-webkit-border-radius: 0.5em;
+border-radius: 0.5em;
+border-color: rgb(213, 77, 43);
+}
+
+
+
+.notesite>.percent .dec {
+font-size: 15px;
+}
+
+</style>
+
+
+
+  <body >
+    <div class="wrapper ">
+	    <div class="inner-wrapper">
+            <input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
+			<input type="hidden" id='course_id' value="<%= locals.course._id %>"/>
+            <% include header %>
+			<!--     http://blog.evantahler.com/blog/production-deployment-with-node-js-clusters.html
+                     <div class="tp-title"><span>Bryan Moats</span><span>8</span></div>			
+	                 
+            -->	
+            <div class='row container-fluid' style='margin-top:100px;'>			
+			  <div class="tabbable span7" > <!-- Only required for left/right tabs style="margin:0 auto;width:960px;"-->
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+                    <li><a href="#class" data-toggle="tab">Class</a></li>
+					<li><a href="#student" data-toggle="tab">Student</a></li>
+					<li><a href="#comment" data-toggle="tab">Comment</a></li>
+					<li><a href="#question" data-toggle="tab">Question</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="home">
+			            <% include course/course_page %>					    
+                    </div>
+                    <div class="tab-pane" id="class">
+                    </div>
+                    <div class="tab-pane " id="student">
+                    </div>
+                    <div class="tab-pane" id="comment">
+                    </div>
+                    <div class="tab-pane" id="question">
+                    </div>					
+                </div>				
+              </div>
+			  <%  include course/course_profile %>
+			</div>
+           	<!--		
+			<div class="notesite">
+			   <div class="percent">
+			     <span class="int">7</span>
+				 <span class="dec">.40</span>
+			   </div>
+			   <div id="slice" class="gt50">
+			     <div class="pie" style="-webkit-transform: rotate(3.24deg);"></div>
+			   </div>
+			</div>
+			
+			
+			<div class="page-title">Developer Center</div>	
+            
+            <div class="graph"></div> 
+            -->
+
+
+
+
+
+
+
+
+			
+            <% include footer %>			
+			
+		</div>
+	</div>				
+  </body>
+  
+<script>
+
+$('a[data-toggle="tab"]').on('show', function (e) {
+   // console.log(e.target,e.relatedTarget);
+    var divid = $(e.target).attr('href').substr(1);
+    console.log(divid);	
+
+	if(divid=='home'){
+	
+	}else if(divid=='student'){
+	    $("#"+divid).load('/course/'+$('#course_id').val()+'/students', function(response, status, xhr) {
+		    console.log(response,status);
+			if(status=='success'){
+			    
+			}		    
+        });
+	}else if(divid=='class'){
+	    $("#"+divid).load('/course/'+$('#course_id').val()+'/class', function(response, status, xhr) {
+			if(status=='success'){
+			    
+			}        
+		});	
+	}else if(divid=='comment'){
+	    $("#"+divid).load('/course/'+$('#course_id').val()+'/comments', function(response, status, xhr) {
+			if(status=='success'){
+			    
+			}		    
+        });	
+	}else if(divid=='question'){
+	    $("#"+divid).load('/course/'+$('#course_id').val()+'/questions', function(response, status, xhr) {
+			if(status=='success'){
+			    
+			}		    
+        });	
+	}
+})
+
+</script>  
+
+
+
+<!--
+
+<style>
+text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+</style>
+<form>
+  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
+  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
+</form>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+-->
+<script>
+/*
+var n = 4, // number of layers
+    m = 58, // number of samples per layer
+    stack = d3.layout.stack(),
+    layers = stack(d3.range(n).map(function() { return bumpLayer(m, .1); })),
+    yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
+    yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+var margin = {top: 40, right: 10, bottom: 20, left: 10},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .domain(d3.range(m))
+    .rangeRoundBands([0, width], .08);
+
+var y = d3.scale.linear()
+    .domain([0, yStackMax])
+    .range([height, 0]);
+
+var color = d3.scale.linear()
+    .domain([0, n - 1])
+    .range(["#aad", "#556"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .tickSize(0)
+    .tickPadding(6)
+    .orient("bottom");
+
+var svg = d3.select(".graph").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var layer = svg.selectAll(".layer")
+    .data(layers)
+  .enter().append("g")
+    .attr("class", "layer")
+    .style("fill", function(d, i) { return color(i); });
+
+var rect = layer.selectAll("rect")
+    .data(function(d) { return d; })
+  .enter().append("rect")
+    .attr("x", function(d) { return x(d.x); })
+    .attr("y", height)
+    .attr("width", x.rangeBand())
+    .attr("height", 0);
+
+rect.transition()
+    .delay(function(d, i) { return i * 10; })
+    .attr("y", function(d) { return y(d.y0 + d.y); })
+    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+d3.selectAll("input").on("change", change);
+
+var timeout = setTimeout(function() {
+  d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+}, 2000);
+
+function change() {
+  clearTimeout(timeout);
+  if (this.value === "grouped") transitionGrouped();
+  else transitionStacked();
+}
+
+function transitionGrouped() {
+  y.domain([0, yGroupMax]);
+
+  rect.transition()
+      .duration(500)
+      .delay(function(d, i) { return i * 10; })
+      .attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
+      .attr("width", x.rangeBand() / n)
+    .transition()
+      .attr("y", function(d) { return y(d.y); })
+      .attr("height", function(d) { return height - y(d.y); });
+}
+
+function transitionStacked() {
+  y.domain([0, yStackMax]);
+
+  rect.transition()
+      .duration(500)
+      .delay(function(d, i) { return i * 10; })
+      .attr("y", function(d) { return y(d.y0 + d.y); })
+      .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+    .transition()
+      .attr("x", function(d) { return x(d.x); })
+      .attr("width", x.rangeBand());
+}
+
+// Inspired by Lee Byron's test data generator.
+function bumpLayer(n, o) {
+
+  function bump(a) {
+    var x = 1 / (.1 + Math.random()),
+        y = 2 * Math.random() - .5,
+        z = 10 / (.1 + Math.random());
+    for (var i = 0; i < n; i++) {
+      var w = (i / n - y) * z;
+      a[i] += x * Math.exp(-w * w);
+    }
+  }
+
+  var a = [], i;
+  for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
+  for (i = 0; i < 5; ++i) bump(a);
+  return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
+}
+*/
+</script>
+
+
+
+
+<style type="text/css">
+svg {
+  font-family: "Helvetica Neue", Helvetica;
+}
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+</style>
+
+
+
+
+
+</html>

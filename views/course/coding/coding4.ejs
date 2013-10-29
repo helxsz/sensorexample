@@ -1,0 +1,775 @@
+<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/js/skulpt/skulpt.js" type="text/javascript"></script> 
+<script src="/assets/js/skulpt/skulpt-stdlib.js" type="text/javascript"></script>
+<script src="/assets/js/builtin.js" type="text/javascript"></script>  
+<script src="/assets/js/ace/mode-python.js" type="text/javascript"></script>
+
+
+	    <div class="question_description">
+		    <div class="question_content " id="output"> </div> 
+			<a href="#" class="help question_tip" style="display:none;" title="">Tip</a>
+			
+			<div class="li-icon"><i id="question-up" class="icon-chevron_up icon2x"></i></div>
+			<div class="li-icon"><i id="question-down" class="icon-chevron_down icon2x"></i></div>
+			<div id="percent"></div>
+			<svg id="svg"></svg>
+			<div id="question-solution" style="display: none;"></div>
+			<form  id="form-question-submit" method="post"   class="form-horizontal " enctype="multipart/form-data" >
+                <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
+			    <input type="hidden" name="answer" id="answer_input">
+                <div class="button " type="submit" onclick="submitCode()" ><a href="#"><i class="ss-icon"></i>SUBMIT ANSWER</a></div>			
+            </form>			
+		</div>
+		<div id="coding-env" class="row" style="position:relative;margin-left: 0;display:none;">		
+            <div class="span6 " id="editor"  style="margin-left:0px;">  </div>
+		    <pre class="span6" id="console" style="margin-left:0px;"></pre>  
+			<canvas class="span7" id="mycanvas" ></canvas>
+			<div id="editor-run" class=" bounceInUp animate" style="display: block;"></div>
+
+        </div>			
+        
+<script>		
+	var canvasSize = 100,
+    centre = canvasSize/2,
+    radius = canvasSize*0.8/2,
+    s = Snap('#svg'),
+    path = "",
+    arc = s.path(path),
+    percDiv = document.getElementById('percent'),    
+    startY = centre-radius;
+
+function run(percent) {
+    var endpoint = percent*360;
+    Snap.animate(0, endpoint,   function (val) {
+        arc.remove();
+
+        var d = val,
+            dr = d-90;
+            radians = Math.PI*(dr)/180,
+            endx = centre + radius*Math.cos(radians),
+            endy = centre + radius * Math.sin(radians),
+            largeArc = d>180 ? 1 : 0;  
+            path = "M"+centre+","+startY+" A"+radius+","+radius+" 0 "+largeArc+",1 "+endx+","+endy;
+  
+        arc = s.path(path);
+        arc.attr({
+          stroke: '#3da08d',
+          fill: 'none',
+          strokeWidth: 12
+        });
+       
+        percDiv.innerHTML =    Math.floor(val/360*100) +'%';
+    }, 2000, mina.easeinout);  
+}
+
+run(65/100);	
+</script>
+
+<style>
+#percent, #svg {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#percent {
+  line-height: 20px;
+  height: 20px;
+  width 100%;
+  top: 90px;
+  font-size: 43px;
+  text-align: center;
+  color: #3da08d;
+  opacity: 0.8
+}
+
+#coding-env{
+
+  height: 100%;
+}
+
+.navbar-inner{
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+border: 0px solid #d4d4d4;
+background-color:rgba(255,0,0,0);
+}
+.dropdown-toggle {
+background-color: rgba(255,0,0,0);
+}
+
+#editor { 
+min-height: 470px;
+height: 100%;
+}
+
+
+#resize-center{z-index:1;width:4px;cursor:col-resize;background:#f8f8f8;background:-webkit-linear-gradient(left,#000,#0e1628);background:-moz-linear-gradient(left,#000,#0e1628);background:-ms-linear-gradient(left,#000,#0e1628);background:-o-linear-gradient(left,#000,#0e1628);background:linear-gradient(left,#000,#0e1628);filter:progid:DXImageTransform.Microsoft.Gradient(StartColorStr='#000000',EndColorStr='#0E1628',GradientType=1);position:relative;height:100%;top:0;left:600px;z-index:1}
+
+
+
+
+#editor-run {
+
+background-image: url('/sprite.png')!important;
+background-position: -6px -65px!important;
+position: absolute;
+z-index: 5;
+BOTTOM: 40px;
+left: 500px;
+z-index: 5;
+width: 40px;
+height: 30px;
+background: rgb(165, 164, 152);
+
+
+}
+
+#editor-run:hover{
+   background-position:-6px -97px!important;
+background: white;
+}
+
+.question-solution{
+position: absolute;
+z-index: 5;
+top: 140px;
+left: 520px;
+z-index: 111115;
+width: 40px;
+height: 60px;
+background: rgb(20,146,113);
+opacity: .7;
+border-radius: 0px 0px 15px 15px;
+transition: opacity 2.4s;
+}
+
+.question-solution:hover{
+background: rgb(38, 202, 159);
+opacity: 1;
+}
+
+#console {
+background-color: #1F251F;
+min-height: 470px;
+left: 0px;
+top: 0px;
+height: 100%;
+overflow: auto;
+margin-bottom: 0px;
+}
+
+.console-warning
+{
+    background:   rgba(255, 50, 50, 0.4);  //#F06; 
+    position: absolute;
+    width: 100% !important;
+    left: 0 !important;
+}
+
+#mycanvas {
+background-color: #2C2E2C;
+min-height: 310px;
+left: 850px;
+top: 20px;
+position: absolute;
+width: 300px;
+}
+
+
+.question_description {
+color: white;
+border-radius: 2px;
+height: 130px;
+padding: 4px 25px;
+border: 1px solid #14161C;
+background-color: #3b3f4d;
+border-radius: 1px;
+list-style: none;
+position: relative;
+}
+
+.question_tip {
+background: #383A52;
+border-radius: 2px;
+border: 1px solid #3F4346;
+color: #E6E0E0;
+display: inline-block;
+height: 20px;
+line-height: 20px;
+text-align: center;
+width: 44px;
+position: absolute;
+top: 100px;
+left: 500px;
+margin:5px 5px 5px 5px;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+text-decoration: none;
+}
+.question_tip:hover{
+color: #E6E0E0;
+}
+
+#question_list{
+
+margin-top:100px;paddint-left:5px;
+}
+
+.next_question_btn{
+position: absolute;
+left: 700px;
+top: 124px;
+}
+
+.question_content{
+top: 10px;
+bottom: 10px;
+left: 10px;
+width: 580px;
+font-size: 9px;
+border-right: solid #434757 1px;
+border-right-style: dotted;
+overflow: auto;
+}
+
+#console .error {
+color: #F06;
+display: block;
+position: relative;
+left: -8px;
+}
+
+#console .output {
+color: #CACFCF;
+}
+
+pre{
+padding: 0px;
+}
+
+.button {border-radius:2px; border-bottom:3px solid rgba(0,0,0,0.2); background:#22c6b8; display:inline-block; text-align:center; text-transform:uppercase; margin:0 5px 0 0; position: absolute;bottom: 40px;z-index: 10000px;right: 350px;}
+.button:hover{border-bottom:5px solid rgba(0,0,0,0.2); position:relative; top:-2px; background:#0fbbad;}
+.button:active{border-bottom:3px solid rgba(0,0,0,0.2); position:relative; top:0px;}
+.button a{color:#fff; font-weight:500;  text-decoration:none; display:inline-block; padding:10px 18px; width:170px; position:relative; z-index:3;}
+.button i{position:relative; top:2px; display:inline-block; margin:0 10px 0 0;}
+.button:before{position:absolute; width:auto; background:rgba(0,0,0,0.15); top:0; left:0; right:170px; bottom:-3px; content:" "; animation: slide 4s linear infinite; z-index:2; animation-delay:2s; border-radius:2px 0 0 2px;}
+.button:hover::before{bottom:-5px;}
+
+</style>
+
+<script>
+	
+var PythonMode;	
+var Range;
+var editor;
+var error_marker = null;
+var UndoManager;
+
+function initLocalstorage(){
+    if (Modernizr.localstorage) {
+       // window.localStorage is available!
+	   console.log('support local storage');
+    } else {
+       // no native support for HTML5 storage :(
+       // maybe try dojox.storage or a third-party solution
+    }
+	var foo = localStorage.getItem("error");
+    if (foo === null) {
+        console.log('foo not existed');
+    }	
+}
+
+function saveError( err){
+    var err_str= err.toString().split(':');
+    //http://coding.smashingmagazine.com/2010/10/11/local-storage-and-how-to-use-it/
+	var errorItem = localStorage.getItem( 'error' );
+	var errors = [];
+	if(errorItem != null) errors = JSON.parse(errorItem);
+	var error = {};
+    error.row = err.lineno;
+    error.col = err.colno ;
+	error.type = err_str[0];
+	error.msg =  err_str[1];
+	error.time = new Date();
+	
+	errors.push(error);
+	JSON.stringify(errors);	
+	console.log('saving the error ',errors);
+    localStorage.setItem( 'error', errors );
+
+}
+
+
+function initEditor(){
+    editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    //editor.getSession().setMode("ace/mode/javascript");
+	Range = require("ace/range").Range;
+	PythonMode = require("ace/mode/python").Mode;
+	UndoManager = require("ace/undomanager").UndoManager;
+    //ace.getSession().setUndoManager(new UndoManager());
+    editor.getSession().setMode(new PythonMode());
+	
+    editor.getSession().on('change', function(e) {
+	    //console.log(e.type);
+    });
+    editor.commands.addCommand({
+            name: 'Submit',
+            bindKey: {win: 'Shift-Enter', mac: 'Shift-Enter'},
+            exec: function(editor){
+                var code = editor.getValue();
+				console.log(' Submit',code);  
+                runCode();				
+            }
+    });
+
+    editor.commands.addCommand({
+            name: 'Enter',
+            bindKey: {win: 'Enter', mac: 'Enter'},
+            exec: function(editor){
+                //chrome.storage.local.set({"offline-python": editor.getValue()});
+                editor.insert("\n");//hack insert a new line
+            }
+    });	
+	editor.getSession().selection.on('changeSelection', function(e) {	
+	    //console.log(e);
+    });	
+	editor.setReadOnly(false); 
+	editor.getSession().setUseWrapMode(true);
+	editor.session.getLength();
+	//editor.insert("Something cool");	
+	//editor.setValue("the new text here"); // or session.setValue
+	
+    editor.focus();
+    session = editor.getSession();
+    count = session.getLength();
+    editor.gotoLine(count, session.getLine(count-1).length);
+	outf(  ' Python 2.7.2 (default,' +  new Date()  + ')\n'   );
+}	
+	
+function outf(text) { 
+	$('#console').append( '<span class="output"> <span class="">'+  text  +'</span></span>' );
+    editor.focus();	
+} 
+
+function oute(text){
+    $('#console').append( '<span class="error"> <span class="">'+  text  +'</span></span>' );
+	var error_text = text.toString();
+	//console.log('error', text, text.colno, text.lineno, error_text.split(':')[0], error_text.split(':')[1]);
+	var row, col;
+	if(text.colno == '<unknown>') { console.log('colno nnkonw');  col = 50; } else  col = Number(text.colno); 
+	if(text.lineno == '<unknown>'){ console.log('lineno  unknow');  }  else row = Number(text.lineno); 
+	//console.log(' row   and coloum  ',row, col );
+    error_marker = editor.session.addMarker(new Range(row-1, 0, row-1, col), "console-warning", "fullLine" );   //"ace_active-line"
+	editor.focus();
+	editor.gotoLine(row-1, session.getLine(row-1).length);
+    setTimeout( function(err){editor.getSession().removeMarker(error_marker)}, 10000);	
+	
+    //saveError(text);
+}
+
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+
+function runCode(e){
+   var prog = editor.getValue(); 
+   var mypre = document.getElementById("console"); 
+   Sk.canvas = "mycanvas";
+   Sk.pre = "console";
+   Sk.configure({output:outf, read:builtinRead}); 
+   try {
+      eval(Sk.importMainWithBody("<stdin>",false,prog));
+   } catch (e) {
+	  oute(e);
+   } 
+
+   styleNotiBox('Congrates','you have finished all the questions in this milestone, waiting for the next round');   
+}
+$('#editor-run').on( "click", runCode );
+
+
+
+function submitCode() { 
+   $('#answer_input').val("11111");
+   var prog = editor.getValue(); 
+   submitAnswer( current_qid ,prog,prog);   
+}
+
+function submitAnswer(qid, answer, debug){
+    console.log('submit answers',$('#csrf').val(), current_question_index,'/',total_question_num, current_milestone_index,'/',total_milestone_num,'finished_num:',finished_num);
+    var notify = 0;
+	var array = new Array();
+	$('#question_list').find('li').each(function(e){
+        array.push( $(this).attr('id') );
+	})
+    	
+	if(finished_num == total_question_num-1){
+	    
+		console.log('sumbit these questions and notification as well', JSON.stringify(array));	
+        notify = 1;		
+	}
+	console.log(JSON.stringify(array));
+	/**/
+	$.ajax({
+           type: "POST",
+		   data: "answer="+ answer +"&debug=" +debug +"&extra="+JSON.stringify(array), 
+		   url: "/course/"+courseid+"/answers/"+qid+"?notify="+notify,
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.error('error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           },           		   
+           success: function(data)
+           {
+                successLoad();		   
+                console.log('update success ...',data);	
+           }
+    });
+    	
+}
+
+
+
+
+var current_milestone_index = 0;
+var total_milestone_num = 0;
+
+var current_question_index = 0;
+var total_question_num = 0;
+
+var finished_num = 0;
+var current_qid;
+
+$(document).ready(function() {
+    $('#question-up').bind('click',UpQuestion);
+	$('#question-down').bind('click',DownQuestion);
+})
+
+function UpQuestion(){
+
+}
+
+function DownQuestion(){
+
+}
+
+function showQuestion(){
+
+	console.log( 'showQuestion', $(this).attr('data-question'),$(this).attr('data-verified') , $(this).attr('data-question'));
+    
+	$(this).parent().find('li').each(function(e){
+	    console.log( $(this).html() );
+	    $(this).removeClass('badge-selected');
+	})
+	$(this).addClass('badge-selected');
+	
+	$('.question_content').text('');
+	var a = $(this);
+    $('#loading').show();
+	setTimeout( function(){ 
+	    console.log('complete');
+	    $('#loading').hide(); 
+		$('.question_content').text( a.attr('data-question')  ); 
+	},1000);
+    current_qid = $(this).attr('id');
+	console.log(current_qid);
+	if( $(this).attr('data-verified') )
+	$('.question-solution').show();
+	else $('.question-solution').hide();
+	if( $(this).attr('data-tip') )
+	$('.question_tip').show();
+	else $('.question_tip').hide();	
+}
+
+function autoShowQuestion(id){
+    console.log('autoShowQuestion  ',id);
+    var question = $("#"+id);
+	question.parent().find('li').each(function(e){
+	    $(e).removeClass('badge-selected');
+	})
+	question.addClass('badge-selected');
+	
+	$('.question_content').text('');
+    $('#loading').show();
+	setTimeout( function(){ 
+	    console.log('complete');
+	    $('#loading').hide(); 
+		$('.question_content').text( question.attr('data-question')  ); 
+	},1000);
+    current_qid = question.attr('id');
+	console.log(current_qid);
+	if( question.attr('data-verified') )
+	$('.question-solution').show();
+	else $('.question-solution').hide();
+	if( question.attr('data-tip') )
+	$('.question_tip').show();
+	else $('.question_tip').hide();	
+}
+
+function destoryOldList(){
+    $('#question_list').find('li').each(function(e){
+	    $(this).unbind('click',showQuestion);
+		$(this).popover('destroy')	
+	});
+	$('.goal').popover('destroy');	
+	$('#question_list').html('');
+}
+
+function showCurrentStatus(){   
+    $('#question_list').find('li').each(function(e){
+	    //console.log($(this).attr('id'),"   ",$(this).attr('data-verified'),$(this).attr('data-right'),$(this).attr('data-finished'));
+		if( $(this).attr('data-finished') == 'true' ){
+		    finished_num ++;
+		}
+	})
+	console.log('You are now in milestone '+(current_milestone_index+1)+' / '+total_milestone_num+'   ');
+	var unfinished = total_question_num - finished_num;
+	console.log('total num :' + total_question_num, 'finished num :'+finished_num);
+	if(finished_num == 0 ){   
+	    //  show board		
+		console.log('show the user the goal of this milestone');
+		styleNotiBox('Let us get started with new goal','show the user the goal of this milestone')
+	}
+	else if( unfinished > 0 ){ 
+    	console.log('still '+unfinished +"  to be finished ");
+		findUnfinished();
+		styleNotiBox('Keep up','U still '+unfinished +"  to be finished ")  
+	}
+	else {
+	    console.log('you have finished all the questions in this milestone, waiting for the next round');
+        styleNotiBox('Congrates','you have finished all the questions in this milestone, waiting for the next round'); 	
+	}
+}
+
+function styleNotiBox(title,msg){
+     $('#noti-box #noti-title').html(title)
+     $('#noti-box #noti-msg').html(msg);
+     $('#noti-box').show();
+	 $('#noti-btn').bind('click',continueTest);
+	 //setTimeout(function(){  $('#noti-box').hide();  },3000);
+	 
+}
+var continueTest = function(){
+
+    $('#noti-box').hide();
+	$('#noti-btn').unbind('click',continueTest);
+}
+
+
+function findUnfinished(){
+    $('#question_list').find('li').each(function(e){
+	    //console.log($(this).attr('id'),"   ",$(this).attr('data-verified'),$(this).attr('data-right'),$(this).attr('data-finished'));
+		if( $(this).attr('data-finished') == 'false' ){
+		    var id = $(this).attr('id');
+			autoShowQuestion(id);
+			return false;
+		}
+	})    
+}
+
+function getCoursePlanMilestones(course_id){ 
+    console.log('getCoursePlanMilestones    .........',course_id);   
+    $.ajax({
+           type: "GET",
+		   url:"/course/"+course_id+"/plan",	   
+           success: function(data)
+           {
+		        successLoad();
+				console.log('getCoursePlanMilestones    .........',data);
+                console.log('getCoursePlanMilestones    .........', data.milestone_index, data.milestone_num, data.plan.goal,data.plan.ques);
+                total_milestone_num = data.milestone_num;
+                current_milestone_index = data.milestone_index;
+				total_question_num = data.plan.ques.length;
+				
+				destoryOldList();
+				
+				var goal = data.plan.goal;  //,  trigger: "hover" 
+				$('.goal').popover({container: 'body',title: goal, content:'<div style="width:200px">goal</div>' , html:true, placement:'right'});
+				
+			    for(var i=0;i<data.plan.ques.length;i++){				    
+					var que = data.plan.ques[i];
+					console.log('   .... ',que);	
+ 					var s = $('<li id="'+  que._id +'"   > '+  (i+1) +'  </li>');
+                    s.attr('data-question',que.que);
+					console.log('tip ............',que.tip);
+					if(que.tip == null || que.tip=='') s.attr('data-tip','');	
+                    else s.attr('data-tip',que.tip);	
+                    s.attr('data-finished',false);					
+					s.appendTo( $('#question_list') );  
+                    s.bind('click', showQuestion);					
+			    }
+				
+				for(var i=0;i<data.answers.length;i++){
+				    var anw = data.answers[i];
+				    console.log(anw._id, anw.right, anw.verified, anw.anw, anw.debug, anw.qid.que);
+					console.log($('#question_list').find('li').length);
+					//var obj = $('#question_list').find('#'+anw._id);
+					
+					//console.log('...................',$('#question_list').find('#'+anw.qid));
+					
+					var obj = $("#"+anw.qid);
+					var content, tutorClass = '', answerClass = '';
+					if(obj!=null){
+					    console.log('find the object '+anw._id,anw.right,anw.verified,anw.anw);
+						//console.log('obj html',obj.html(), obj.parent().html());
+					    obj.attr('data-right',anw.right);
+					    obj.attr('data-verified',anw.verified);
+					    obj.attr('data-anw',anw.anw);
+					    obj.attr('data-debug',anw.debug);
+					    
+						content = '<div class="pop-content" style="width:200px;">' + obj.attr('data-question') + '<div> Answers <span> '+ anw.anw.length +' </span> </div> </div>';
+						if(anw.verified == true && anw.right == true){
+						    tutorClass = 'right';
+						}else if(anw.verified == true && anw.right == false){
+						    tutorClass = 'wrong';
+						}
+						if(anw.anw && anw.anw.length>0)
+						{ answerClass = 'green'; obj.attr('data-finished',true);}
+						else
+						{ answerClass = 'gray'; }
+						
+						var status = $('<span class="badge "> </span>');
+						status.addClass(answerClass);status.addClass(tutorClass);
+						obj.append(status);
+						obj.popover({container: 'body', title: goal, content:content , html:true, placement:'right'  }); //,trigger: "hover"																	    
+						
+					}else{
+					    content = '<div class="content">' + que +'</div>';
+					}
+
+                    showCurrentStatus();					
+				}
+           },
+		   error: function(jqXHR, textStatus, errorThrown){
+                console.error('getCoursePlanMilestones  error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    }); 
+}
+
+</script>
+
+
+
+<script>
+$(document).ready(function() {
+    $('.notifItem').click(function(e){
+        console.log('click notiitem');
+        $('#chat-list').animate({left:'0px'});
+        $('#help-list').animate({left:'-300px'});  
+    })
+    $('.chat-box li').click(function(e){
+        $('#chat-list').animate({left:'300px'});
+        $('#help-list').animate({left:'0px'});  
+    })	
+    $('#back-btn').click(function(e){
+        $('#chat-list').animate({left:'300px'});
+        $('#help-list').animate({left:'0px'});  
+    })	
+	$('#help-btn').click(function(e){
+	    console.log('help click');
+        $('#chat-box').show();  
+    })	
+
+    $('#chat-btn').click(function(){   
+	    var msg = $('#chat-area').val();	
+	    console.log('help msg clicks',$('#csrf').val(),msg);
+	    if(msg.length <20) {
+	       // the question should be a lot of more specific
+	        return false;
+	    }
+	/* */
+	    $.ajax({
+           type: "POST",
+		   url:"/course/"+courseid+"/help?role=0",
+		   data: 'msg='+msg+'&question_id='+current_qid,
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		
+                successLoad();		 		   
+                console.log('success  ',data);			   
+                $('#chat-area').val('');				
+           }
+        }); 		
+    })
+	
+	$('.goal').click(function(){   
+	    console.log('click goal');
+		getAllHelps(courseid);
+	})
+});
+
+function getAllHelps(course_id){  
+    console.log('getChatsOnQuestion');
+	$.ajax({
+           type: "GET",
+		   url:"/course/"+course_id+"/help",
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log("getChatsOnQuestion  results",data.data);				
+				if(data==null)  {
+				    return true;
+				}
+				data = data.data;
+                for(var i=0;i<data.length;i++){
+                    console.log('add help info  ',data[i].question, data[i].course, data[i].user, data[i].chats);				
+			   	    var a = $(   '<li class="notifItem" data-question="' +  data[i].question +'"><a href="#">'+  data[i].question +'</a></li>');	
+                    a.appendTo($('#help-list ul')); 
+                    a.bind('click',clickHelpQuestion);					
+				}				 				
+           }
+    });
+}
+
+function clickHelpQuestion(e){
+    var qid = $(this).attr('data-question');
+	console.log('clickHelpQuestion',qid);
+	getChatsOnQuestion(courseid,qid);
+}
+
+function getChatsOnQuestion(course_id,question_id){  
+	$.ajax({
+           type: "GET",
+		   url:"/course/"+course_id+"/help?question="+question_id,
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log("getChatsOnQuestion  results",data,data.data.length);				
+				if(data==null)  {
+				    return true;
+				}
+				data = data.data;
+                for(var i=0;i<data.length;i++){
+                    console.log('add help info  ',data[i].t, data[i].m, data[i].r, data[i]._id);				
+			   	      loadMessage('Carolyn' ,'http://s.cdpn.io/42746/carolyn.jpg', data[i].m, data[i]._id);
+                   							
+				}				 				
+           }
+    });
+}
+
+function loadMessage(name, img, msg, time){
+    var msg = $('<li class="media">'
+            +'<a class="media-object" href="#"> <img src="'+ img +'" alt="Carolyn"></a> '                            
+                +'<div class="media-body">'
+                    +'<div class="user"> '+ name  +'<span class="status"> </span> </div>'
+                    +'<p>'+ msg +'</p>'
+                    +'<span class="text-subtle h-promo">posted '+ time  +'</span>'
+				+'</div>'
+        +'</li>');
+    msg.appendTo($('.chat-box'));		
+}
+</script>

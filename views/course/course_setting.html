@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+<link rel="stylesheet" href="/assets/css/loading.css	">	
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> 
+	      <script src="/assets/js/jquery/jquery-1.8.1.min.js"></script> 
+
+<script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>	
+<script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+	-->
+<script src="/assets/js/jquery/jquery-1.10.2.min.js "></script> 
+<script src="/assets/js/jquery/jquery-ui 1.9.2.min.js"></script> 
+
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/typeahead.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-tab.js"></script>								   
+  </head>
+<style>
+body {
+font-family: 'proxima-nova',Proxima Nova,'Helvetica Neue',Helvetica,sans-serif;
+margin: 0;
+padding: 0;
+height: 100%;
+background: #F3F5F8;
+
+}
+
+</style>
+
+ <style>
+.content{
+     position: relative;
+	margin-top:50px;	 
+}
+
+@import "//netdna.bootstrapcdn.com/font-awesome/3.0/css/font-awesome.css";
+.update-status {
+width: 200px;
+height: 50px;
+border-radius: 100px;
+-webkit-border-radius: 100px;
+-moz-border-radius: 100px;
+position: absolute;
+top: 30%;
+left: 45%;
+z-index:1000;
+display:none;
+}
+.update-status:after, .update-status:before {
+	content: '';
+	position: absolute;
+	background: #2ecc71;
+	z-index: -1;
+}
+
+.update-status{
+	background: #2ecc71;
+}
+
+.status_ok:before {
+position: absolute;
+left: 38%;
+content: "\f00c";
+font-family: FontAwesome;
+font-style: normal;
+font-size: 4em;
+text-decoration: inherit;
+color: #fff;
+z-index: 5;
+top: 12px;
+}
+
+.status_ok {
+-webkit-animation: pulse 3s ease-out;
+-moz-animation: pulse 3s ease-out;
+-ms-animation: pulse 3s ease-out;
+-o-animation: pulse 3s ease-out;
+animation: pulse 3s ease-out;
+-webkit-animation-iteration-count: infinite;
+-moz-animation-iteration-count: infinite;
+-ms-animation-iteration-count: infinite;
+-o-animation-iteration-count: infinite;
+animation-iteration-count: infinite;
+}
+
+@keyframes "pulse" {
+ 0% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   	filter: alpha(opacity=0);
+   	opacity: 0;
+ }
+ 50% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   	filter: alpha(opacity=100);
+   	opacity: 1;
+ }
+ 100% {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   	filter: alpha(opacity=0);
+   	opacity: 0;
+ }
+
+}
+
+@-moz-keyframes pulse {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-webkit-keyframes "pulse" {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-ms-keyframes "pulse" {
+ 0% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+
+@-o-keyframes "pulse" {
+ 0% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+ 50% {
+   filter: alpha(opacity=100);
+   opacity: 1;
+ }
+ 100% {
+   filter: alpha(opacity=0);
+   opacity: 0;
+ }
+
+}
+ </style>
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">                
+            <div class="update-status cloud_ok"><span class="status_ok"></span></div>
+
+            <% include ../header %>
+			<% if(!locals.course) { %> 
+		        <div class="content">
+                    <% include course_form_guide %>				
+			    </div>				
+			<% } %>
+			<% if(locals.course){ %>			
+			    <% if(locals.page=="basic"){ %>
+		            <div class="content">
+                        <% include course_form_nav %>
+				        <% include course_form_basic %> 
+			        </div>
+				<% } %>
+				
+				<% if(locals.page=="question"){ %>
+		            <div class="content">
+					    <% include course_form_nav %>
+				        <% include course_form_questions %> 
+			        </div> 
+                <% } %>
+				<% if(locals.page=="invitation"){ %>
+		            <div class="content">
+					    <% include course_form_nav %>
+						<% include course_form_invite %>
+                        					
+			        </div> 
+                <% } %>
+				<% if(locals.page=="milestone"){ %>
+		            <div class="content">
+					    <% include course_form_nav %>
+						<% include course_form_milestone %>                      					
+			        </div> 
+                <% } %>				
+			<% } %>
+			
+			
+			
+			<!--
+			<script type="text/javascript" src="/assets/js/pagedown/Markdown.Converter.js"></script>
+            <script type="text/javascript" src="/assets/js/pagedown/Markdown.Sanitizer.js"></script>
+            <script type="text/javascript" src="/assets/js/pagedown/Markdown.Editor.js"></script>
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                <textarea class="wmd-input" id="wmd-input">
+                    This is the *first* editor.
+                    ------------------------------
+                </textarea>
+            </div>
+            <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+            <script type="text/javascript">
+               (function () {
+                var converter1 = Markdown.getSanitizingConverter();
+                var editor1 = new Markdown.Editor(converter1);
+                editor1.run();
+               })();
+            </script>
+			-->
+						
+            <% include ../footer %>			
+			 
+		</div>
+	</div>				
+  </body>
+
+</html>

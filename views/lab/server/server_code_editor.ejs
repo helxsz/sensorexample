@@ -1,0 +1,150 @@
+<div class="span6">    
+	<div class="row-fluid">
+              <div class="editor-container">
+                <ul class="nav nav-pills" id="app-tabs">
+				<!--
+				    http://runnable.com/UTlPMl-f2W1TAABS/how-to-get-and-post-in-node-js#
+				    http://jsfiddle.net/vinodlouis/pb6EM/1/
+				
+				    <li class="active"><a href="#" data-action="app" data-filename="hello-world.c">hello-world.c</a></li>
+				    <li><a href="#" data-action="app" data-filename="blink.c">blink.c</a></li>
+				-->	
+					<li class="dropdown pull-right">
+					    <a class="dropdown-toggle" data-toggle="dropdown" href="#">All apps <b class="caret"></b></a>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+						    <!--
+						    <li><a href="#" data-action="app" data-filename="hello-world.c">hello-world.c</a></li>
+                            <li><a href="#" data-action="app" data-filename="blink.c">blink.c</a></li>
+							-->
+                        </ul>
+					</li>
+				
+                </ul>
+				
+                <div id="editor" class="editor">
+				
+				</div>
+				<input type="hidden" id='csrf' name="_csrf" value="<%= token %>"/>
+				<button id="save"> save </button>
+				<button id="run"> run </button>
+              </div>
+    </div>
+</div>	  
+
+<script>
+
+
+</script>
+
+	
+<script>
+initEditor();
+	
+var PythonMode;	
+var Range;
+var editor;
+var error_marker = null;
+var UndoManager;
+
+function initLocalstorage(){
+    if (Modernizr.localstorage) {
+       // window.localStorage is available!
+	   console.log('support local storage');
+    } else {
+       // no native support for HTML5 storage :(
+       // maybe try dojox.storage or a third-party solution
+    }
+	var foo = localStorage.getItem("error");
+    if (foo === null) {
+        console.log('foo not existed');
+    }	
+}
+
+
+function initEditor(){
+    editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    
+	Range = require("ace/range").Range;
+	PythonMode = require("ace/mode/python").Mode;
+	UndoManager = require("ace/undomanager").UndoManager;
+    ace.getSession().setUndoManager(new UndoManager());
+    //editor.getSession().setMode(new PythonMode());
+	editor.getSession().setMode("ace/mode/javascript");
+	
+    editor.getSession().on('change', function(e) {
+	    //console.log(e.type);
+    });
+    editor.commands.addCommand({
+            name: 'Submit',
+            bindKey: {win: 'Shift-Enter', mac: 'Shift-Enter'},
+            exec: function(editor){
+                var code = editor.getValue();
+				console.log(' Submit',code);  
+                runCode();				
+            }
+    });
+
+    editor.commands.addCommand({
+            name: 'Enter',
+            bindKey: {win: 'Enter', mac: 'Enter'},
+            exec: function(editor){
+                //chrome.storage.local.set({"offline-python": editor.getValue()});
+                editor.insert("\n");//hack insert a new line
+            }
+    });	
+	editor.getSession().selection.on('changeSelection', function(e) {	
+	    //console.log(e);
+    });	
+	editor.setReadOnly(false); 
+	editor.getSession().setUseWrapMode(true);
+	editor.session.getLength();
+	//editor.insert("Something cool");	
+	//editor.setValue("the new text here"); // or session.setValue
+	
+    editor.focus();
+    session = editor.getSession();
+    count = session.getLength();
+    editor.gotoLine(count, session.getLine(count-1).length);
+	outf(  ' Python 2.7.2 (default,' +  new Date()  + ')\n'   );
+}	
+	
+function outf(text) { 
+	$('#console').append( '<span class="output"> <span class="">'+  text  +'</span></span>' );
+    editor.focus();	
+} 
+
+function oute(text){
+    $('#console').append( '<span class="error"> <span class="">'+  text  +'</span></span>' );
+	var error_text = text.toString();
+	//console.log('error', text, text.colno, text.lineno, error_text.split(':')[0], error_text.split(':')[1]);
+	var row, col;
+	if(text.colno == '<unknown>') { console.log('colno nnkonw');  col = 50; } else  col = Number(text.colno); 
+	if(text.lineno == '<unknown>'){ console.log('lineno  unknow');  }  else row = Number(text.lineno); 
+	//console.log(' row   and coloum  ',row, col );
+    error_marker = editor.session.addMarker(new Range(row-1, 0, row-1, col), "console-warning", "fullLine" );   //"ace_active-line"
+	editor.focus();
+	editor.gotoLine(row-1, session.getLine(row-1).length);
+    setTimeout( function(err){editor.getSession().removeMarker(error_marker)}, 10000);	
+	
+    //saveError(text);
+}
+
+
+
+function runCode(e){
+   styleNotiBox('Congrates','you have finished all the questions in this milestone, waiting for the next round');   
+}
+$('#editor-run').on( "click", runCode );
+
+
+
+function submitCode() { 
+   
+   var prog = editor.getValue(); 
+   
+}
+
+
+	
+</script> 

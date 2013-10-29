@@ -58,12 +58,12 @@ margin-top: 20px;
 			
 	        <div class="content">  </div>	
              			
-			<% include device/device_modal %>
+			<% include lab/device/device_modal %>
 
             <div class="row-fluid" style="margin-top:80px;">     
-                <% include device/device_code_editor %>
-                <% include device/device_status %>  
-                <% include device/device_list %>
+                <% include lab/device/device_code_editor %>
+                <% include lab/device/device_status %>  
+                <% include lab/device/device_list %>
             </div>
          </div>	
 
@@ -76,18 +76,7 @@ margin-top: 20px;
   
 <script>
 
-initWebsocket();
-function initWebsocket(){
-            console.log('init train socket');
-            var socket =  io.connect(':8082/');
-						
-            socket.on('connect', function(message) {
-                console.log('on connect',message);
-            });
-            socket.on('news', function(message){
-			   console.log(message);			   
-            });
-}
+
 
 </script>  
 

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="/assets/js/jquery/jquery-1.8.1.min.js"></script> 
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="/assets/js/socket.io.js"></script>	
+	<script src="/assets/js/modernizr.js"></script>
+
+	<script src="/assets/js/intro/intro.min.js"></script>
+	<link href="/assets/js/intro/introjs.min.css" rel="stylesheet">
+	<link href="/assets/js/intro/introjs-rtl.min.css" rel="stylesheet">
+	
+	<script src="/assets/js/sidr/jquery.sidr.min.js"></script>
+	<link href="/assets/js/sidr/jquery.sidr.light.css" rel="stylesheet">
+	<link href="/assets/css/mfglabs_iconset.css" rel="stylesheet">
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/53148/snap.svg-min.js"></script>	
+  </head>
+<style>
+
+
+
+body,html {
+  font-family:'Open Sans', sans;
+    height: 100%; 
+  position: relative;
+  background: #060606;
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+.help-btn.input[type="submit"] {
+display: block;
+height: 33px;
+line-height: 34px;
+padding: 0 15px;
+background-color: #55bc75;
+color: #fff;
+cursor: pointer;
+border: none;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+-webkit-transition: background 0.5s ease-out;
+-moz-transition: background 0.5s ease-out;
+-o-transition: background 0.5s ease-out;
+transition: background 0.5s ease-out;
+}
+
+.help-btn.input[type="submit"]:hover{
+background-color: #409f89;
+}
+
+
+a{text-decoration:none;}
+a:hover{text-decoration:none;}
+a:focus{outline:thin dotted;text-decoration:none;}
+a:active,a:hover{outline:0}
+
+#update-status {
+width: 140px;
+padding: 1px 1px;
+background: #199ce8;
+border-radius: 5px;
+margin:0px;
+position: absolute;
+top: 0%;
+left: 40%;
+z-index: 3000;
+display:none;
+  -moz-animation-delay: 1.2s;
+  -webkit-animation-delay: 1.2s;
+  -o-animation-delay: 1.2s
+}
+
+#update-status h1 {
+font-weight: 400;
+font-size: 20px;
+color: #C8DDDD;
+margin: 0px auto;
+}
+
+#question_list li{
+margin-top:5px;
+padding-left:5px;
+padding-top:5px;
+padding-bottom:5px;
+border-top: 0px solid #4d4d4d;
+color:#686868;
+}
+
+#question_list li:hover{
+color:#928585;
+cursor: pointer; cursor: hand;
+}
+
+.green{
+background-color: #4BA036;
+color:white;
+/* #0F6D67*/
+}
+
+.blue{
+background-color: #0F6D67;
+color:white;
+}
+
+.gray{
+background-color: #4BA036;
+background:#CAC9C9;
+}
+
+.red{
+background-color: #C23816;
+}
+.badge {
+display: inline-block;
+padding: 4px 4px;
+font-size: 11.844px;
+font-weight: bold;
+line-height: 14px;
+color: #ffffff;
+text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+white-space: nowrap;
+vertical-align: baseline;
+min-width:5px;
+min-height:5px;
+border-radius: 100%;
+}
+
+.badge-selected{
+background: #2F3233;
+}
+
+
+#menu_button {
+background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi¡­xLTAuMzkxLDAuMzkyLTEuMDIzLDAtMS40MTRMMTUuODIyLDEyLjU4eiIvPg0KPC9zdmc+DQo=');
+}
+
+.sidr a{
+color: #666666;
+display: inline-block;
+}
+
+.sidr span{
+color: #7c7c7c;
+}
+
+@-webkit-keyframes formAnim {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+@-moz-keyframes {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}  
+@-o-keyframes {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+} 
+@-ms-keyframes {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}  
+@keyframes{
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+#question_list{
+ -webkit-animation:formAnim 3s ease-out 1s 
+}
+
+
+#loading{
+top: 15%;
+left: 50%;  
+z-index:3000;
+}
+
+.media-object {
+float: left;
+}
+
+
+
+.chat-box img{
+   width:30px;height:30px;
+}
+
+.sidr{
+overflow:hidden;
+}
+
+.sidr ul li, .sidr ul li:hover{
+line-height: 18px;
+border-top: 0px solid #fff;
+}
+
+.user{
+color: #333;
+}
+
+.text-subtle, .sidr ul li span  {
+color: #999;
+font-weight: normal;
+font-size: 12px;
+display:inline;
+}
+
+
+.sidr p {
+font-size: 13px;
+margin: 0 0 12px;
+color: #555;
+}
+
+.sidr ul li span{
+padding: 0 0px;
+}
+
+.media, .media-body {
+overflow: hidden;
+margin-top: 4px;
+}
+
+.chat-box a, .sidr ul li a {
+padding: 0 5px; margin: 5px 5px 5px 0; 
+}
+
+.chat-box a:hover{
+padding: 0 5px; margin: 5px 5px 5px 0; 
+}
+
+.chat-box ul li{
+line-height: 18px;
+}
+.chat-box ul li:hover{
+line-height: 18px;
+}
+
+.chat-box{
+height:400px;
+overflow-y: scroll;
+}
+
+.goal{
+transition: all .3s ease-out, color .2s .4s ease-out;
+}
+.goal:hover{
+//margin-left: 30px;
+cursor: pointer;
+color: #DBDBDB;
+}
+
+.status{
+width: 10px;
+height: 10px;
+border-radius: 100%;
+background: #e1e2e4;
+display: inline-block;
+margin-left: 10px;
+background: #46c9ab;
+}
+
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  display: none;
+  max-width: 600px;
+  width:auto;
+  padding: 1px;
+  text-align: left;
+  white-space: normal;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding;
+          background-clip: padding-box;
+}
+
+</style>
+
+
+
+
+
+  <body>
+
+</script>  
+  
+    
+	
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+            <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
+            <input id="csrf" type="hidden" name="_csrf" value="<%= locals.token %>"/>			
+ 
+ 			<section id="update-status" class="  bounceInUp animate">
+				<h1>Success</h1>						
+			</section>           
+			<span id="loading" class="folding" sytle="display:none;">Loading...</span>
+            
+            <% include header/header_student_test_short %>						
+            <div class="question_board row " >
+                <div id="sidr" style="display:none;overflow-x:hidden;">
+                   <section id="chat-section" style="overflow-x:hidden;">				
+                      <div class="Course-menu" style="width:100%">
+		                <div class="courseHeader">
+				            <div style="margin-top:5px;margin-left: 5px;">
+				                <span><img src="/ajit.jpg"></span>
+					            <span> Course Test  </span>					
+			                </div>
+				            <div style="margin-top:5px;margin-left: 5px;"> ajit </div>
+                        </div>	
+                       </div>
+                     <div id='help-list' style="position:absolute;left:0px;width:100%">
+					    <ul class="User-menu" style="width:100%;">
+		                    <li class="notifItem"><a href="#">Dashboard</a></li>						
+                        </ul>
+                     </div>					   
+                     <div id="chat-list" style="position:absolute;left:300px;">					
+					   <ul class="chat-box">
+                          <li class="media">
+                            <a class="media-object" href="#"> <img src="http://s.cdpn.io/42746/jason.jpg" alt="Jason"> </a>
+                            <div class="media-body">
+                                <div>Jason </div>
+                                <p>There¡¯s no reason to oversell here with large promises and fancy words. Overselling is a sign of insecurity, speak confidently.</p>
+                                <span class="text-subtle h-promo">posted 2 hours ago</span>
+							</div>	
+                          </li>
+
+                          <li class="media">
+                           <a class="media-object" href="#"> <img src="http://s.cdpn.io/42746/tracy.jpg" alt="Tracy"></a>       
+                            <div class="media-body">
+                                <div>Tracy </div>
+                                <p>Reading ¡°HTML &amp; CSS¡± by Jon Duckett, which is new gold standard for books to teach complete beginners.</p>
+								<span class="text-subtle h-promo">posted 9 hours ago</span>
+                            </div>
+                          </li>					
+                       </ul>
+                       <input type="submit" id="help-btn" value="Submit">
+					   <input type="submit" id="back-btn" value="Go back">
+					 </div>
+					 
+				   </section>
+					
+				</div>			
+ 				<nav id="navigation-main" class="navigation-main span2" style="top: 0px;">
+			        <div id="menu_button"></div>
+                    <div class="primary"> 
+					    <div style="margin-top:10px;margin-bottom:10px;"> <a id="simple-menu" href="#sidr" style="color: rgb(146, 150, 137);text-decoration:none;">HELP</a> </div>
+						<div class="li-icon"><i class="icon-list icon2x"></i></div>
+						<div class="li-icon"><i class="icon-reload icon2x"></i></div>
+						<div class="li-icon"><i class="icon-lock icon2x"></i></div>
+						<div class="li-icon"><i class="icon-unlock icon2x"></i></div>
+						<div class="li-icon"><i class="icon-attachment icon2x"></i></div>
+						<div class="li-icon"><i class="icon-check_circle icon2x"></i></div>
+						<div class="li-icon"><i class="icon-cancel_circle icon2x"></i></div>
+						<div class="li-icon"><i class="icon-white_question icon2x"></i></div>
+						<div class="li-icon"><i class="icon-information_white icon2x"></i></div>
+					    <span class=" badge is-right ">10</span>
+                        <div class="goal">  our story  </div>						
+                        <ul id="question_list">					   
+
+                        </ul>							
+					</div>
+					
+				</nav>	
+				<div style="margin-left:80px;">
+ 					<% include course/coding/coding4 %>					
+                    <div id="noti-box" class=" bounceInUp animated" style="display:none;">
+						<div class="header">
+							<div style="margin-top:5px;margin-left: 5px;">
+				                <span><img style="width:30px;height:30px;" src="/ajit.jpg" id="user-image"></span>
+					            <span id="noti-title"> Course Test  </span>					
+			                </div>
+							<div style="margin-top:5px;margin-left: 5px;" id="user-name"> ajit </div>
+						</div>
+                        <div style="margin-top: 25px;display: block;font-size: 13px;text-align: left;font-weight: bold;color: #b5b5b5;padding: 0px 0px 25px 25px;">
+                                <div style="color:#34bf6e">    </div>
+                                <span id="noti-msg"></span>
+								<button id="noti-btn" style="background: #43b1aa;color: white;border: 0 none;display: block;padding: 0.5em 0;width: 80%;font-weight: 300;cursor: pointer;transition: all 0.3s ease-in-out;"> Continue </button>
+                        </div> 
+                    </div>
+                    <div id="chat-box" class="bounceInUp animated" style="display:none;left:200px;">
+						<div class="header">
+							<div style="margin-top:5px;margin-left: 5px;">
+				                <span><img style="width:30px;height:30px;" src="/ajit.jpg" id="user-image"></span>
+					            <span id="chat-title"> Course Test  </span>					
+			                </div>
+							<div style="margin-top:5px;margin-left: 5px;" id="user-name"> ajit </div>
+						</div>
+                        <div style="margin-top: 25px;display: block;font-size: 13px;text-align: left;font-weight: bold;color: #b5b5b5;padding: 0px 0px 25px 25px;">
+                                <textarea id="chat-area" type="text" name="chat" value="" style="margin-bottom: 5px; height: 148px;"> </textarea>
+								<button id="chat-btn" style="background: #43b1aa;color: white;border: 0 none;display: block;padding: 0.5em 0;width: 80%;font-weight: 300;cursor: pointer;transition: all 0.3s ease-in-out;"> Submit </button>
+                        </div> 
+                    </div>					
+				</div>			
+            </div>			
+		</div>
+	</div>
+
+<style>
+#noti-box, #chat-box {
+  -moz-animation-delay: .6s;
+  -webkit-animation-delay: .6s;
+  -o-animation-delay: .6s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -184px 0px 0px -150px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 14px rgba(0,0,0,0.6);
+background-color: #F0F0F0;
+width: 320px;
+padding: 0px 0;
+  border-radius: 3px;  
+  z-index: 2100;
+}
+
+#noti-box .header, #chat-box .header{
+-webkit-border-radius: 3px 3px 0 0;
+-moz-border-radius: 3px 3px 0 0;
+-ms-border-radius: 3px 3px 0 0;
+-o-border-radius: 3px 3px 0 0;
+border-radius: 3px 3px 0 0;
+-webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+-moz-box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+box-shadow: 0 1px 0 rgba(0,0,0,0.1),0 2px 3px rgba(0,0,0,0.05);
+padding: 10px;
+background-color: #f5f5f5;
+}
+
+
+
+#dribbble {
+  -moz-animation-delay: 1.8s;
+  -webkit-animation-delay: 1.8s;
+  -o-animation-delay: 1.8s;
+ position: absolute;
+z-index: 5;
+BOTTOM: 40px; 
+}
+
+#dribbble:hover {
+  color: #ea4c89;
+}
+
+
+
+
+
+.question_board {
+
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  outline: 3px solid rgba(0,0,0,0.05);
+  background: #1F251F;
+}
+
+canvas{
+top: -110px;
+left: 710px;
+position: relative;
+}
+
+
+
+</style>
+
+	
+  </body>
+
+  
+<script type="text/javascript">
+    function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: document.querySelector('#step1'),
+                intro: "This is a tooltip."
+              },
+              {
+                element: document.querySelectorAll('#step2')[0],
+                intro: "Ok, wasn't that fun?",
+                position: 'right'
+              },
+              {
+                element: '#step3',
+                intro: 'More features, more fun.',
+                position: 'left'
+              }
+            ]
+          });
+
+        intro.start();
+    }
+	//startIntro();
+</script>  
+
+<script>
+
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+
+function successLoad(){
+    $('#update-status').show();
+    $('#update-status h1').text('success');
+	//$('.update-status').addClass('animated fadeIn');
+	setTimeout(function(){
+	    //$('.update-status').addClass('animated fadeOut');
+		$('#update-status').hide();
+	},1500);
+}
+
+function errorLoad(){
+    $('#update-status h1').text('FAIL');
+    $('#update-status').show();
+	setTimeout(function(){$('#update-status').hide();},1500);
+}
+
+function errorMsg(msg){
+    $('#update-status h1').text(msg);
+    $('#update-status').show();
+	setTimeout(function(){$('#update-status').hide();},1500);
+}	
+
+function showAlert(type,msg){
+    var alert = $(' <div class="alert" style="width:960px;margin:0 auto;" style="hidden"> '
+	                    +' <a class="close" data-dismiss="alert"><i class="icon-remove"></i></a>'
+	                    +' <strong>'+type+'</strong> '+msg
+	             +'</div>');  
+    alert.insertBefore('.progress-board');	
+    setTimeout(function(){  alert.remove();   },3000)	
+}
+
+$(window).keypress(function(event) {
+    if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
+    alert("Ctrl-S pressed");
+    event.preventDefault();
+    return false;
+});
+
+</script>  
+
+<script>
+var pathname = window.location.pathname;
+console.log(pathname);
+console.log('cid  ',pathname.split('/')[2]);
+var courseid = pathname.split('/')[2];
+ $(document).ready(function() {
+  $('#simple-menu').sidr();
+  $('#sidr').css('display','block');
+     $('#coding-env').show();
+     initEditor();  
+  setTimeout( function(err){getCoursePlanMilestones(courseid);  }, 1000);	
+  //loadMessage('Carolyn' ,'http://s.cdpn.io/42746/carolyn.jpg', 'Sign up via Facebook is cool and all, but now it seems like every site wants you to do that before you can tell if it has enough value.', '1 hour ago');
+  initLocalstorage();
+});
+
+
+
+
+  var timeParser = function(date) {
+    var hours = date.getHours()
+      , minutes = date.getMinutes()
+      , seconds = date.getSeconds();
+    return {
+      hours: hours > 12 ? hours - 12 : hours,
+      minutes: minutes > 10 ? minutes : '0' + minutes,
+      seconds: seconds > 10 ? seconds : '0' + seconds,
+      meridiem: hours > 12 ? 'PM' : 'AM'
+    }
+  };
+  
+
+</script>
+ 
+<style>
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.status-progress {
+background: #ccc;
+border-radius: 3px;
+height: 5px;
+margin: 9px 0;
+position: relative;
+margin-top: 20px;
+}
+
+.status-progress ul {
+	position: absolute;
+	top: -11px;
+}
+
+.status-progress li {
+	float: left;
+}
+
+.status-progress li:first-child { margin-left: 0; }
+.status-progress li:last-child { margin-right: 0; }
+
+
+
+.status-progress .current { background: #43c47a; }
+
+.status-progress .progress-info {
+	background: #1f222c;
+	border-radius: 3px;
+	color: #ccc;
+	display: block;
+	font-size: 12px;
+	height: 32px;
+	left: -68px;
+	line-height: 32px;
+	position: absolute;
+	top: -48px;
+	width: 160px;
+}
+
+.status-progress .progress-info:after {
+	background: #1f222c;
+	content: '';
+	display: block;
+	height: 8px;
+	left: 76px;
+	position: absolute;
+	top: 28px;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	width: 8px;
+}
+
+.status-finished {
+	background: #439ec4;
+	border-radius: 100%;
+	border: 2px solid #eee;
+	color: #fff;
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	position: relative;
+	text-align: center;
+	width: 24px;
+}
+
+.status-unfinished {
+background: #ccc;
+border-radius: 100%;
+border: 3px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 20px;
+line-height: 20px;
+position: relative;
+text-align: center;
+width: 20px;
+}
+
+
+
+
+</style>
+
+		
+
+<style>
+
+
+.navigation-main {
+left: 0;
+min-height: 600px;
+opacity: 1;
+top: 0;
+width: 50px;
+z-index: 1001;
+}
+
+.navigation-main .primary {
+-webkit-box-shadow: 0 0 19px -1px rgba(0,0,0,0.1);
+-moz-box-shadow: 0 0 19px -1px rgba(0,0,0,0.1);
+-ms-box-shadow: 0 0 19px -1px rgba(0,0,0,0.1);
+-o-box-shadow: 0 0 19px -1px rgba(0,0,0,0.1);
+box-shadow: 0 0 19px -1px rgba(0,0,0,0.1);
+-webkit-transition: width 0.25s;
+-moz-transition: width 0.25s;
+-ms-transition: width 0.25s;
+-o-transition: width 0.25s;
+transition: width 0.25s;
+-webkit-transform: translate3d(0, 0, 0);
+-moz-transform: translate3d(0, 0, 0);
+-ms-transform: translate3d(0, 0, 0);
+-o-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+background: #1F1E1E;
+bottom: 0;
+position: absolute;
+top: 0;
+width: 50px;
+}
+
+.navbar-inner{
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(255,0,0,0)), to(rgba(255,0,0,0)));
+background-image: -webkit-linear-gradient(top, rgba(255,0,0,0), rgba(255,0,0,0));
+background-image: -o-linear-gradient(top, rgba(255,0,0,0), rgba(255,0,0,0));
+background-image: -moz-linear-gradient(top, rgba(255,0,0,0), rgba(255,0,0,0));
+border: 0px solid rgba(255,0,0,0);
+background-color:rgba(255,0,0,0);
+}
+.dropdown-toggle {
+background-color: rgba(229, 229, 229, 0);
+}
+
+</style>
+
+<script>
+$(function(){
+	time_setting = 5;
+	random_setting = 100;
+	input_text = "<div class='main'>\n\t<!-- holy moly I forgot how fast I can type when I get going -->\n\t<h1>Introduction</h1>\n\t<p>Welcome to my website, all about my adventures with code</p>\n</div><!-- .main -->";
+	target_setting = $("#output");
+	/*
+	type(input_text, target_setting, 0, time_setting, random_setting);
+	$("button").click(function(){
+		$(this).fadeOut('fast', function(){
+			target_setting.text("").show();
+			type(input_text, target_setting, 0, time_setting, random_setting);
+		});
+	});
+	*/
+});
+
+function type(input, target, current, time, random){
+	if(current > input.length){
+		setTimeout(function(){
+			finished(input, target, current, time, random);
+		},1000);		
+	}
+	else{
+		current += 1;
+		target.text(input.substring(0,current));
+		setTimeout(function(){
+			type(input, target, current, time, random);
+		},time + Math.random()*random);
+	}
+}
+
+function finished(input, target, current, time, random){
+
+}
+
+</script>
+</html>

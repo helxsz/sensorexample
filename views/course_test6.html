@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> -->
+    <script src="/assets/js/jquery/jquery-1.8.1.min.js"></script> 
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/typeahead.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="/assets/js/socket.io.js"></script>	
+
+	<script src="/assets/js/intro/intro.min.js"></script>
+	<link href="/assets/js/intro/introjs.min.css" rel="stylesheet">
+	<link href="/assets/js/intro/introjs-rtl.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/js/sidr/jquery.sidr.dark.css">	
+    <script src="/assets/js/sidr/jquery.sidr.min.js"></script>
+  </head>
+<style>
+body,html {
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+    height: 100%; 
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+a{text-decoration:none;}
+a:focus{outline:thin dotted;text-decoration:none;}
+a:active,a:hover{outline:0}
+
+.inner-wrapper {
+width: 100%;
+height: 100%;
+-webkit-transform: translate3d(0, 0, 0);
+-moz-transform: translate3d(0, 0, 0);
+-ms-transform: translate3d(0, 0, 0);
+-o-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+-webkit-transition: -webkit-transform 287ms cubic-bezier(0.215, 0.61, 0.355, 1);
+-moz-transition: -moz-transform 287ms cubic-bezier(0.215, 0.61, 0.355, 1);
+-o-transition: -o-transform 287ms cubic-bezier(0.215, 0.61, 0.355, 1);
+transition: transform 287ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+</style>
+
+
+
+<style>
+nav {
+position: fixed;
+left: 0;
+top: 0;
+width: 100px;
+height: 100%;
+z-index: 800;
+-webkit-transform: translate3d(0, 0, 0);
+-moz-transform: translate3d(0, 0, 0);
+-ms-transform: translate3d(0, 0, 0);
+-o-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+}
+nav #nav_wrap {
+position: absolute;
+width: 300px;
+height: 100%;
+right: 100px;
+top: 0;
+background-color: #060606;
+opacity: 0;
+-webkit-backface-visibility: hidden;
+-webkit-transform: translate3d(0, 0, 0);
+-moz-transform: translate3d(0, 0, 0);
+-ms-transform: translate3d(0, 0, 0);
+-o-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+-webkit-transition: opacity 487ms ease-out;
+-webkit-transition-delay: 123ms;
+-moz-transition: opacity 487ms ease-out 123ms;
+-o-transition: opacity 487ms ease-out 123ms;
+transition: opacity 487ms ease-out 123ms;
+}
+
+nav #bar {
+position: relative;
+width: 100px;
+height: 100%;
+padding-top: 2.125em;
+background-color: #212121;
+z-index: 9999;
+cursor: pointer;
+}
+
+nav #nav_wrap ul {
+position: absolute;
+height: 100px;
+left: 0;
+top: 50%;
+margin: -50px 0 0 2.0625em;
+list-style: none;
+-webkit-backface-visibility: hidden;
+-webkit-transform: translate3d(0, 0, 0);
+-moz-transform: translate3d(0, 0, 0);
+-ms-transform: translate3d(0, 0, 0);
+-o-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+}
+
+nav #nav_wrap ul li {
+line-height: 1.4;
+}
+
+nav #nav_wrap ul li a {
+font-family: "futura-pt", sans-serif;
+font-weight: 300;
+font-size: 1.25em;
+text-transform: uppercase;
+}
+
+nav #bar #menu_button {
+-webkit-transition: opacity 111ms ease-out;
+-moz-transition: opacity 111ms ease-out;
+-o-transition: opacity 111ms ease-out;
+transition: opacity 111ms ease-out;
+}
+
+#bar #menu_button {
+width: 33px;
+height: 26px;
+background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi¡­sMS0xaDMwLjE2Ng0KCWMwLjU1NCwwLDEsMC40NDcsMSwxVjIzLjMzNHoiLz4NCjwvc3ZnPg0K');
+background-repeat: no-repeat;
+background-size: 100% 100%;
+}
+
+#menu_button {
+margin-left: auto;
+margin-right: auto;
+cursor: pointer;
+}
+
+#bar #bcm_logo {
+width: 49px;
+height: 46px;
+background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi¡­xLjU1OCwzMi43NTYsNjAuNjc5LDM0LjMyLDU4Ljc3NSwzNS40OTJ6Ii8+DQo8L3N2Zz4NCg==');
+background-repeat: no-repeat;
+background-size: 100% 100%;
+}
+
+#bcm_logo {
+position: absolute;
+left: 50%;
+top: 50%;
+margin-left: -25px;
+margin-top: -23px;
+}
+
+</style>
+
+
+  <body>
+
+ 
+  
+  
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+            <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
+            <input id="csrf" type="hidden" name="_csrf" value="<%= locals.token %>"/>			
+		    <span id="loading" class="folding">Loading...</span> 
+			
+
+   <nav>
+      <div id="nav_wrap">
+        <ul id="_nav_list">
+          <li><a href="/" class="_nav_link" data-navid="index">Home</a></li>
+          <li><a href="/approach" class="_nav_link" data-navid="approach">Approach</a></li>
+          <li><a href="/themes" class="_nav_link" data-navid="themes">Themes</a></li>
+          <li><a href="/team" class="_nav_link cur_nav" data-navid="team">Team</a></li>
+        </ul>
+        <div id="footer">
+          <div id="bcm_footer_logo"></div>
+          <a href="http://maps.google.com/?q=405 LEXINGTON AVENUE+New York+NY+10174" target="_blank" id="address_link">405 LEXINGTON AVENUE<br> 34TH FLOOR<br>New York, NY 10174</a>
+          
+          <a href="tel:212-226-7348" id="bcm_tel">
+            <span>212-226-7348</span>
+            <div></div>
+          </a>
+          
+          <a href="mailto:info@bienvillecapital.com" id="bcm_email">
+            <span>info@bienvillecapital.com</span>
+            <div></div>
+          </a>
+          
+          <small>? Bienville Capital Management, LLC. 2013<br><a href="/privacy" class="_nav_link">Legal</a></small>
+        </div>
+      </div>
+      <div id="bar">
+        <div id="menu_button"></div>
+        <div id="bcm_logo"></div>
+      </div>
+    </nav>
+	
+	
+			
+
+
+		</div>
+	</div>
+
+
+	
+  </body>
+
+
+<script>
+
+
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+
+function successLoad(){
+    $('.update-status').show();
+    $('.update-status h1').text('SUCCESS');
+	//$('.update-status').addClass('animated fadeIn');
+	setTimeout(function(){
+	    //$('.update-status').addClass('animated fadeOut');
+		$('.update-status').hide();
+	},1500);
+}
+
+function errorLoad(){
+    $('.update-status h1').text('FAIL');
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+}
+
+function errorMsg(msg){
+    $('.update-status h1').text(msg);
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+}	
+
+
+function getQuestionsOfMilestone(plan_id,index){
+    // get all the question of a milestone
+    $.ajax({
+           type: "GET",
+           url: "/workplan/"+plan_id+"/milestone/"+ index +"/questions",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		       $(".questions").html('');
+               console.log(data.data.goal,data.data.ques.length,data.data);
+			   var questions = data.data.ques;
+			   			   
+			   questions.forEach(function(entry) {
+                    console.log(entry.que,entry.sol,entry);				    
+					var item = $(
+					        '<div class="question_item" data-id="'+entry+'">'
+							    +'<span class="question_mark question_right"></span>'
+                                +'<span class="question_desc">'+entry+'</span>'
+                            +'</div>'					
+					);
+                    item.appendTo($(".questions"));
+                    item.click(function(){
+					   console.log($(this).attr('data-id'));					
+					})					
+               });			   
+           }
+    });
+}
+
+</script>  
+
+ 
+
+</html>

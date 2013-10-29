@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> -->
+    <script src="/assets/js/jquery/jquery-1.8.1.min.js"></script> 
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="/assets/js/typeahead.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>
+<script src="/assets/js/socket.io.js"></script>	
+
+	<script src="/assets/js/intro/intro.min.js"></script>
+	<link href="/assets/js/intro/introjs.min.css" rel="stylesheet">
+	<link href="/assets/js/intro/introjs-rtl.min.css" rel="stylesheet">
+   <!-- http://www.9lessons.info/2013/04/play-notification-sound-using-jquery.html
+http://demos.9lessons.info/googledrag/index.html
+http://www.developerscode.com/2011/09/jquery-drag-and-drop-google-circle.html
+
+http://codepen.io/rafaelrinaldi/pen/tihsD
+http://codepen.io/joejoinerr/pen/BxabC
+
+http://codepen.io/kevingimbel/pen/niDEe
+http://codepen.io/codedsignal/pen/fwpaF
+http://codepen.io/sheepysheep60/pen/HJsav
+http://codepen.io/simoncoudeville/pen/LyCda
+https://path.com/p/vSlvu
+http://vjk2005.tumblr.com/post/45194407467/simple-how-to-tutorial-on-talking-to-the-dropbox-api
+http://stackoverflow.com/questions/12343695/make-bootstrap-popover-appear-disappear-on-hover-instead-of-click
+http://ejohn.org/blog/introducing-khan-cs/
+http://codepen.io/dope/pen/Flxoi
+http://codepen.io/b1nary/pen/Bcsbd
+
+https://squareup.com/wallet
+   -->
+	
+  </head>
+<style>
+body,html {
+ <!--  http://tympanus.net/Development/ModalWindowEffects/
+  background-image: -webkit-radial-gradient(center top, circle farthest-corner, #FFFFFF 0%, #D8DFE9 100%);
+  background-image: radial-gradient(circle farthest-corner at center top, #FFFFFF 0%, #D8DFE9 100%);
+ -->
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+    height: 100%; 
+  position: relative;
+}
+
+.close {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 18px;
+  color: #000000;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  text-decoration: none;
+}
+.close:hover {
+  color: #000000;
+  text-decoration: none;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+a{text-decoration:none;}
+a:focus{outline:thin dotted;text-decoration:none;}
+a:active,a:hover{outline:0}
+</style>
+
+ <style>
+.board {
+padding-bottom: 5px;
+padding-top: 5px;
+background: rgb(219, 224, 213);
+position: relative;
+}
+.user-info {
+	height: 48px;
+	padding: 10px;
+}
+
+.user-info p {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 6px 0 0 60px;
+}
+
+.user-info span {
+	color: #555555;
+	font-size: 11px;
+	margin-left: 10px;
+	padding-left: 8px;
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAKCAYAAACXDi8zAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo4NUEzMTJCRTBCMjA2ODExOEMxNEI3NzJFOUU0MzIyOSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCM0JENjY0Njk0OUYxMUUyOTREMkM4NTFFQUJFMDMwOCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCM0JENjY0NTk0OUYxMUUyOTREMkM4NTFFQUJFMDMwOCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzM4RjE4QTMxOTNFMjExQTI3NUQ4QzI0OTk2NDI0MSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4NUEzMTJCRTBCMjA2ODExOEMxNEI3NzJFOUU0MzIyOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhRzYYcAAACpSURBVHjadI8tEoMwEIXfZmo4CKhMFL4mHAEuwD1io2g0AlXHETrDBdCYcgJ0Ut1ttqJT0a55+/u+WWJm/IpTSo88YYQQsG0btNZwzpGS5jBcUFUVpmlCWZbouu6mntlq3++w1oKI0DSNOJ2VykVRFFiWBcITzXFQjJHHccS6rt/sK6WUWDb7vv9053kWOISPuq7fqTFG4IBYyZWo955T1rZtQf8efAkwACtRUK7OBfX9AAAAAElFTkSuQmCC) no-repeat 0 center;
+}
+
+.user-info img {
+	float: left;
+}
+
+
+.help {
+background: #ccc;
+border-radius: 4px;
+border: 1px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 24px;
+line-height: 24px;
+text-align: center;
+width: 24px;
+position: absolute;
+bottom: 10px;
+right: 220px;
+}
+
+.help-info {
+background: #1f222c;
+border-radius: 3px;
+color: #ccc;
+display: block;
+font-size: 12px;
+height: 32px;
+left: -68px;
+line-height: 32px;
+position: absolute;
+top: -48px;
+width: 160px;
+}
+
+.help-info:after {
+background: #1f222c;
+content: '';
+display: block;
+height: 8px;
+left: 76px;
+position: absolute;
+top: 28px;
+-webkit-transform: rotate(45deg);
+-moz-transform: rotate(45deg);
+-ms-transform: rotate(45deg);
+-o-transform: rotate(45deg);
+transform: rotate(45deg);
+width: 8px;
+}
+
+.help a {
+background: #ccc;
+border-radius: 100%;
+border: 3px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 20px;
+line-height: 20px;
+position: relative;
+text-align: center;
+width: 20px;
+}
+
+.help .help-info {
+visibility:hidden;   
+}
+
+.help:hover .help-info {
+visibility:visible;
+}
+
+.helpbar {
+background: #ccc;
+border-radius: 4px;
+border: 1px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 24px;
+line-height: 24px;
+position: relative;
+text-align: center;
+width: 24px;
+position: absolute;
+bottom: 10px;
+right: 250px;
+}
+
+.helpbar:hover .helpmenu {
+  opacity: 1;
+  visibility: visible;  
+}
+
+.helpbar:hover .helpmenu {
+  color: #6bc6d8;
+  transition: all .15s;
+}
+
+.helpmenu {
+  opacity: 0;
+  position: relative;
+  top: 0;
+  transform: translate3d(0, 0, 0,);
+  transition: all .15s;
+  visibility: hidden;
+}
+
+.helpmenu ul {
+  background: #797979;
+  border-radius: 4px;
+  color: #efefef;
+  float: left;
+  font-size: 13px;
+  left: -35px;
+  position: absolute;
+  text-align: left;
+  text-transform: uppercase;
+  top: 15px;
+}
+
+.helpmenu ul li:first-child:after {
+  border-bottom: 10px solid #797979;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  content: "";
+  display: block;
+  height: 0;
+  position: absolute;
+  right: 37px;
+  top: -10px;
+  width: 0;
+}
+
+.helpmenu ul li:first-child:hover:after {
+  border-bottom: 10px solid #f68867;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  content: "";
+  display: block;
+  height: 0;
+  right: 37px;
+  top: -10px;
+  width: 0;
+}
+
+.helpmenu ul li {
+  border-bottom: 1px solid rgba(204, 204, 204, .3);
+  left: -50px;
+  padding: 15px;
+}
+
+.helpmenu ul li:last-child {
+  border: 0;
+}
+
+.helpmenu ul li span {
+  margin: 0 14px 0 0;
+}
+
+.helpmenu ul li:hover {
+  background: #f68867;
+  border-bottom: 1px solid #f68867;
+  cursor: pointer;
+}
+
+.helpmenu ul li a {
+  color: #efefef;
+}
+
+
+.pen_data {
+padding: 8px 12px;
+font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
+font-size: 12px;
+line-height: 18px;
+font-weight: 100;
+letter-spacing: 1px;
+color: rgba(255,255,255,0.7);
+text-shadow: 0 2px 0 rgba(0,0,0,0.02);
+background: #2c3e50;
+bottom: 0px;
+right: 0px;
+position: absolute;
+z-index: 100;
+}
+
+.pen_data a, .pen_data a:visited {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  border-bottom: 1px dotted #999999;
+}
+
+.pen_data a:hover {
+  color: rgba(255,255,255,0.9);
+  border-bottom: 1px dotted #cccccc;
+}
+
+.pen_data .noti-number{
+position: relative;
+top: -15px;
+right: -15px;
+background: #FA565A;
+color: #FFF;
+padding: 4px 8px 4px 8px;
+
+border-radius: 50%;
+box-shadow: -3px 2px 0px 0px rgba(0,0,0,0.2);
+font-weight: bold;
+}
+Pseudo ::-webkit-scrollbar element
+
+</style>
+
+<style>
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+a { text-decoration: none; }
+
+.status-progress {
+background: #ccc;
+border-radius: 3px;
+height: 5px;
+margin: 9px 0;
+position: relative;
+margin-top: 20px;
+}
+
+.status-progress ul {
+	position: absolute;
+	top: -11px;
+}
+
+.status-progress li {
+	float: left;
+}
+
+.status-progress li:first-child { margin-left: 0; }
+.status-progress li:last-child { margin-right: 0; }
+
+
+
+.status-progress .current { background: #43c47a; }
+
+.status-progress .progress-info {
+	background: #1f222c;
+	border-radius: 3px;
+	color: #ccc;
+	display: block;
+	font-size: 12px;
+	height: 32px;
+	left: -68px;
+	line-height: 32px;
+	position: absolute;
+	top: -48px;
+	width: 160px;
+}
+
+.status-progress .progress-info:after {
+	background: #1f222c;
+	content: '';
+	display: block;
+	height: 8px;
+	left: 76px;
+	position: absolute;
+	top: 28px;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	width: 8px;
+}
+
+.status-finished {
+	background: #439ec4;
+	border-radius: 100%;
+	border: 2px solid #eee;
+	color: #fff;
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	position: relative;
+	text-align: center;
+	width: 24px;
+}
+
+.status-unfinished {
+background: #ccc;
+border-radius: 100%;
+border: 3px solid #D5D7D8;
+color: #fff;
+display: inline-block;
+height: 20px;
+line-height: 20px;
+position: relative;
+text-align: center;
+width: 20px;
+}
+
+.update-status {
+width: 128px;
+background-color: #FFFFFF;
+box-shadow: 0 2px 6px #CCC;
+border-radius: 5px;
+float: left;
+margin: 10px;
+position: absolute;
+top: 40%;
+left: 50%;
+z-index:3000;
+display:none;
+}
+
+.update-status .color-right {
+width: 64px;
+height: 25px;
+background-color: #000;
+border-top-right-radius: 5px;
+display: block;
+float: left;
+}
+
+.update-status .color-left {
+width: 64px;
+height: 25px;
+background-color: #000;
+border-top-left-radius: 5px;
+display: block;
+float: left;
+}
+
+.update-status h1 {
+font-weight: 400;
+font-size: 20px;
+color: #494A4A;
+margin:0px auto;
+margin-top:40px;
+margin-bottom:20px;
+}
+
+.color-left.grapefruit-light {
+background-color: #ED5565;
+}
+
+.color-right.grapefruit-dark {
+background-color: #DA4453;
+}
+
+</style>
+
+		
+
+<style>
+.button {border-radius:2px; border-bottom:3px solid rgba(0,0,0,0.2); background:#22c6b8; display:inline-block; text-align:center; text-transform:uppercase; margin:0 5px 0 0; position:relative;}
+.button:hover{border-bottom:5px solid rgba(0,0,0,0.2); position:relative; top:-2px; background:#0fbbad;}
+.button:active{border-bottom:3px solid rgba(0,0,0,0.2); position:relative; top:0px;}
+.button a{color:#fff; font-weight:500;  text-decoration:none; display:inline-block; padding:10px 18px; width:170px; position:relative; z-index:3;}
+.button i{position:relative; top:2px; display:inline-block; margin:0 10px 0 0;}
+.button:before{position:absolute; width:auto; background:rgba(0,0,0,0.15); top:0; left:0; right:170px; bottom:-3px; content:" "; animation: slide 4s linear infinite; z-index:2; animation-delay:2s; border-radius:2px 0 0 2px;}
+.button:hover::before{bottom:-5px;}
+
+@keyframes slide {
+    0% {right:170px;}
+    5% { right:140px;}
+    15% { right:140px;}    
+    20% { right:110px; }          
+    30% { right:110px;}    
+    35% {right:80px;}            
+    45% { right:80px; }        
+    50% {right:50px;}            
+    60% {right:50px;}            
+    65% { right:0px; border-radius:2px 0 0 2px;}                  
+    75% {right:0px;opacity:1.0;border-radius:2px;}                              
+    85% {right:0px; opacity:0;}                    
+    100% {right:0px;opacity:0;}                  
+}
+</style>
+
+
+  <body>
+    <!--
+        <div class="section intro">
+            <p>Introduction</p>
+            <div class="loader">
+                <span class="bar">
+                    <i class="animate"></i>
+                </span>
+                <span class="tick animate">&#10004;</span>
+            </div>
+        </div>
+
+<style>
+.section {
+  width: 100%;
+  height: 100%; 
+  position: relative; 
+}
+.section p {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font: 40px/60px Arial;
+  color: #fff;
+  height: 60px;
+  top: 50%;
+  margin-top: -30px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.intro   { background: #ccc }
+.content { background: #e74c3c }
+
+.loader {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 150px;
+  top: 65%;
+}
+.loader .bar {
+  display: block;
+  background: #bbb;
+  height: 10px;
+  border-radius: 5px;
+  box-shadow: inset 1px 1px 0px #999, 1px 1px 0 #ddd;
+  overflow: hidden;
+}
+.loader .bar i {
+  display: block;
+  background: #e74c3c;
+  height: 10px;
+  width: 0px;
+  box-shadow: inset 1px 1px 0 #c0392b;
+  border-radius: 5px;
+  transition: width 1s linear;
+  transition-delay: 1s;
+}
+.loader .tick {
+  display: block;
+  position: absolute;
+  left: 100%;
+  top: 15px;
+  margin: -7px 0 0 7px;
+  text-align: center;
+  font-size: 20px;
+  color: #e74c3c;
+  opacity: 0;
+  transition: opacity 0.25s, top 0.25s;
+  transition-delay: 2s;
+}
+
+.bar i.run {
+  width: 100%;
+}
+.tick.run { 
+  top: 0;
+  opacity: 1; 
+}
+</style>
+
+<script language="javascript" type="text/javascript">
+
+function fakeLoad(){
+	  // http://stackoverflow.com/questions/9872128/get-bottom-and-right-position-of-an-element
+	  var animate  = $(".animate").addClass("run");
+	  var distance = $(".sub").offset().top;    
+	  var timer    = setTimeout(function(){
+	    $(".loader").fadeOut(250);	
+	    $('html,body').animate({
+	      scrollTop: distance},
+          500,
+		  function(){ $(".intro").remove(); }
+	    );		
+	  }, 3000);
+	  
+	}
+
+	$(document).ready(function(){
+
+	  fakeLoad();
+
+	});
+-->
+</script>  
+  
+  
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+            <input id="csrf" type="hidden" name="_csrf" value="<%= token %>"/>
+            <input id="csrf" type="hidden" name="_csrf" value="<%= locals.token %>"/>			
+		    <span id="loading" class="folding">Loading...</span> 
+			
+			<section class="update-status">
+				<h1>Success</h1>						
+			</section>
+			
+			
+            <% include header/header_student_test %>
+			
+			<div class="row sub" style="height:40px;background:#e74c3c;position: relative;">  
+		    </div> 
+
+			<% include widget/chatter %>
+            <div class="question_board row">
+				<div class="offset1 span6">
+ 					<% include course/coding/coding %>
+				</div>
+				<div class="span5">
+                    <div><pre id="output" style="padding:5px 10px;"></pre> </div>	
+                    <canvas id="mycanvas" ></mycanvas>
+	            </div>				
+            </div>	
+
+		</div>
+	</div>
+
+<style>
+.question_board {
+  left: 40px;
+  bottom: 0px;
+  z-index: 1000;
+  margin: 0;
+  padding: 12px 12px 16px 12px;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  outline: 3px solid rgba(0,0,0,0.05);
+  background: #1F251F;
+}
+
+.question_board .chatter_field {
+  position: relative;
+  margin: 0 0 8px 0;
+  padding: 11px 12px 9px 12px;
+  width: 276px;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #4b4b4b;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  border: none;
+  outline: none;
+  background: #ffffff;
+}
+
+.question_board .questions {
+  position: relative;
+  margin: 0 -6px 12px -6px;
+  padding: 0 6px;
+  height: 366px;
+  font-size: 14px;
+  line-height: 18px;
+  color: #ffffff;
+  overflow-y: auto;
+}
+
+.question_board .questions .question_item {
+  position: relative;
+  margin: 5px 0 8px 0;
+  padding: 8px 10px;
+  max-width: 100%;
+  display: block;
+  background: rgba(255,255,255,0.26);
+}
+
+.question_board .question_mark {
+position: relative;
+display: inline-block;
+vertical-align: top;
+margin-right: 12px;
+width: 20px;
+height: 20px;
+border: 2px solid #c4cbd2;
+border-radius: 12px;
+}
+
+.question_mark:before {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+margin: -5px 0 0 -6px;
+height: 4px;
+width: 8px;
+border: solid #39ca74;
+border-width: 0 0 4px 4px;
+-webkit-transform: rotate(-45deg);
+-moz-transform: rotate(-45deg);
+-ms-transform: rotate(-45deg);
+-o-transform: rotate(-45deg);
+transform: rotate(-45deg);
+}
+
+.question_board .question_right{
+border-color: #39ca74;
+}
+
+.question_board .question_wrong{
+border-color: #39ca74;
+}
+
+</style>
+
+	
+  </body>
+
+  
+<script type="text/javascript">
+    function startIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: document.querySelector('#step1'),
+                intro: "This is a tooltip."
+              },
+              {
+                element: document.querySelectorAll('#step2')[0],
+                intro: "Ok, wasn't that fun?",
+                position: 'right'
+              },
+              {
+                element: '#step3',
+                intro: 'More features, more fun.',
+                position: 'left'
+              }
+            ]
+          });
+
+        intro.start();
+    }
+	startIntro();
+</script>  
+
+<script>
+
+showAlert('Alert','abc');
+
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+
+function successLoad(){
+    $('.update-status').show();
+    $('.update-status h1').text('SUCCESS');
+	//$('.update-status').addClass('animated fadeIn');
+	setTimeout(function(){
+	    //$('.update-status').addClass('animated fadeOut');
+		$('.update-status').hide();
+	},1500);
+}
+
+function errorLoad(){
+    $('.update-status h1').text('FAIL');
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+}
+
+function errorMsg(msg){
+    $('.update-status h1').text(msg);
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+}	
+/*	
+$( document ).ajaxSuccess()(function() {
+    $('.update-status h1').text('SUCCESS');
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+})
+.ajaxError()(function() {
+    $('.update-status h1').text('FAIL');
+    $('.update-status').show();
+	setTimeout(function(){$('.update-status').hide();},1500);
+});
+	
+	.ajaxError(
+        function(e, x, settings, exception) {
+            var message;
+            var statusErrorMap = {
+                '400' : "Server understood the request but request content was invalid.",
+                '401' : "Unauthorised access.",
+                '403' : "Forbidden resouce can't be accessed",
+                '500' : "Internal Server Error.",
+                '503' : "Service Unavailable"
+            };
+            if (x.status) {
+                message =statusErrorMap[x.status];
+                                if(!message){
+                                      message="Unknow Error \n.";
+                                  }
+            }else if(exception=='parsererror'){
+                message="Error.\nParsing JSON Request failed.";
+            }else if(exception=='timeout'){
+                message="Request Time out.";
+            }else if(exception=='abort'){
+                message="Request was aborted by the server";
+            }else {
+                message="Unknow Error \n.";
+            }
+            $(this).css("display","inline");
+            $(this).html(message);
+});
+*/
+
+
+
+function showAlert(type,msg){
+    var alert = $(' <div class="alert" style="width:960px;margin:0 auto;" style="hidden"> '
+	                    +' <a class="close" data-dismiss="alert"><i class="icon-remove"></i></a>'
+	                    +' <strong>'+type+'</strong> '+msg
+	             +'</div>');  
+    alert.insertBefore('.progress-board');	
+    setTimeout(function(){  alert.remove();   },3000)	
+}
+
+$(window).keypress(function(event) {
+    if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
+    alert("Ctrl-S pressed");
+    event.preventDefault();
+    return false;
+});
+
+
+//getCourseStudents(courseid);
+
+// get the students
+function getCourseStudents(course_id){
+    $.ajax({
+           type: "GET",
+           url: "/course/"+course_id+"/students",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        console.log(data);
+			   for(var i=0;i<data.length;i++){			        
+				    console.log(data[i]._id,data[i].username,"img:",data[i].img);
+					var img_path;
+					if(data[i].img == undefined)  img_path= "/default_user.jpeg";
+					else img_path = '/images/'+data[i].img;
+					var s = $(
+					  '<div class="user-info span2" data-id="'+ data[i]._id +'">'			      	
+                        +'<img src="'+ img_path  +'"> </img>'			
+					    +'<p>'+ data[i].username +'</p>'
+					    +'<span>Liverpool, UK</span>'
+				      +'</div>'
+				   );
+				   $('.progress-board').prepend(s);	
+				   //s.appendTo( $(".board") );
+			   }
+           }
+    });
+}
+
+$('.pen_data').click(function(e){
+    console.log('click pen data');
+	if(  $('.chatter').is(':visible')){
+	     $('.chatter').hide();    
+	}else{
+	     $('.chatter').show();
+	}
+})
+
+
+
+//getQuestionOfCourse("520db60a8932d7700f000001");
+// plan id
+
+function getQuestionOfCourse(course_id){
+    $.ajax({
+           type: "GET",
+           url: "/course/"+ course_id +"/questions", 
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",
+           success: function(data){
+               //console.log(data.length,data);
+			   data.forEach(function(entry) {
+                    //console.log(entry.que,entry.sol,entry._id);				    
+					var item = $(
+					        '<div class="question_item" data-id="'+entry._id+'">'
+							    +'<span class="question_mark question_right"></span>'
+                                +'<span class="question_desc">'+entry.que+'</span>'
+                            +'</div>'					
+					);
+                    item.appendTo($(".questions"));
+                    item.click(function(){
+					   console.log($(this).attr('data-id'));
+					
+					})					
+               });
+           }
+    });
+}
+
+function getQuestionsOfMilestone(plan_id,index){
+    // get all the question of a milestone
+    $.ajax({
+           type: "GET",
+           url: "/workplan/"+plan_id+"/milestone/"+ index +"/questions",
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		       $(".questions").html('');
+               console.log(data.data.goal,data.data.ques.length,data.data);
+			   var questions = data.data.ques;
+			   			   
+			   questions.forEach(function(entry) {
+                    console.log(entry.que,entry.sol,entry);				    
+					var item = $(
+					        '<div class="question_item" data-id="'+entry+'">'
+							    +'<span class="question_mark question_right"></span>'
+                                +'<span class="question_desc">'+entry+'</span>'
+                            +'</div>'					
+					);
+                    item.appendTo($(".questions"));
+                    item.click(function(){
+					   console.log($(this).attr('data-id'));					
+					})					
+               });			   
+           }
+    });
+}
+
+</script>  
+
+<script>
+
+ 
+
+  var timeParser = function(date) {
+    var hours = date.getHours()
+      , minutes = date.getMinutes()
+      , seconds = date.getSeconds();
+    return {
+      hours: hours > 12 ? hours - 12 : hours,
+      minutes: minutes > 10 ? minutes : '0' + minutes,
+      seconds: seconds > 10 ? seconds : '0' + seconds,
+      meridiem: hours > 12 ? 'PM' : 'AM'
+    }
+  };
+  
+  
+$('#chat_btn').click(function(){
+   console.log('chat_input  ',$('#chat_input').val());
+   if($('#chat_input').val().length>0)
+   sendMsgCommand(uid,room,$('#chat_input').val());
+})
+
+$('#code_share_btn').click(function(){
+   console.log(editor.getValue());
+   if(  editor.getValue().length>0  )
+   sendCodeViewCommand(uid,room, editor.getValue());
+})
+
+//initWebsocket();
+var socket;
+var socket_id, uid;
+var room;
+function initWebsocket(){
+            console.log('init train socket');
+			socket = io.connect('https://localhost', {secure: true,"connect timeout": 1000});
+						
+            socket.on('connect', onConnectSuccessCallback);
+			
+			socket.on('disconnect',onDisconnectCallback);
+			
+            socket.on('msg', onMsgReceivedCallback);
+			
+			socket.on('history response', onHistoryReceivedCallback);
+			
+			socket.on('new user', onNewUserCallback);
+			socket.on('user leave',onUserLeaveCallback);
+			
+            socket.on('error', onErrorCallback);	
+
+
+            // receive something from tutor			
+			socket.on('code snippet',onCodeSnippetCallback);
+			socket.on('code comment',onCodeCommentCallback);
+}
+/**********************************
+        common command
+***********************************/
+function sendMsgCommand(uid, room, msg){
+   var data = JSON.stringify({"uid":uid,"room":room,"msg":msg});
+   socket.emit('msg request',data);
+}
+
+function closeConnectionCommand(){
+   
+   socket.emit('disconnect');
+}
+
+/***********************************
+        student  command function
+************************************/ 
+function requestHistoryCommand(tid, uid , room){ 
+   var data = JSON.stringify({"tid":tid,"uid":uid,"room":room});  
+   socket.emit('history request',data);
+}
+
+function requestHelpCommand(tid, uid , room){
+   var data = JSON.stringify({"tid":tid,"uid":uid,"room":room});
+   socket.emit('help request',data);
+}
+
+///  student send code to tutor for view
+function sendCodeViewCommand(uid,room,code){
+   var data = JSON.stringify({"uid":uid,"room":room,"code":code});
+   socket.emit('code view',data);
+}
+
+/**************************************
+     tutor command
+***************************************/
+function sendCodeSnippetCommand(uid,room,code){
+    var data = JSON.stringify({"uid":uid,"room":room,"code":code});	
+	socket.emit('code snippet',data);
+}
+
+function sendCodeCommentCommand(uid,room,comment,codeline){
+    var data = JSON.stringify({"uid":uid,"room":room,"comment":comment,"line_num":codeline});	
+	socket.emit('code comment',data);
+}
+
+/***********************************
+            callback function
+************************************/
+function onErrorCallback(reason){
+    console.error('Unable to connect Socket.IO', reason);
+}
+                
+function onMsgReceivedCallback(message){
+	console.log("onMsgReceivedCallback   ",message);
+    	
+}
+
+function onHistoryReceivedCallback(msg){
+
+
+}
+
+function onNewUserCallback(msg){
+
+    console.log('greate    lalalal     onNewUserCallback ',msg);
+	if(msg !=null){
+	    console.log(msg.uid);
+		if(msg.uid !== uid){
+		    // should add user img icon to the editor bar
+		    sendCodeViewCommand(uid,room,editor.getValue());
+		}
+	}
+}
+
+function onUserLeaveCallback(msg){
+
+    console.log('onUserLeaveCallback ',msg);
+}
+
+function onConnectSuccessCallback(msg) {
+	console.info('successfully established a working connection');
+    console.log('on connect',msg);
+	if(msg !=null){
+	    console.log(msg.id,msg.uid);
+	    uid = msg.uid, socket_id = msg.id;
+	    //requestHistoryCommand({'tutor_id':'tutor'});
+		room = "help:"+uid;
+	    requestHelpCommand("tutor_id",uid,room);
+	}
+}
+
+function onDisconnectCallback(msg){
+      setTimeout(function() {
+        $('.navigation').remove();
+        $('#content').empty();
+        $('#content').append('<h1>503</h1><h2>I\'m sorry Dave, i\'m afraid i have lost the connection to the server.</h2><p><a href="/login"><h3>Back to Login</h3></a></p>');
+      }, 1000);
+}
+
+/*******************************
+   receive something from client
+********************************/
+function onStudentHelpCallback(msg){
+    
+
+}
+/********************************
+   receive something from tutor
+********************************/
+function onCodeSnippetCallback(msg){  // {"uid":uid,"room":room,"code":code}
+
+}
+
+function onCodeCommentCallback(msg){  // {"uid":uid,"room":room,"comment":comment,"line_num":codeline} 
+
+}
+</script>
+ 
+<script>
+//http://tamaspiros.co.uk/2013/07/16/advanced-chat-using-node-js-and-socket-io-episode-2/
+//http://tamaspiros.co.uk/2013/07/15/advanced-chat-using-node-js-and-socket-io-episode-1/
+//http://buildnewgames.com/optimizing-websockets-bandwidth/
+//https://bitbucket.org/webrtc/codelab
+</script> 
+</html>
