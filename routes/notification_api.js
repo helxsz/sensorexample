@@ -299,12 +299,7 @@ function publishMsg( channel , mssage,callback){
 
 exports.publishMsg = publishMsg;
 
-setTimeout(function(){ 
-    publishMsg('course/1/user/b/submit','',function(err,data){});
-    publishMsg('course/1/user/c/submit','',function(err,data){});
-    publishMsg('course/2/user/b/submit','',function(err,data){});
-    publishMsg('course/2/user/c/submit','',function(err,data){});
-}  , 4000);
+
 
 
 
@@ -458,3 +453,11 @@ function testNoti(){
 }
 
 //setTimeout(function(){ testNoti();}  , 4000);
+/*
+setTimeout(function(){ 
+    publishMsg('course/1/user/b/submit','',function(err,data){});
+    publishMsg('course/1/user/c/submit','',function(err,data){});
+    publishMsg('course/2/user/b/submit','',function(err,data){});
+    publishMsg('course/2/user/c/submit','',function(err,data){});
+}  , 4000);
+*/

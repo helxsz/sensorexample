@@ -46,6 +46,7 @@
 	, "passport.socketio":"latest"
 	, "passport-github":"latest"
 	, "dbox":"latest"
+	, "mqtt":"latest"
   }
   ,"engines":{
         "node":"latest"
