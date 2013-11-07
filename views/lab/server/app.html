@@ -73,8 +73,13 @@ margin-top: 20px;
 	    <div class="inner-wrapper">
 						
             <div class="row-fluid" style="margin-top:80px;">     
-                <% include lab/server/server_code_editor %>
-                <% include lab/server/server_status %>  
+                <% include server_code_editor %>
+                <% include server_status %>  
+				
+				<button id="start_server"> start server </button>
+				<button id="stop_server"> stop server </button>
+				<button id="stopall_server"> stop all server </button>
+				
             </div>
 			<div>
 			    <div id="mydiv">
@@ -84,7 +89,7 @@ margin-top: 20px;
 			</div>
          </div>	
 
-            <% include footer %>
+            <% include ../../footer %>
 			
 		</div>
 	</div>				
@@ -96,6 +101,7 @@ margin-top: 20px;
  /**/ 
 var fullpath = window.location.pathname +window.location.search ;
 console.log(fullpath,window.location.search);
+
 var token = getUrlVars()['token'];
 
 function getUrlVars()
@@ -188,7 +194,18 @@ $(document).ready(function () {
 		//initCode();
         loadFilesFromWeb();
         initCodeSave();
-        initIframe();		
+        initIframe();	
+        startServerCode();
+        stopServerCode();
+/*
+            var filename = $("#node-dialog-library-save-filename").val().replace(/(^\s*)|(\s*$)/g,"");
+            var pathname = $("#node-dialog-library-save-folder").val().replace(/(^\s*)|(\s*$)/g,"");
+            if (filename == "" || !/.+\.js$/.test(filename)) {
+                RED.notify("Invalid filename","warning");
+                return;
+            }
+
+*/		
 });
 
 
@@ -294,6 +311,68 @@ function initCodeSave(){
     });	
   });
 } 
+
+function startServerCode(){
+   $("#start_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	e.preventDefault();
+	var serverpath  = window.location.pathname + "/start"+window.location.search ;
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });
+
+}
+
+function stopServerCode(){
+   $("#stop_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	var serverpath  = window.location.pathname + "/stop"+window.location.search ;
+	e.preventDefault();
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });
+  
+   $("#stopall_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	var serverpath  = window.location.pathname + "/stopall"+window.location.search ;
+	e.preventDefault();
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });  
+}
  
 function initLocalstorage(){
     if (Modernizr.localstorage) {

@@ -55,7 +55,6 @@ function getStudentDashboardPage(req,res,next){
 
 // Test
 app.get('/course/:id/test' , permissionAPI.authUser, getCourseTestPage);
-app.get('/course/:id/test2', permissionAPI.authUser, getCourseTestPage2);
 app.get('/course/:id/test3',  permissionAPI.authUser, permissionAPI.authStudentInCourse,  getCourseTestPage3);
 app.get('/course/:id/test4', permissionAPI.authUser, getCourseTestPage4);
 
@@ -96,41 +95,7 @@ function getCourseTestPage(req,res,next){
 }
 
 
-function getCourseTestPage2(req,res,next){
-    var locals = {};
-    var id = req.params.id;
-	var uid = req.session.uid;
-	async.parallel([
-		function(callback) {
-		 // first check user login 
-		    userModel.findUserById(uid,function(err,user){
-		       if(err || !user) {
-			       console.log('user uid not found'.red);
-                    return res.json(404);
-		       }
-			   else{
-			        console.log('find user uid'.green,user._id);
-                    locals.user = {
-                       username : user.username, 
-					   email : user.email,
-					   img:user.img
-                    };
-					callback();
-                }			
-		    })
-		}],function(err) {
-	      if (err) return next(err); 
-	      res.format({
-                    html: function(){
-						 locals.title = 'Course Test';
-                         res.render('course_test2',locals);			
-                    },
-                    json: function(){
-                         res.send(locals.courses);
-                    }
-                  });
-	    });	 
-}
+
 
 function getCourseTestPage3(req,res,next){
     var locals = {};

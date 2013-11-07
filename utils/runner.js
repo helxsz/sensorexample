@@ -5,18 +5,27 @@ var util = require('util'),
 	cluster = require('cluster'),
 	color = require('colors');;
 
-process.on('message', function( UNKNOWN_CODE ) {
-    //run the code directly
-	/*
-    runServerCode(UNKNOWN_CODE,function(err,data){
-	    if(err) console.log(err);
-		else console.log(data);
-	})
-	*/
-	// run the code in path indirectly
-	runServerFromPath2('auth2.js',function(err,data){	
-	    process.send( "finished  bla bla" ); //Send the finished message to the parent process
-	});
+process.on('message', function( code ) {
+	//console.log('running the code',code, code.path);
+	// type:0 == start server error , type: 1 == start server ok  , type: 2 == end server ok, type: 3 == normal server msg
+	if(code.type == 0){         // end the server
+	    process.send( {'type':2,'data':null }); 
+	}else if(code.type == 1){   // start the server
+	    if(code.path !=null){
+	        runServerFromPath2(code.path,function(err,data){
+                if(err) process.send({'type':0,'err':err});		
+	            else process.send( {'type':1,'data':null }); 
+	        });
+	    }else if(code.code !=null){
+            runServerCode(code.src,function(err,data){
+	            if(err) process.send({'type':0,'err':err});	
+		        else process.send( {'type':1,'data':null });
+	        })		
+	    }else{	
+	        console.log('can not execute the code, since the path or src of code is invalid'.red);
+	    }	
+	}
+
 });
 
 function runServerCode(code,callback){
@@ -29,7 +38,7 @@ function runServerCode(code,callback){
 		    console.log(e);
 			return callback(e,null);
 		}
-	console.log('finish executing the code'.green);
+	//console.log('finish executing the code'.green);
 }
 
 function runServerFromPath(filepath,callback){	
@@ -47,7 +56,7 @@ function runServerFromPath(filepath,callback){
 		    console.log(e);
 			return callback(e,null);
 		}
-		console.log('finish executing the code'.green);
+		//console.log('finish executing the code'.green);
 		return callback(null,'success');
     })
 }
@@ -64,7 +73,7 @@ function runServerFromPath2(filepath,callback){
 		    console.log(e);
 			return callback(e,null);
 		}
-		console.log('finish executing the code'.green);
+		//console.log('finish executing the code'.green);
 		return callback(null,'success');
     })
 }

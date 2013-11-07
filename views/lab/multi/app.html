@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+	<script src="/assets/js/jquery/jquery-1.8.1.min.js"></script>
+	<script src="/assets/js/all.fineuploader-3.8.2.min.js"></script>
+	<script src="/assets/js/underscore.js"></script>
+    <script src="/assets/js/backbone/backbone-min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
+	<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/assets/js/modernizr.js" type="text/javascript" charset="utf-8"></script>
+	
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>  
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>
+
+<script src="/assets/js/d3.v3.min.js"></script>
+
+  </head>
+<style>
+body {
+  background: #222222 url('http://unsplash.s3.amazonaws.com/batch%2010/gipsy_in_the_woods.jpg') no-repeat top center fixed; 
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,300italic,400italic,500,500italic,700,700italic,900,900italic,100italic);
+
+#errorMsg {
+position: absolute;
+
+z-index: 99999999999999999999;
+-webkit-transition: top 1000ms ease-out;
+-moz-transition: top 1000ms ease-out;
+-ms-transition: top 1000ms ease-out;
+-o-transition: top 1000ms ease-out;
+transition: top 1000ms ease-out;
+}
+
+.content{
+     position: relative;
+	margin-top:140px;	 
+}
+
+#editor { 
+height: 351px;
+margin-top: 20px;	
+}
+</style>  
+
+
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+			
+            <% include ../../header %>			
+            <div class="row-fluid" style="margin-top:80px;">     
+                <div id="chart"></div>                                  
+            </div>
+			
+		</div>
+	</div>				
+  </body>
+
+
+
+<script>
+ /**/ 
+var fullpath = window.location.pathname +window.location.search ;
+console.log(fullpath,window.location.search);
+var token = getUrlVars()['token'];
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+	.ajaxError(
+        function(e, x, settings, exception) {
+            var message;
+            var statusErrorMap = {
+                '400' : "Server understood the request but request content was invalid.",
+                '401' : "Unauthorised access.",
+                '403' : "Forbidden resouce can't be accessed",
+                '500' : "Internal Server Error.",
+                '503' : "Service Unavailable"
+            };
+            if (x.status) {
+                message =statusErrorMap[x.status];
+                                if(!message){
+                                      message="Unknow Error \n.";
+                                  }
+            }else if(exception=='parsererror'){
+                message="Error.\nParsing JSON Request failed.";
+            }else if(exception=='timeout'){
+                message="Request Time out.";
+            }else if(exception=='abort'){
+                message="Request was aborted by the server";
+            }else {
+                message="Unknow Error \n.";
+            }
+            $(this).css("display","inline");
+            $(this).html(message);
+ });
+; 
+var space_width = 5000,
+        space_height = 5000,
+        lineCurveScale = 0.75,
+        scaleFactor = 1,
+        node_width = 100,
+        node_height = 30;
+		
+var moving_set = []
+    mouse_mode = 0,
+	mouse_offset = [0,0];	
+
+var state = {
+    MOVING: 1,
+    JOINING: 2,
+    MOVING_ACTIVE: 3,
+    ADDING: 4,
+    EDITING: 5,
+    EXPORT: 6,
+    IMPORT: 7,
+    IMPORT_DRAGGING: 8
+}	
+		
+var vis, outer, outer_background;		
+$(document).ready(function () {
+    outer = d3.select("#chart")
+        .append("svg:svg")
+        .attr("width", space_width)	
+        .attr("height", space_height)
+        .attr("pointer-events", "all")
+        .style("cursor","crosshair");
+
+    vis = outer
+        .append('svg:g')
+        .on("dblclick.zoom", null)
+        .append('svg:g')
+        .on("mousemove", canvasMouseMove)
+        .on("mousedown", canvasMouseDown)
+        .on("mouseup", canvasMouseUp)
+        .on("touchstart",canvasMouseDown)
+        .on("touchend",canvasMouseUp)
+        .on("touchmove",canvasMouseMove);
+
+    outer_background = vis.append('svg:rect')
+        .attr('width', space_width)
+        .attr('height', space_height)
+        .attr('fill','#fff');	
+		
+	draw();	
+});
+
+function canvasMouseMove(){
+    mouse_position = d3.touches(this)[0]||d3.mouse(this);
+	//console.log('canvasMouseMove   ',mouse_position);
+    if (mouse_mode == state.MOVING) {
+            var m = mouse_position;
+            var d = (mouse_offset[0]-m[0])*(mouse_offset[0]-m[0]) + (mouse_offset[1]-m[1])*(mouse_offset[1]-m[1]);
+            if (d > 2) {
+                mouse_mode = state.MOVING_ACTIVE;
+            }
+    } 
+		/**/
+	else if (mouse_mode == state.MOVING_ACTIVE || mouse_mode == state.IMPORT_DRAGGING) {
+	    console.log('canvasMouseMove   MOVING_ACTIVE',mouse_position);
+            var mousePos = mouse_position;
+            if (d3.event.shiftKey && moving_set.length > 1) {
+                mousePos[0] = 20*Math.floor(mousePos[0]/20);
+                mousePos[1] = 20*Math.floor(mousePos[1]/20);
+            }
+            for (var n in moving_set) {
+                var node = moving_set[n];
+                node.n.x = mousePos[0]+node.dx;
+                node.n.y = mousePos[1]+node.dy;
+                if (d3.event.shiftKey && moving_set.length == 1) {
+                    node.n.x = 20*Math.floor(node.n.x/20);
+                    node.n.y = 20*Math.floor(node.n.y/20);
+                }
+                node.n.dirty = true;
+            }
+    }	
+}
+
+function canvasMouseDown(){
+
+}
+
+function canvasMouseUp(){
+
+}
+
+
+function nodeMouseDown(d) {
+    console.log('click the node', d.id,  d3.event.button);
+	mousedown_node = d;
+    mousedown_node.selected = true;
+    moving_set.push({n:mousedown_node});
+    if (d3.event.button != 2) {
+        mouse_mode = state.MOVING;
+        var mouse = d3.touches(this)[0]||d3.mouse(this);
+         mouse[0] += d.x-d.w/2;
+        mouse[1] += d.y-d.h/2;
+		console.log('click the node',d.id, mouse[0],  mouse[1]);
+        for (var i in moving_set) {
+                    //moving_set[i].ox = moving_set[i].n.x;
+                    //moving_set[i].oy = moving_set[i].n.y;
+                    moving_set[i].dx = moving_set[i].n.x-mouse[0];
+                    moving_set[i].dy = moving_set[i].n.y-mouse[1];
+        }
+		mouse_offset = d3.mouse(document.body);
+        if (isNaN(mouse_offset[0])) {
+            mouse_offset = d3.touches(document.body)[0];
+        }
+    }
+    //redraw();
+    d3.event.stopPropagation();	
+}
+
+function nodeMouseUp(d){
+   mouse_mode = 0;
+
+}
+
+var nodes = [{ 'a':2, 'x':112,'y':112, 'id':4, 'outputs':1, 'links':[{'id':9}]},{'a':2, 'x':211,'y':211, 'id':9, 'outputs':0}];
+
+function draw(){
+
+    var node = vis.selectAll(".nodegroup").data(nodes.filter(function(d) { return d.a == 2 }),function(d){return d.id});;
+	node.exit().remove();
+	console.log(node);
+	var nodeEnter = node.enter().insert("svg:g").attr("class", "node nodegroup");
+    nodeEnter.each(function(d,i) {
+	    console.log(d,"    ",i);
+                    var node = d3.select(this);
+                    var mainRect = node.append("rect")
+                        .attr("class", "node")
+                        .attr("rx", 6)
+                        .attr("ry", 6)
+                        .attr("fill",function(d) { return '#000fff';})//
+                        .on("mousedown",nodeMouseDown)  //
+                        .on("touchstart",function(d) {})  //
+                        .on("dblclick",function(d) {console.log('dbclick the node', d.id);}) 
+                        .on("mouseup",nodeMouseUp);						
+						/*
+                        .on("mouseover",function(d) {
+                                if (mouse_mode == 0) {
+                                    var node = d3.select(this);
+                                    node.classed("node_hovered",true);
+                                }
+                        })
+                        .on("mouseout",function(d) {
+                                var node = d3.select(this);
+                                node.classed("node_hovered",false);
+                        });
+                        */
+                    var text = node.append('svg:text').attr('class','node_label').attr('x', 23).attr('dy', '.35em').attr('text-anchor','start').text('abc');
+						
+					
+	});	
+
+    node.each(function(d,i) {
+        var thisNode = d3.select(this);
+		d.w = 100; d.h = 50;
+        thisNode.attr("transform", function(d) { return "translate(" + (d.x-d.w/2) + "," + (d.y-d.h/2) + ")"; });
+        thisNode.selectAll(".node")
+                .attr("width",function(d){return d.w})
+                .attr("height",function(d){return d.h})
+                //.classed("node_selected",function(d) { return d.selected; })
+                //.classed("node_highlighted",function(d) { return d.highlighted; });
+				
+        var numOutputs = d.outputs;
+        var y = (d.h/2)-((numOutputs-1)/2)*13;
+        d.ports = d.ports || d3.range(numOutputs);
+        d._ports = thisNode.selectAll(".port_output").data(d.ports);
+        d._ports.enter().append("rect").attr("class","port port_output").attr("rx",3).attr("ry",3).attr("width",10).attr("height",10)
+            .on("mousedown",function(){var node = d; return function(d,i){  //portMouseDown(node,0,i);
+							}}() )
+            .on("touchstart",function(){var node = d; return function(d,i){ //portMouseDown(node,0,i);
+			
+			}}() )
+            .on("mouseup",function(){var node = d; return function(d,i){  //portMouseUp(node,0,i);
+			}}() )
+            .on("touchend",function(){var node = d; return function(d,i){  //portMouseUp(node,0,i);
+			}}() )
+            .on("mouseover",function(d,i) { var port = d3.select(this); })
+            .on("mouseout",function(d,i) { var port = d3.select(this); });
+        d._ports.exit().remove();
+        if (d._ports) {
+            var numOutputs = d.outputs || 1;
+            var y = (d.h/2)-((numOutputs-1)/2)*13;
+            var x = d.w - 5;
+            d._ports.each(function(d,i) {
+                var port = d3.select(this);
+                port.attr("y",(y+13*i)-5).attr("x",x);
+            });
+        }		
+    })
+    /*
+    var link = vis.selectAll(".link").data(nodes.links.filter(function(d) { return true; }));
+    link.enter().insert("svg:path",".node").attr("class","link");
+    link.exit().remove();
+    */	
+}
+
+
+
+var RED = {};	
+RED.keyboard = function() {
+    
+    var active = true;
+    var handlers = {};
+    
+    d3.select(window).on("keydown",function() {
+        if (!active) { return; }
+        var handler = handlers[d3.event.keyCode];
+        if (handler) {
+            if (!handler.modifiers ||
+                ((!handler.modifiers.shift || d3.event.shiftKey)&&
+                    (!handler.modifiers.ctrl || d3.event.ctrlKey))) {
+                handler.callback();
+            }
+        }
+    });
+    
+    function addHandler(key,modifiers,callback) {
+        var mod = modifiers;
+        var cb = callback;
+        if (typeof modifiers == "function") {
+            mod = {};
+            cb = modifiers;
+        }
+        handlers[key] = {modifiers:mod, callback:cb};
+    }
+    function removeHandler(key) {
+        delete handlers[key];
+    }
+    
+    return {
+        add: addHandler,
+        remove: removeHandler,
+        disable: function(){ active = false;},
+        enable: function(){ active = true; }
+    }
+
+}();
+
+RED.keyboard.add(/* backspace */ 8,function(){d3.event.preventDefault();});
+RED.keyboard.add(/* delete */ 46,function(){deleteSelection();d3.event.preventDefault();});
+RED.keyboard.add(/* c */ 67,{ctrl:true},function(){copySelection();d3.event.preventDefault();});		   
+
+
+function deleteSelection(){
+    console.log('delete selection');
+
+}
+			
+</script>

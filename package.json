@@ -47,6 +47,8 @@
 	, "passport-github":"latest"
 	, "dbox":"latest"
 	, "mqtt":"latest"
+	, "peer":"latest"
+	, "jsonld":"latest"
   }
   ,"engines":{
         "node":"latest"
