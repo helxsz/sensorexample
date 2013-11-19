@@ -7,6 +7,7 @@ var https = require('https');
 var passport = require('passport');
 var app = express();
 var ejs =  require('ejs');
+var path = require('path');
 var winston = require('winston');
 var config = require('./conf/config.js');
 var colors = require('colors');
@@ -92,6 +93,52 @@ var allowCrossDomain = function(req, res, next) {
 		 http://www.nt.ntnu.no/users/skoge/prost/proceedings/acc11/data/papers/0128.pdf
 		 ¡«www.eit.uni-kl.de/koenig/gemeinsame_seiten/projects/ROSIG/PAC4PT_ROSIG_16012013.pdf
 **********************************************/
+
+
+  function traceCaller(n) {
+    if( isNaN(n) || n<0) n=1;
+    n+=1;
+    var s = (new Error()).stack
+      , a=s.indexOf('\n',5);
+    while(n--) {
+      a=s.indexOf('\n',a+1);
+      if( a<0 ) { a=s.lastIndexOf('\n',s.length); break;}
+    }
+    b=s.indexOf('\n',a+1); if( b<0 ) b=s.length;
+    a=Math.max(s.lastIndexOf(' ',b), s.lastIndexOf('/',b));
+    b=s.lastIndexOf(':',b);
+    s=s.substring(a+1,b);
+    return s;
+  }
+  
+  
+if (process.env.NODE_ENV == 'production'){
+   console.log('on production env', config.port);
+}else if(process.env.NODE_ENV == 'development'){
+   console.log('on development env');
+}else {
+   console.log('there is nothing about it'.yellow); //,   process.env.NODE_ENV,process.env
+}
+
+app.configure('development',function(){
+	app.set('db-uri',config.mongodb_development);
+    app.use(express.static(__dirname+'/static'));
+    app.use(express.static(__dirname+'/weibo'));	
+    app.use(express.static(__dirname+'/public'));
+	
+	app.use(webdir, 	express.static(__dirname+webdir));
+	app.use(mobiledir,	express.static(__dirname+mobiledir));
+	console.log('app on development 11111'.yellow,config.port);
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	config.port = 80;
+});
+
+app.configure('production',function(){
+	app.set('db-uri',config.mongodb_production);
+	console.log('app on production'.yellow, config.port);
+	app.use(express.errorHandler())
+});
+
 app.configure(function(){
 	
     app.engine('.html', ejs.__express);
@@ -128,6 +175,13 @@ app.configure(function(){
 	//app.use(express.logger({stream:access_logfile,format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms'}));
     winston.remove(winston.transports.Console);
     winston.add(winston.transports.Console, {'timestamp':true});
+    var logger_info_old = winston.info;
+        winston.info = function(msg) {
+        var fileAndLine = traceCaller(1);
+        return logger_info_old.call(this, fileAndLine + ":" + msg);
+    }	
+	
+	
     if (config.logRESTRequests) {
         app.use(function(req, res, next){
                 winston.info(req.method + ' ' + req.url);
@@ -147,12 +201,6 @@ app.configure(function(){
     app.use(passport.initialize());
     app.use(passport.session());	  
 		
-	app.use(express.static(__dirname+'/public'));
-    app.use(express.static(__dirname+'/static'));
-    app.use(express.static(__dirname+'/weibo'));	
-	
-	app.use(webdir, 	express.static(__dirname+webdir));
-	app.use(mobiledir,	express.static(__dirname+mobiledir));
 	// put at last	
 	app.get('/version', function(req, res) {
         res.send('0.0.1');
@@ -253,21 +301,7 @@ function conditionalCSRF(req, res, next) {
 }
 
 
-app.configure('development',function(){
-	app.set('db-uri',config.mongodb_development);
-    app.use(express.bodyParser({uploadDir:'/uploads',keepExtensions: true,limit: '50mb'}));	
-	app.use(express.static(__dirname+'/public'));
-	console.log('app on development');
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
 
-app.configure('production',function(){
-	app.set('db-uri',config.mongodb_production);
-    app.use(express.bodyParser({uploadDir:'/uploads',keepExtensions: true,limit: '50mb'}));	
-	app.use(express.static(__dirname+'/public'));
-	console.log('app on production');
-	app.use(express.errorHandler())
-});
 
 
 /******************************************
@@ -322,9 +356,9 @@ function errorHandler(err, req, res, next) {
 var startServer = function() {
     if (!module.parent) {
         if(app){
-	  
+				winston.info("the port used ".yellow, config.port);
 	        app.listen(config.port,'0.0.0.0',function(){
-	            console.log('Express started on port',config.port);	  
+                winston.info('Express started on port'.yellow,config.port);				
 	        });
 	   
 
@@ -409,7 +443,7 @@ var startSelfSSLServer = function() {
 };
 
 startServer();
-startSSLServer();
+//startSSLServer();
 exports.https_server = https_server;
 
 /******************************************************
@@ -670,22 +704,23 @@ bootControllers(app);
 function bootControllers(app) {
 	fs.readdir(__dirname + '/routes', function(err, files){
 		if (err) throw err;
-		files.forEach(function(file){
-		/*
-            fs.stat(file.path, function(err,stats){			
-			   if(stats.isFile()){
-			   }
-			})
-		*/	 
-			 bootController(app, file);				
-		});
+		files.map(function (file) {
+            return path.join(__dirname+'/routes', file);
+        }).filter(function (file) {
+            return fs.statSync(file).isFile();
+        }).forEach(function (file) {         
+			var i = file.lastIndexOf('.');
+            var ext= (i < 0) ? '' : file.substr(i);
+			if(ext==".js")
+			bootController(app, file);	
+        });
 	});
 }
 
 function bootController(app, file) {
 	var name = file.replace('.js', '');
-	//console.log(__dirname + '/routes/'+ name);
-	require(__dirname + "/routes/"+ name);				
+	//console.log( name);
+	require( name);				
 }
 
 

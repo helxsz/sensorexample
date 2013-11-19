@@ -2,7 +2,7 @@ module.exports = {
     name:'Feynlabs',
     sessionStore:'mongodb://localhost/sessionStore/session',
 	sessionSecret: '076ee61d63aa10a125ea872411e433b9',
-	port: 80,
+	port: 61337,
 	uri: 'http://localhost:8080', // Without trailing /
 	host: 'localhost',
     redis: {
@@ -101,8 +101,3 @@ exports.commonName = "Feynlabs";
 exports.subjectAltName = "127.0.0.1";
 
 exports.logRESTRequests = false;
-
-if (module.exports.environment == 'production') {
-	module.exports.port = process.env.PORT || 80; // Joyent SmartMachine uses process.env.PORT
-    module.exports.uri = 'http://localhost:'+module.exports.port;
-}

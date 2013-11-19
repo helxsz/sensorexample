@@ -32,6 +32,23 @@ mqttclient.on('connect', function(){
 
 
 var io = socket.listen(3000);
+io.configure(function () {
+        console.log('web socket io configure'.green);   
+      	io.set('log level', 1);
+	    //setStore(io);	
+	    io.enable('browser client minification');  // send minified client
+        io.enable('browser client etag');          // apply etag caching logic based on version number
+        io.enable('browser client gzip'); 
+	    io.set('heartbeat interval', 45);
+    	io.set('heartbeat timeout', 120); 
+    	io.set('polling duration', 20);
+	
+        io.set('close timeout', 60*60*24); // 24h time out
+    	io.set('transports', [
+            'websocket', 'xhr-polling'
+            //'xhr-polling' // for benchmarking
+       ]);	
+});
 // Subscribe to topic
 io.sockets.on('connection', function (socket) {
     socket.on('subscribe', function (data) {
