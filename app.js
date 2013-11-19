@@ -245,7 +245,7 @@ app.configure(function(){
            res.redirect('https://' + req.headers.host + req.url);
         }
     });	
-    */
+    */   
     //http://stackoverflow.com/questions/10697660/force-ssl-with-expressjs-3	
 	app.use(function(req, res, next) {
        if(!req.secure) {
