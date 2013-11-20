@@ -12,7 +12,7 @@ var winston = require('winston');
 var config = require('./conf/config.js');
 var colors = require('colors');
 var webdir = '/web';
-var mobiledir = '/mobile';
+var mobiledir = '/mobile';  
 var access_logfile = fs.createWriteStream('./access.log',{flags:'a'});
 
 var https_server; 
