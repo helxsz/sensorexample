@@ -1,5 +1,5 @@
   //lala   lalla  blabla                        
-var express = require('express')
+var express = require('express')    
   , passport = require('passport')
   , util = require('util')
   , GitHubStrategy = require('passport-github').Strategy;
