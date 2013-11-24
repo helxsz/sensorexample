@@ -1,26 +1,28 @@
-var mongoose = require("mongoose")
-    , GridStore = mongoose.mongo.GridStore
-    , ObjectID = mongoose.mongo.BSONPure.ObjectID;
+var im = require('imagemagick'),
+    fs = require('fs'),
+    moment = require('moment'),
+    async = require('async'),
+    colors = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    mongoose = require("mongoose"), 
+    GridStore = mongoose.mongo.GridStore,
+    ObjectID = mongoose.mongo.BSONPure.ObjectID;
 	
-var im = require('imagemagick'),fs = require('fs');	
-var moment = require('moment');		
-var app = require('../app').app;
-var	gridfs = require("./gridfs");
-
-var async = require('async');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var account_api = require('./account_api');
+var app = require('../app').app,
+    userModel = require('../model/user_model'),
+    courseModel = require('../model/course_model'),
+    contactModel = require('../model/contact_model'),
+    account_api = require('./account_api'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
 
 
 var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
 
-var userModel = require('../model/user_model');
-var courseModel = require('../model/course_model');
-var contactModel = require('../model/contact_model');
+
 /*
 https://github.com/lefthand/Node-JS-Bootstrap/blob/master/lib/admin.js
 https://github.com/QLeelulu/copy_work/blob/470e006d253c6bccbd451f1e0f1f31d08931ad20/controllers/admin_users.js

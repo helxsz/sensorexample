@@ -6,8 +6,15 @@
 ****/
 
 
-var emailer = require('nodemailer');
-var config = require('../conf/config.js');
+var emailer = require('nodemailer'),
+   	path = require('path'),
+    fs = require('fs'),
+    async = require('async'),
+    color = require('colors');
+var config = require('../conf/config.js'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
 /*
 var config = {
     user:"feynlabs.uk@gmail.com"
@@ -16,7 +23,6 @@ var config = {
 };
 */
 var SITE_ROOT_URL = "https://"+config.host;  //"http:localhost:8080"
-console.log(config.email.user,config.email.pass);
 var smtpTransport = emailer.createTransport("SMTP", {
     host: "smtp.gmail.com", // hostname
     secureConnection: true, // use SSL
@@ -26,6 +32,9 @@ var smtpTransport = emailer.createTransport("SMTP", {
         pass: config.email.pass
     }
 });
+
+winston.info("website email:",config.email.user,config.email.pass);
+
 
 /*
 // Create an Amazon SES transport object
@@ -54,7 +63,7 @@ function sendInvitationMail(url, description,tutor,mail,callback){
   var from = config.email.user;
   var to = mail;
   var subject = 'Feynlabs Invitation';
-  console.log('sendInvitationMail'.green,from, to , subject);
+  winston.data('sendInvitationMail'.green,from, to , subject);
   //course/:id/invitation/:token/reply			
 			
     html = 
@@ -109,7 +118,7 @@ function sendRegistraionMail(username,mail,callback){
     var to = mail;
     var subject = 'Feynlabs Registraion';
   
-    console.log('sendRegistraionMail'.green, from,to,subject);
+    winston.data('sendRegistraionMail'.green, from,to,subject);
     //course/:id/invitation/:token/reply
 			
     html = 
@@ -148,7 +157,7 @@ function sendForgetPasswordMail(username,mail,token,callback){
     var to = mail;
     var subject = 'Password Retrival';
   
-    console.log('sendRegistraionMail'.green, from,to,subject);
+    winston.data('sendRegistraionMail'.green, from,to,subject);
 			
     html = 
 	       '<table cellpadding="0" cellspacing="0" style="width:600px;color: #f5290a;">'

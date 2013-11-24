@@ -1,29 +1,25 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var questionModel = require('../model/question_model');
-var	gridfs = require("./gridfs");
+var async = require('async'),
+    fs = require('fs'),
+    color = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    moment = require('moment'),
+	mongoose = require('mongoose');
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var account_api = require('./account_api');
-var permissionAPI = require('./permission_api');
 
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-
-var courseModel = require('../model/course_model');	
-var studentPlanModel = require('../model/student_plan_model');
-var studentAnswerModel = require('../model/student_answer_model');
-var questionModel = require('../model/question_model');
+var app = require('../app').app,
+    account_api = require('./account_api'),
+    permissionAPI = require('./permission_api'),
+    courseModel = require('../model/course_model'),
+    studentPlanModel = require('../model/student_plan_model'),
+    studentAnswerModel = require('../model/student_answer_model'),
+    questionModel = require('../model/question_model'),
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 	
 
 app.get('/course/:id/setting/milestone',permissionAPI.authUser, permissionAPI.authTutorInCourse,getMilestonePage)
 function getMilestonePage(req,res,next){

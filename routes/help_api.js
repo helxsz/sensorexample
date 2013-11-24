@@ -1,28 +1,22 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var questionModel = require('../model/question_model');
-var helpModel = require('../model/help_model');
-var	gridfs = require("./gridfs");
+var async = require('async'),
+    fs = require('fs'),
+    color = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    moment = require('moment');
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var permissionAPI = require('./permission_api');
+var app = require('../app').app,
+    permissionAPI = require('./permission_api'),
+    notifyAPI = require('./notification_api'),
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    questionModel = require('../model/question_model'),
+    helpModel = require('../model/help_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
 
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-	
-var notifyAPI = require('./notification_api');
-	
-var errors = require('../utils/errors');
 
 app.post('/course/:id/help',permissionAPI.authUser, permissionAPI.authStudentInCourse, callTutorForHelp);
 app.get('/course/:id/help',permissionAPI.authUser, permissionAPI.authStudentInCourse, getHelpInfoOnQuestion);

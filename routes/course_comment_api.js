@@ -1,23 +1,19 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var courseLikeModel = require('../model/course_like_model');
-var	gridfs = require("./gridfs");
+var async = require('async'),
+    fs = require('fs'),
+    colors = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),	
+    moment = require('moment');
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-
-var notification_api = require('./notification_api');	
+var app = require('../app').app,
+	notification_api = require('./notification_api'),
+    courseModel = require('../model/course_model'),
+    courseLikeModel = require('../model/course_like_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');	
+	
 /*****************************************************************
        comment for the course
 	   
@@ -77,7 +73,7 @@ function postCommentOnCourse(req,res,next){
 	 /**/
 	 courseModel.addComment(req.params.id,req.session.username,req.body.img,req.body.msg, function(err,data){
 	    if(err) next(err);
-	    else res.send(200,{'img':req.body.img,'username':req.session.username,'msg':req.body.msg,'time':moment().startOf('hour').fromNow()});
+	    else res.send(200,{'img':req.body.img,'username':req.session.username,'msg':req.body.msg});  //,'time':moment().startOf('hour').fromNow()
 
 	 });
 	 

@@ -1,29 +1,21 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var invitationModel = require('../model/invitation_model');
-var	gridfs = require("./gridfs");
+var async = require('async'),
+    fs = require('fs'),
+    colors = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),	
+    moment = require('moment');
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-
-var mail_api = require('./mail_api');
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-	
-var notification_api = require('./notification_api');
-var permissionAPI = require('./permission_api');
-	
-var errors = require('../utils/errors');
+var app = require('../app').app,
+    notification_api = require('./notification_api'),
+    permissionAPI = require('./permission_api'),
+    mail_api = require('./mail_api'),	
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    invitationModel = require('../model/invitation_model'),	
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 	
 
 // tutor goes to the invitation
 app.get('/course/:id/setting/invitation',permissionAPI.authUser,  permissionAPI.authTutorInCourse, getCourseInvitationPage);

@@ -9,17 +9,22 @@ https://github.com/zackster/CompassionPit--Node-/blob/master/app.js
 http://blog.rstack.cc/post/node_js__using_socket_io_with_cluster_module
 //http://weblog.plexobject.com/?p=1697
 **********************************************/
-var app = require('../app').app;
+var app = require('../app').app,
+    sessionStore =  require('../app').sessionStore,
+    config = require('../conf/config.js'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');
 //var https_server = require('../app').https_server;
-var fs = require('fs');
-var logger = require('../logging.js');
-var config = require('../conf/config.js');
-var sessionStore =  require('../app').sessionStore;
 
-var parseCookie = require('express/node_modules/connect').utils.parseCookie;
-var connect = require('express/node_modules/connect')
-, parseSignedCookie = connect.utils.parseSignedCookie
-, cookie = require('express/node_modules/cookie');
+var fs = require('fs'),
+    parseCookie = require('express/node_modules/connect').utils.parseCookie,
+    connect = require('express/node_modules/connect'),
+    parseSignedCookie = connect.utils.parseSignedCookie,
+    cookie = require('express/node_modules/cookie');
+
+
+
 
 /*
  * websockets.user_msg()

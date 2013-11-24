@@ -1,12 +1,18 @@
-var moment = require('moment');
-require('colors');
-var async = require('async');
-var check = require('validator').check,
+var crypto = require('crypto'),
+    moment = require('moment'),
+    color = require('colors'),
+    async = require('async'),
+    check = require('validator').check,
     sanitize = require('validator').sanitize;
+	
+	
 var userModel = require('../model/user_model');	
-var courseModel = require('../model/course_model');	
-var crypto = require('crypto');
-var config = require('../conf/config.js');
+    courseModel = require('../model/course_model');	
+    config = require('../conf/config.js');
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
+	
 	
 function authUser(req,res,next){
 

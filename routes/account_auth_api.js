@@ -10,32 +10,31 @@
 //http://stackoverflow.com/questions/18413836/how-do-i-create-a-cookie-passportjs-facebook
 //http://stackoverflow.com/questions/11210817/link-facebook-data-to-currently-logged-in-user-with-passport-js
 //http://stackoverflow.com/questions/17675887/github-oauth-for-node-js-express-application-private-email
-var mongoose = require("mongoose")
-    , GridStore = mongoose.mongo.GridStore
-    , ObjectID = mongoose.mongo.BSONPure.ObjectID;
-var crypto = require('crypto');	
-var _=require('underscore');
 
-var request = require('request');
 
-var config = require('../conf/config.js');
-var app = require('../app.js').app;
-
-var moment = require('moment');	
-var redis = require('redis'),
+var mongoose = require("mongoose"),
+    GridStore = mongoose.mongo.GridStore,
+    ObjectID = mongoose.mongo.BSONPure.ObjectID,
+    crypto = require('crypto'),
+    _=require('underscore'),
+    moment = require('moment'),
+    redis = require('redis'),
     fs = require('fs'),
-	io = require('socket.io');
-	
-var permissionAPI = require('./permission_api');
-
-var userModel = require('../model/user_model');
-
-var passport = require('passport') , 
+	io = require('socket.io'),
+    request = require('request');
+ 
+ var passport = require('passport') , 
     LocalStrategy = require('passport-local').Strategy,
     TwitterStrategy = require('passport-twitter').Strategy,
 	FacebookStrategy = require('passport-facebook').Strategy,
 	GithubStrategy = require('passport-github').Strategy,
 	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+var app = require('../app.js').app,
+    permissionAPI = require('./permission_api'),
+	userModel = require('../model/user_model'),
+    config = require('../conf/config.js'),
+	winston = require('../utils/logging.js');
 	
 // serialize sessions    
 //http://danialk.github.io/blog/2013/02/23/authentication-using-passportjs/
@@ -306,6 +305,45 @@ app.get('/connect/twitter/callback',
   }
 );
 
+var request = require('request');
 
+app.get('/pro/:name',function(req,res){
+
+	console.log(req.session);
+	
+    var repos,
+        opts = {
+			host: "api.github.com",
+			path: '/users/'+req.params.name+'/repos',
+			method: "GET"
+		},
+    	 request = https.request(opts, function(resp) {
+    		var data = "";
+    		resp.setEncoding('utf8');
+		resp.on('data', function (chunk) {
+			data += chunk;
+		});
+		resp.on('end', function () {
+			repos = JSON.parse(data); 
+			console.log('repos',repos);
+			//res.render('board',{ repos: repos});
+		    res.send(repos);
+		});
+    	});
+    request.end();
+  // https://api.github.com/users/username/repos
+    
+  request('https://api.github.com/users/'+req.params.name+'/repos', function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+          //console.log(body) // Print the google web page.
+		  
+		  var json = JSON.parse(body);
+          json.forEach(function(repo){
+               console.log(repo.name,repo.description) ;
+          });		  
+		  res.send(body);
+      }  
+  })
+})
 
  */

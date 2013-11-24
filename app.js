@@ -1,22 +1,23 @@
-var fs = require('fs');
-var express = require('express');
-var http = require('http');
-var domain = require('domain'); 
-var crypto = require('crypto');
-var https = require('https');
-var passport = require('passport');
-var app = express();
-var ejs =  require('ejs');
-var path = require('path');
-var winston = require('winston');  
-var config = require('./conf/config.js');
-var colors = require('colors');   
-var webdir = '/web';
-var mobiledir = '/mobile';  
-var access_logfile = fs.createWriteStream('./access.log',{flags:'a'});
- 
-var https_server; 
- 
+var fs = require('fs'),
+    express = require('express'),
+    http = require('http'),
+    domain = require('domain'),
+    crypto = require('crypto'),
+    https = require('https'),
+    passport = require('passport'),    
+    ejs =  require('ejs'),
+    path = require('path'),
+	colors = require('colors'),
+    mongoose = require('mongoose'),
+	GridStore = mongoose.mongo.GridStore,
+    db = mongoose.connection.db;;
+	
+var config = require('./conf/config.js'),
+    app = express(),
+    https_server;   
+    webdir = '/web',
+    mobiledir = '/mobile';  
+
 // Virtual Hosts
 /*   
 var site_vhosts=[],vhosts;
@@ -28,8 +29,8 @@ http://docs.mongodb.org/manual/use-cases/storing-comments/
 http://docs.mongodb.org/manual/use-cases/inventory-management/
 */
 
-// mongodb session
-/*
+
+/* mongodb session
 var MongoStore = require('connect-mongo')(express);
 var sessionStore = new MongoStore({url: config.sessionStore}, function() {
     	                  console.log('connect mongodb session success...');
@@ -38,20 +39,35 @@ var sessionStore = new MongoStore({url: config.sessionStore}, function() {
 // redis session
 //host: config.redis.host, port: config.redis.port,
 */
-var redisClient = require("redis").createClient(config.redis.port,config.redis.host)
-redisClient.auth(config.redis.auth, function(result) {
-	console.log("Redis authenticated.".green);  
-});
-redisClient.on("error", function (err) {  
-     console.log("redis Error " + err.red);  
-     return false;  
-});    
-redisClient.on('connect',function(err){
-	console.log('redis connect success'.green);
-});
-var RedisStore  = require("connect-redis")(express);
-var sessionStore = new RedisStore({  client:redisClient  });
-exports.sessionStore= sessionStore;
+var sessionStore;
+function configSessionStore(){
+    var redisClient = require("redis").createClient(config.redis.port,config.redis.host)
+    redisClient.auth(config.redis.auth, function(result) {
+	    winston.info("Redis authenticated.".green);  
+    });
+    redisClient.on("error", function (err) {  
+        winston.error("redis Error " + err.red);  
+        return false;  
+    });    
+    redisClient.on('connect',function(err){
+	    winston.info('redis connect success'.green);
+    });
+    var RedisStore  = require("connect-redis")(express);
+    sessionStore = new RedisStore({  client:redisClient  });
+	return sessionStore;
+}
+
+var winston
+function configLogging(){
+    /*
+    var logging = require('./utils/logging.js');
+    winston = require('winston'); 
+    logging.init();
+	*/
+	winston = require('./utils/logging.js');
+}
+configLogging();
+
 
 
 //  allowed cross domain
@@ -94,30 +110,12 @@ var allowCrossDomain = function(req, res, next) {
 		 ¡«www.eit.uni-kl.de/koenig/gemeinsame_seiten/projects/ROSIG/PAC4PT_ROSIG_16012013.pdf
 **********************************************/
 
-
-  function traceCaller(n) {
-    if( isNaN(n) || n<0) n=1;
-    n+=1;
-    var s = (new Error()).stack
-      , a=s.indexOf('\n',5);
-    while(n--) {
-      a=s.indexOf('\n',a+1);
-      if( a<0 ) { a=s.lastIndexOf('\n',s.length); break;}
-    }
-    b=s.indexOf('\n',a+1); if( b<0 ) b=s.length;
-    a=Math.max(s.lastIndexOf(' ',b), s.lastIndexOf('/',b));
-    b=s.lastIndexOf(':',b);
-    s=s.substring(a+1,b);
-    return s;
-  }
-  
-  
 if (process.env.NODE_ENV == 'production'){
-   console.log('on production env', config.port);
+   //winston.info('on production env', config.port);
 }else if(process.env.NODE_ENV == 'development'){
-   console.log('on development env');
+   //winston.info('on development env');
 }else {
-   console.log('there is nothing about it'.yellow); //,   process.env.NODE_ENV,process.env
+   //winston.info('there is nothing about it'.yellow); //,   process.env.NODE_ENV,process.env
 }
 
 app.configure('development',function(){
@@ -128,29 +126,25 @@ app.configure('development',function(){
 	
 	app.use(webdir, 	express.static(__dirname+webdir));
 	app.use(mobiledir,	express.static(__dirname+mobiledir));
-	console.log('app on development 11111'.yellow,config.port);
+	winston.info('app on development'.yellow,config.port);
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	config.port = 80;
 });
 
 app.configure('production',function(){
 	app.set('db-uri',config.mongodb_production);
-	console.log('app on production'.yellow, config.port);
+	winston.info('app on production'.yellow, config.port);
 	app.use(express.errorHandler())
 });
 
 app.configure(function(){
-	
+
     app.engine('.html', ejs.__express);
     app.set('view engine', 'html');
 	app.set('views',__dirname+'/views');
-	app.set('ejs',ejs);
-	
+	app.set('ejs',ejs);	
     app.disable('x-powered-by');
-	
-	app.use(express.favicon(__dirname + '/public/favicon.ico'));
-	
-  // should be placed before express.static
+	app.use(express.favicon(__dirname + '/public/favicon.ico'));	
     app.use(express.compress({
         filter: function (req, res) {
          return /json|text|javascript|css/.test(res.getHeader('Content-Type'));
@@ -158,29 +152,19 @@ app.configure(function(){
         level: 9
     })); 	
 	
-	 // bodyParser should be above methodOverride
 	app.use(express.bodyParser({uploadDir:__dirname+'/public/uploads',keepExtensions: true,limit: '50mb'}));
 	app.use(express.methodOverride());
-	//  // cookieParser should be above session
 	app.use(express.cookieParser());
-	 // express/mongo session storage  //  
     app.use(express.session({ 
 					  cookie: { maxAge: 24 * 60 * 60 * 1000 }
-    	              ,store: sessionStore
+    	              ,store: configSessionStore()
     	              ,secret: config.sessionSecret
 					  ,key: 'express.sid'
 					  ,clear_interval: 3600
     }));
-
-	//app.use(express.logger({stream:access_logfile,format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms'}));
-    winston.remove(winston.transports.Console);
-    winston.add(winston.transports.Console, {'timestamp':true});
-    var logger_info_old = winston.info;
-        winston.info = function(msg) {
-        var fileAndLine = traceCaller(1);
-        return logger_info_old.call(this, fileAndLine + ":" + msg);
-    }	
 	
+    //var access_logfile = fs.createWriteStream('./access.log',{flags:'a'});
+	//app.use(express.logger({stream:access_logfile,format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms'}));	
 	
     if (config.logRESTRequests) {
         app.use(function(req, res, next){
@@ -188,8 +172,7 @@ app.configure(function(){
                 next();
         });
     }
-	
-	
+		
     //app.use(express.csrf()); 
 	app.use(conditionalCSRF);
     app.use(function(req, res, next){
@@ -214,7 +197,7 @@ app.configure(function(){
     app.use(function (req,res, next) {
         var d = domain.create();
         d.on('error', function (err) {
-          logger.error(err);
+          winston.error(err);
           res.statusCode = 500;
           res.json({sucess:false, messag: 'error in the server'});
           d.dispose();
@@ -301,15 +284,9 @@ function conditionalCSRF(req, res, next) {
 }
 
 
-
-
-
 /******************************************
            error handling   logging
 *******************************************/
-
-
-
 function logErrors(err, req, res, next) {
   console.error(err.stack);
   next(err);
@@ -318,7 +295,7 @@ function logErrors(err, req, res, next) {
 function clientErrorHandler(err, req, res, next) {
   winston.error(err.stack);
   if (req.xhr) {
-    console.log('send error to the client in json'.red,err);
+    winston.error('send error to the client in json'.red,err);
 	/*
 	if(err.name =='MongoError'){  // http://www.mongodb.org/about/contributors/error-codes/
 	    switch(err.code){
@@ -356,25 +333,12 @@ function errorHandler(err, req, res, next) {
 var startServer = function() {
     if (!module.parent) {
         if(app){
-				winston.info("the port used ".yellow, config.port);
+			winston.info("the port used ".yellow, config.port);
 	        app.listen(config.port,'0.0.0.0',function(){
-                winston.info('Express started on port'.yellow,config.port);				
+                winston.info("Express started on port".yellow, config.port);				
 	        });
-	   
-
-	  	/*
-	        var out = app.listen(config.port, '0.0.0.0',function(){
-	           console.log('Express started on port',config.port);	  
-	        });
-	  
-	        process.nextTick(function () {
-                if (out && out.address && out.address().port !== config.port) {
-                    console.log("server listening on port: ".red + out.address().port);
-                }
-            });
-        */
        }else{
-            console.log("\r\ terminated ...\r\n".grey);
+            winston.error("\r\ terminated ...\r\n".grey);
             process.exit();
         }
     }
@@ -390,7 +354,7 @@ var startSSLServer = function(){
       };
 	   
       https_server = https.createServer(options,app).listen(443, '0.0.0.0', function(){
-            console.log("Express server listening on port ".green + 433);
+            winston.info("Express server listening on port ".green + 433);
 			var websocket = require('./routes/websocket_api');
 			websocket.initWebsocket(https_server);
       });	  
@@ -403,12 +367,12 @@ var startSelfSSLServer = function() {
         privateKey = fs.readFileSync('certs/server.key').toString();
         certificate = fs.readFileSync('certs/server.cert').toString();
     } catch ( e ) {
-        console.log( "no certificate found. generating self signed cert.\n" );
+        winston.info( "no certificate found. generating self signed cert.\n" );
     }
     
     if ( privateKey !== "" && certificate !== "" ) {
 		loadServer();
-		console.log('start SSL not private key and certificate '.red);
+		winston.info('start SSL not private key and certificate '.red);
     }else {
         var spawn = require('child_process').spawn;
         
@@ -445,6 +409,7 @@ var startSelfSSLServer = function() {
 startServer();
 //startSSLServer();
 exports.https_server = https_server;
+exports.sessionStore = sessionStore;
 
 /******************************************************
             cluster2 
@@ -512,11 +477,11 @@ app.on('close', function () {
 //  terminator === the termination handler.
 function terminator(sig) {
    if (typeof sig === "string") {
-      console.log('%s: Received %s - terminating Node server ...',Date(Date.now()), sig);                 
+      winston.info('%s: Received %s - terminating Node server ...',Date(Date.now()), sig);                 
       process.exit(1);
 	  app.close();
    }
-   console.log('%s: Node server stopped.'.red, Date(Date.now()) );
+   winston.info('%s: Node server stopped.'.red, Date(Date.now()) );
 }
 
 //  Process on exit and signals.
@@ -542,7 +507,6 @@ process.on("uncaughtException", function(error) {
 **********************************************/
 
 // mongodb mongoose
-var mongoose = require('mongoose');
 //mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
 //mongoose.createConnection('localhost', 'database', port, opts);
 
@@ -552,7 +516,7 @@ var database_error = null;
 
 mongoose.connect(config.mongodb_development,opts,function(err){
 	if(err) { 
-	    console.log('connect mongodb error'.red,err);
+	    winston.error('connect mongodb error'.red,err);
 		database_error = err;
 		if(err.name == 'MongoError' && err.code == 18 && err.errmsg == 'auth fails'){
 		/*
@@ -564,12 +528,12 @@ mongoose.connect(config.mongodb_development,opts,function(err){
 		    onConnectUnexpected(err);
 		}	
 	}
-	else console.log('mongodb connect success');
+	else winston.info('mongodb connect success');
 });
 
 mongoose.connection.on('open', function (err) {
       if (reconnTimer) { clearTimeout(reconnTimer); reconnTimer = null; }
-      console.log('connection opening');
+      winston.info('connection opening');
 	  /*
 	  if(!err){
 	    //http://stackoverflow.com/questions/18688282/handling-timeouts-with-node-js-and-mongodb
@@ -619,13 +583,13 @@ var reconnTimer = null;
  /*  tryReconnect -> onConnectUnexpected  -> disconnected callback  */
 function tryReconnect() {
     reconnTimer = null;
-    console.log("try to connect: %d".grey, mongoose.connection.readyState);
+    winston.warm("try to connect: %d".grey, mongoose.connection.readyState);
     db = mongoose.connect(config.mongodb_development,function(err){
 	    if(err) {
-	        console.log('connect mongodb error'.red,err);
+	        winston.error('connect mongodb error'.red,err);
 		    onConnectUnexpected(err);
 	    }
-	    else console.log('mongodb connect success'.green,mongoose.connection.readyState);
+	    else winston.log('mongodb connect success'.green,mongoose.connection.readyState);
   });
 }
 
@@ -688,24 +652,22 @@ function done (err) {
 }
 
 /// file grid
-var GridStore = mongoose.mongo.GridStore;
-var db = mongoose.connection.db;
+
 
 ///////////////////////////////////////////////////// 
 exports.app = app;
-exports.mongoose = mongoose;
 exports.GridStore = GridStore;
 // management modulers
 
 
-bootControllers(app);
-
+bootControllers(app,__dirname + '/routes');
+bootPlugins(app,__dirname + '/plugins')
 // Bootstrap controllers
-function bootControllers(app) {
-	fs.readdir(__dirname + '/routes', function(err, files){
+function bootControllers(app,route) {
+	fs.readdir(route, function(err, files){
 		if (err) throw err;
 		files.map(function (file) {
-            return path.join(__dirname+'/routes', file);
+            return path.join(route, file);
         }).filter(function (file) {
             return fs.statSync(file).isFile();
         }).forEach(function (file) {         
@@ -717,13 +679,26 @@ function bootControllers(app) {
 	});
 }
 
-function bootController(app, file) {
-	var name = file.replace('.js', '');
-	//console.log( name);
-	require( name);				
+function bootPlugins(app,route) {
+	fs.readdir(route, function(err, files){
+		if (err) throw err;
+		files.map(function (file) {
+            return path.join(route, file);
+        }).filter(function (file) {
+            return fs.statSync(file).isDirectory();
+        }).forEach(function (file) {
+		    
+			file = path.join(file, "app.js");
+			winston.info(file);
+			var i = file.lastIndexOf('.');
+            var ext= (i < 0) ? '' : file.substr(i);
+			if(ext==".js")
+			bootController(app, file);          			
+        });
+	});
 }
 
-
-//var pluginHelper = require('./pluginHelper');
-//pluginHelper.getPluginList(__dirname +'/plugins');
-
+function bootController(app, file) {
+	var name = file.replace('.js', '');
+	require( name);				
+}

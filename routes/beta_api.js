@@ -1,30 +1,24 @@
-var app = require('../app').app;
-var	gridfs = require("./gridfs");
-
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var permissionAPI = require('./permission_api');
-
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
+var async = require('async'),
+    fs = require('fs'),
+    colors = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    moment = require('moment'); 
+	
+var app = require('../app').app,
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    notification_api = require('./notification_api'),
+    permissionAPI = require('./permission_api'),	
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
+ 
 var Hashids = require("hashids"),
     hashids = new Hashids("this is my salt");
-
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
 	
-var notification_api = require('./notification_api');	
-var errors = require('../utils/errors');	
-
 app.get('/',permissionAPI.authUser,homePage);
-
 app.get('/beta',betaHomePage);
 
 function betaHomePage(req,res,next){

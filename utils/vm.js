@@ -12,9 +12,8 @@ var util = require('util'),
 var runner = require('./runner');
     
 
-console.log(__filename);
 var coding_repository  = path.join(path.dirname(fs.realpathSync(__filename)), '../coding-repository');
-console.log(coding_repository,"      ",path.dirname(fs.realpathSync(__filename)));	
+//console.log(coding_repository,"      ",path.dirname(fs.realpathSync(__filename)));	
 
 /*
 client runs a virual machine, on the server side, we need to assign him a 

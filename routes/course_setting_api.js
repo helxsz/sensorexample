@@ -1,32 +1,25 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var questionModel = require('../model/question_model');
-var	gridfs = require("./gridfs");
-
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var permissionAPI = require('./permission_api');
-
-var followModel = require('../model/follow_model');
-var courseLikeModel = require('../model/course_like_model');
-var mail_api = require('./mail_api');
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
+var async = require('async'),
+    fs = require('fs'),
+    color = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),	
+    moment = require('moment'),
+	mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.ObjectId;
 	
-var notification_api = require('./notification_api');
-	
-var errors = require('../utils/errors');
-
+var app = require('../app').app,
+     notification_api = require('./notification_api'),
+    permissionAPI = require('./permission_api'),
+    mail_api = require('./mail_api'),
+    followModel = require('../model/follow_model'),
+    courseLikeModel = require('../model/course_like_model'),
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    questionModel = require('../model/question_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');  	 
 /*********************
     admin course api
 *********************/

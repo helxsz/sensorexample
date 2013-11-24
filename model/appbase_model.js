@@ -1,6 +1,6 @@
 //var utils = require("./utils");
 //https://raw.github.com/Wyverald/net9-auth/master/appbase-mongo.js
-var mongoose = require('../app').mongoose;
+var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
 require('colors');
 

@@ -1,7 +1,6 @@
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
+var mongoose = require('mongoose'),
+   ObjectId = mongoose.Schema.ObjectId;
 var crypto = require('crypto'), 
-    Schema = mongoose.Schema,
 	uuid = require('node-uuid');
 var color = require('colors');
 var _ = require('underscore');

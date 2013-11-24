@@ -1,21 +1,23 @@
-var mongoose = require("mongoose")
-    , GridStore = mongoose.mongo.GridStore
-    , ObjectID = mongoose.mongo.BSONPure.ObjectID;
-var crypto = require('crypto');	
-var _=require('underscore');
-
-var config = require('../conf/config.js');
-var app = require('../app.js').app;
-
-var moment = require('moment');	
-var redis = require('redis'),
+var crypto = require('crypto'),
+    _=require('underscore'),
+    moment = require('moment'),
+    redis = require('redis'),
     fs = require('fs'),
-	io = require('socket.io');
+	io = require('socket.io'),
+	color = require('colors'),
+    mongoose = require("mongoose"),
+    GridStore = mongoose.mongo.GridStore,
+    ObjectID = mongoose.mongo.BSONPure.ObjectID;
+
+var app = require('../app.js').app,
+    permissionAPI = require('./permission_api'),
+    websocketAPI  = require('./websocket_api'),
+    config = require('../conf/config.js'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');  
 	
-var permissionAPI = require('./permission_api');
 
-
-var websocketAPI  = require('./websocket_api');
 /*********************************************
 
 redis
@@ -35,12 +37,12 @@ redisClient.auth(config.opt.redis_auth, function(result) {
 })
 */ 
 redisClient.on("error", function (err) {  
-     console.log("redis Error " + err.red);  
+     winston.error("redis Error " + err.red);  
      return false;  
 });    
 
 redisClient.on('connect',function(err){
-	console.log('redis connect success');
+	winston.info('redis connect success');
 })
 
 
@@ -224,25 +226,24 @@ function listenCourseEvent(pattern){
     })
     */ 
     redisClient.on("error", function (err) {  
-        console.log("redis Error " + err.red,err);  
+        winston.error("redis Error " + err.red,err);  
         return false;  
     });    
 
     redisClient.on('connect',function(err){
-	    console.log('redis connect success');
+	    winston.info('redis connect success');
     })
 	
     redisClient.psubscribe(pattern);
     redisClient.on('pmessage', function(pattern, channel, message){	    
-	    console.log('on publish / subscribe   ',  pattern+"   "+channel+"    " );
+	    winston.data('on publish / subscribe   ',  pattern+"   "+channel+"    " );
 	    if(pattern == course_pattern){
-		    console.log('course_pattern');
 	        try {
     		    var data = JSON.parse(message);   		
     		    //var channelName = channel.split(':')[1].replace(/-/g, ' ');				
 				var array = channel.split('/');
 				var cid = array[1], type = array[2],uid = array[3], op = array[4];
-				console.log("received published message:".green, cid+  "   " + type   +"    "+uid+"    "+op);
+				winston.data("received published message:".green, cid+  "   " + type   +"    "+uid+"    "+op);
                 if(type == 'user'){
 				    console.log('to notify the student');
 				

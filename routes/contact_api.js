@@ -1,16 +1,18 @@
-var app = require('../app').app;
-var userModel = require('../model/user_model');
-var contactModel = require('../model/contact_model');
-
-var crypto = require('crypto');
-var fs = require('fs');
-
-var moment = require('moment');
-require('colors');
-var async = require('async');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-
+var moment = require('moment'),
+    colors = require('colors'),
+    async = require('async'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    fs = require('fs');
+	
+var app = require('../app').app,
+    userModel = require('../model/user_model'),
+    contactModel = require('../model/contact_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');	
+	
 app.get('/contact_us',getContactPage);	
 app.post('/contact',contact);
 

@@ -1,4 +1,4 @@
-var mongoose = require('../app').mongoose;
+var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
 //http://www.ibm.com/developerworks/library/os-rulesengines/
 //http://docs.oracle.com/cd/E11882_01/server.112/e17069/strms_adrules.htm

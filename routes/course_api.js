@@ -1,31 +1,21 @@
-var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var questionModel = require('../model/question_model');
-var	gridfs = require("./gridfs");
+var async = require('async'),
+    fs = require('fs'),
+    colors = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    moment = require('moment');
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var permissionAPI = require('./permission_api');
-
-var followModel = require('../model/follow_model');
-var courseLikeModel = require('../model/course_like_model');
-
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-	
-var notification_api = require('./notification_api');
-	
-var errors = require('../utils/errors');	
+var app = require('../app').app,
+    permissionAPI = require('./permission_api'),
+    notification_api = require('./notification_api'),
+    followModel = require('../model/follow_model'),
+    courseLikeModel = require('../model/course_like_model'),
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');
 
 app.get('/courses',getCourses);
 app.get('/courses/popular',getPopularCourses);

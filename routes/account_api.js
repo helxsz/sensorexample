@@ -1,29 +1,24 @@
-var app = require('../app').app;
-var GridFS = require('../app').GridFS
+var crypto = require('crypto'),
+    fs = require('fs'),
+    moment = require('moment'),
+    colors = require('colors'),
+    async = require('async'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    util = require("util"),
+    im = require('imagemagick');
 
-var userModel = require('../model/user_model');
-var config = require('../conf/config.js');
-var	gridfs = require("./gridfs");
-
-var crypto = require('crypto');
-var fs = require('fs');
-
-var moment = require('moment');
-require('colors');
-var async = require('async');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-	
-var followModel = require('../model/follow_model');
-		
-var util = require("util");//, mime = require("mime");
-var im = require('imagemagick');
-
-var mail_api = require('./mail_api');
-var permissionAPI = require('./permission_api');
-// session
-var courseModel = require('../model/course_model');
-
+var app = require('../app').app,
+    GridFS = require('../app').GridFS,
+    mail_api = require('./mail_api'),
+    permissionAPI = require('./permission_api'),
+    userModel = require('../model/user_model'),
+    followModel = require('../model/follow_model'),
+    courseModel = require('../model/course_model'),
+    config = require('../conf/config.js'),
+	gridfs = require("../utils/gridfs"),
+    winston = require('../utils/logging.js'); 	
+ 
 
 /** 
  *   sign up

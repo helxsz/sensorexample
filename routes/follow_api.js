@@ -1,25 +1,21 @@
-var app = require('../app').app;
-var GridFS = require('../app').GridFS
+var crypto = require('crypto'),
+    fs = require('fs'),
+    moment = require('moment'),
+    color = require('colors'),
+    async = require('async'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    util = require("util"),
+   im = require('imagemagick');
 
-var followModel = require('../model/follow_model');
-var config = require('../conf/config.js');
-var	gridfs = require("./gridfs");
+var app = require('../app').app,
+    notification_api = require('./notification_api'),
+    followModel = require('../model/follow_model');
+    config = require('../conf/config.js'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js'); 
 
-var crypto = require('crypto');
-var fs = require('fs');
-
-var moment = require('moment');
-require('colors');
-var async = require('async');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-	
-var util = require("util");//, mime = require("mime");
-var im = require('imagemagick');
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-	
-var notification_api = require('./notification_api');
 
 // Middleware  moderators  admin
 var requireLogin = function(role) {

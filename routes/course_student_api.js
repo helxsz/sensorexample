@@ -1,30 +1,27 @@
+var async = require('async'),
+    fs = require('fs'),
+    color = require('colors'),
+    check = require('validator').check,
+    sanitize = require('validator').sanitize,
+    crypto = require('crypto'),
+    moment = require('moment'),
+	mongoose = require('mongoose');
+
+	
 var app = require('../app').app;
-var courseModel = require('../model/course_model');
-var userModel = require('../model/user_model');
-var questionModel = require('../model/question_model');
-var	gridfs = require("./gridfs");
+    account_api = require('./account_api'),
+    permissionAPI = require('./permission_api'),
+    notifyAPI = require('./notification_api'),
+    courseModel = require('../model/course_model'),
+    userModel = require('../model/user_model'),
+    questionModel = require('../model/question_model'),
+    courseModel = require('../model/course_model'),
+    studentPlanModel = require('../model/student_plan_model'),
+    studentAnswerModel = require('../model/student_answer_model'),	
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');  	
 
-var async = require('async');
-var fs = require('fs');
-require('colors');
-var check = require('validator').check,
-    sanitize = require('validator').sanitize;
-var crypto = require('crypto');	
-var moment = require('moment');
-var account_api = require('./account_api');
-
-var mongoose = require('../app').mongoose;
-var ObjectId = mongoose.Schema.ObjectId;
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt");
-
-var courseModel = require('../model/course_model');	
-var studentPlanModel = require('../model/student_plan_model');
-var studentAnswerModel = require('../model/student_answer_model');
-var permissionAPI = require('./permission_api');
-
-var notifyAPI = require('./notification_api');
 
 // 
 app.get('/profile/:username/student',permissionAPI.authUser,getStudentDashboardPage);

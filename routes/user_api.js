@@ -1,20 +1,18 @@
-var app = require('../app').app;
-var GridFS = require('../app').GridFS
-
-var userModel = require('../model/user_model');
-var config = require('../conf/config.js');
-var	gridfs = require("./gridfs");
-
-var crypto = require('crypto');
-var fs = require('fs');
-
-var moment = require('moment');
-require('colors');
-var async = require('async');
-var check = require('validator').check,
+var crypto = require('crypto'),
+    fs = require('fs'),
+	color = require('colors'),
+    moment = require('moment'),
+    async = require('async'),
+    check = require('validator').check,
     sanitize = require('validator').sanitize;
-	
-	
+
+var app = require('../app').app,
+    GridFS = require('../app').GridFS,
+    userModel = require('../model/user_model'),
+    config = require('../conf/config.js'),
+    errors = require('../utils/errors'),
+	gridfs = require("../utils/gridfs"),
+	winston = require('../utils/logging.js');  
 	
 /*******************************************
   search tutor    

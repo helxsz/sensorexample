@@ -1,4 +1,4 @@
-var mongoose = require('../app').mongoose;
+var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.ObjectId;
 
 /*  https://github.com/LearnBoost/mongoose/wiki/3.6-Release-Notes
