@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+	<script src="/assets/js/jquery/jquery-1.8.1.min.js"></script>
+	<script src="/assets/js/all.fineuploader-3.8.2.min.js"></script>
+	<script src="/assets/js/underscore.js"></script>
+    <script src="/assets/js/backbone/backbone-min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
+	<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/assets/js/modernizr.js" type="text/javascript" charset="utf-8"></script>
+	
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>  
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>
+  </head>
+<style>
+body {
+  background: #222222 url('http://unsplash.s3.amazonaws.com/batch%2010/gipsy_in_the_woods.jpg') no-repeat top center fixed; 
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,300italic,400italic,500,500italic,700,700italic,900,900italic,100italic);
+
+#errorMsg {
+position: absolute;
+
+z-index: 99999999999999999999;
+-webkit-transition: top 1000ms ease-out;
+-moz-transition: top 1000ms ease-out;
+-ms-transition: top 1000ms ease-out;
+-o-transition: top 1000ms ease-out;
+transition: top 1000ms ease-out;
+}
+
+.content{
+     position: relative;
+	margin-top:140px;	 
+}
+
+#editor { 
+height: 351px;
+margin-top: 20px;	
+}
+</style>  
+
+
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+						
+            <div class="row-fluid" style="margin-top:80px;">     
+                <% include server_code_editor %>
+                <% include server_status %>  
+				
+				<button id="start_server"> start server </button>
+				<button id="stop_server"> stop server </button>
+				<button id="stopall_server"> stop all server </button>
+				
+            </div>
+			<div>
+			    <div id="mydiv">
+				    <iframe id="frame" src="" width="100%" height="100%">
+                    </iframe>
+				</div>
+			</div>
+         </div>	
+
+			
+		</div>
+	</div>				
+  </body>
+
+
+
+<script>
+ /**/ 
+var fullpath = window.location.pathname +window.location.search ;
+console.log(fullpath,window.location.search);
+
+var token = getUrlVars()['token'];
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+function stringInEndWith(){
+  if (!String.prototype.endsWith) {
+    Object.defineProperty(String.prototype, 'endsWith', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: function (searchString, position) {
+            position = position || this.length;
+            position = position - searchString.length;
+            var lastIndex = this.lastIndexOf(searchString);
+            return lastIndex !== -1 && lastIndex === position;
+        }
+    });
+  }
+}
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+	.ajaxError(
+        function(e, x, settings, exception) {
+            var message;
+            var statusErrorMap = {
+                '400' : "Server understood the request but request content was invalid.",
+                '401' : "Unauthorised access.",
+                '403' : "Forbidden resouce can't be accessed",
+                '500' : "Internal Server Error.",
+                '503' : "Service Unavailable"
+            };
+            if (x.status) {
+                message =statusErrorMap[x.status];
+                                if(!message){
+                                      message="Unknow Error \n.";
+                                  }
+            }else if(exception=='parsererror'){
+                message="Error.\nParsing JSON Request failed.";
+            }else if(exception=='timeout'){
+                message="Request Time out.";
+            }else if(exception=='abort'){
+                message="Request was aborted by the server";
+            }else {
+                message="Unknow Error \n.";
+            }
+            $(this).css("display","inline");
+            $(this).html(message);
+ });
+; 
+
+$(document).ready(function () {
+        $('#code-uploader').fineUploader({
+          request: {
+            endpoint: fullpath
+          },deleteFile: {
+                enabled: false,
+           },retry: {
+               enableAuto: false
+          }
+        }).on('complete', function(event, id, fileName, responseJSON) {
+				$('.qq-drop-processing').hide();
+				$('.qq-upload-list').hide(); 
+               	console.log('upload success',responseJSON);			
+                if (responseJSON.success) {
+                    
+				    //get the code repository 
+					// load the files in the repository and load the html file in iframe
+                }
+         }); 
+
+		 
+		stringInEndWith(); 
+		//initCode();
+        loadFilesFromWeb();
+        initCodeSave();
+        initIframe();	
+        startServerCode();
+        stopServerCode();
+/*
+            var filename = $("#node-dialog-library-save-filename").val().replace(/(^\s*)|(\s*$)/g,"");
+            var pathname = $("#node-dialog-library-save-folder").val().replace(/(^\s*)|(\s*$)/g,"");
+            if (filename == "" || !/.+\.js$/.test(filename)) {
+                RED.notify("Invalid filename","warning");
+                return;
+            }
+
+*/		
+});
+
+
+
+function initIframe(){
+    $("#run").click(function () { 
+	    
+		var filename = $("#app-tabs").find('.active').find('a').attr('data-filename');
+		if(token.indexOf("#") != -1)   token = token.substring(0,token.length-1);
+		
+		var filepath = '/coding/'+token+'/'+filename;
+		console.log('click get iframe',filepath);
+		if(filename.endsWith('html') || filename.endsWith('htm')){
+		    $("#frame").attr("src", filepath);
+		}else if(filename.endsWith('js')){
+		
+		    console.log('start server on the backend');
+		}
+    });
+    $('#frame-button').load(function(){
+        $(this).show();
+        console.log('laod the iframe')
+    });
+}
+
+
+
+ function initCode(){
+    var demoExampleCode = [ { name: 'http-example.c',
+                          code: '#include \"mist.h\"\r\n\r\nPROCESS(http_example_process, \"HTTP example\");\r\n\r\nAUTOSTART_PROCESSES(&http_example_process);\r\n\r\nstatic struct http_socket s;\r\n\r\nstatic void\r\ncallback(struct http_socket *s, void *ptr,\r\n         http_socket_event_t e,\r\n         const uint8_t *data, uint16_t datalen)\r\n{\r\n    io_printf(\"HTTP callback event %d datalen %d data \'%s\'\\n\", e, datalen, data);\r\n}\r\n\r\nPROCESS_THREAD(http_example_process, ev, data)\r\n{\r\n    PROCESS_BEGIN();\r\n\r\n    io_printf(\"Starting HTTP example\");\r\n\r\n    http_socket_get(&s, \"http:\/\/thingsquare.com\/\",\r\n                    callback, NULL);\r\n\r\n    while(1) {\r\n        PROCESS_WAIT_EVENT();\r\n    }\r\n\r\n    PROCESS_END();\r\n}\r\n'},
+
+                        { name: 'blink.c',
+                          code: '#include \"mist.h\"\r\n\r\nPROCESS(blinka_process, \"Blink\");\r\nAUTOSTART_PROCESSES(&blinka_process);\r\n\r\nPROCESS_THREAD(blinka_process, ev, data)\r\n{\r\n    static struct etimer et;\r\n\r\n    PROCESS_EXITHANDLER(goto exit;)\r\n    PROCESS_BEGIN();\r\n\r\n    io_printf(\"Started program\");\r\n\r\n    etimer_set(&et, CLOCK_SECOND * 2);\r\n    while(1) {\r\n        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));\r\n        etimer_reset(&et);\r\n        leds_on(LEDS_ALL);\r\n\r\n        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));\r\n        etimer_reset(&et);\r\n        leds_off(LEDS_ALL);\r\n    }\r\n\r\nexit:\r\n    leds_off(LEDS_ALL);\r\n    PROCESS_END();\r\n}\r\n'},
+
+                        { name: 'hello-world.c',
+                          code: '#include \"mist.h\"\r\n\r\nPROCESS(hello_world_process, \"Hello world process\");\r\nAUTOSTART_PROCESSES(&hello_world_process);\r\n\r\nPROCESS_THREAD(hello_world_process, ev, data)\r\n{\r\n    PROCESS_BEGIN();\r\n    io_printf(\"Hello, world!\");\r\n    PROCESS_END();\r\n}\r\n'},
+
+    ]; 
+ 	for(var i = 0; i < demoExampleCode.length; i++) {
+        addCode( demoExampleCode[i].name, demoExampleCode[i].code, "abc");
+    }
+	$("#app-tabs li").bind('click',onCodeTabClick);	
+ }
+ 
+function onCodeTabClick(e){
+    console.log('click   ',$(this).html());
+	var code_name = $(this).find('a').attr('data-filename');
+	console.log( code_name );
+	$(this).parent().find('li').removeClass('active');
+	$(this).addClass('active');
+	loadCode(code_name);
+}
+
+function showCode(li){
+    console.log(li.html());
+	var code_name = li.find('a').attr('data-filename');
+	console.log( code_name );
+	li.parent().find('li').removeClass('active');
+	li.addClass('active');
+	loadCode(code_name);
+}
+
+function loadFilesFromWeb(){
+    console.log('......   loadFilesFromWeb');
+    $.ajax({
+           type: "GET",
+           url: fullpath,
+		   contentType:"application/json; charset=utf-8",
+           dataType:"json",		   
+           success: function(data)
+           {
+		        console.log(' data ',data);				
+			    for(var i=0;i<data.files.length;i++){	
+                    console.log(data.files[i].name, data.files[i].src);		        
+                    addCode(data.files[i].name, data.files[i].code,data.files[i].src);
+			    }
+				
+				$("#app-tabs li").bind('click',onCodeTabClick);
+				showCode( $("#app-tabs li:first") );
+				
+           },error: function(jqXHR, textStatus, errorThrown){
+               console.error('error',jqXHR.status,jqXHR.responseText, jqXHR,textStatus,errorThrown);
+           }
+    });
+}
+
+function initCodeSave(){
+   $("#save").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	e.preventDefault();
+	$.ajax({
+           type: "PUT",
+           url: fullpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });
+} 
+
+function startServerCode(){
+   $("#start_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	e.preventDefault();
+	var serverpath  = window.location.pathname + "/start"+window.location.search ;
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });
+
+}
+
+function stopServerCode(){
+   $("#stop_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	var serverpath  = window.location.pathname + "/stop"+window.location.search ;
+	e.preventDefault();
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });
+  
+   $("#stopall_server").click(function(e) {
+    console.log("Handler for .click() called.",$('#csrf').val(),editor.getValue());
+	var serverpath  = window.location.pathname + "/stopall"+window.location.search ;
+	e.preventDefault();
+	$.ajax({
+           type: "PUT",
+           url: serverpath+'&name='+ $("#app-tabs").find('.active').find('a').attr('data-filename'),
+		   data:'code='+editor.getValue(),
+           beforeSend: function(xhr){xhr.setRequestHeader('x-csrf-token', $('#csrf').val() );},
+		   error: function(jqXHR, textStatus, errorThrown){
+               console.log('error',jqXHR.status,jqXHR.responseText);
+           },		   
+           success: function(data)
+           {		        
+                console.log('success',data);				
+           }
+    });	
+  });  
+}
+ 
+function initLocalstorage(){
+    if (Modernizr.localstorage) {
+       // window.localStorage is available!
+	   console.log('support local storage');
+    } else {
+
+    }	
+}
+
+function loadCode(name) {
+	var snippet = loadCodeFromStorage(name);
+	if(snippet){
+        editor.setValue(snippet);
+        editor.gotoLine(0,0);
+        editor.focus();		
+	}
+}
+
+function addCode( name, code, path){
+ 	var li = '<li><a href="#" data-action="app" data-filename="'+ name + '"   data-path="'+ path + '">' + name +'</a></li>';
+	$("#app-tabs").prepend( li );  $('.dropdown-menu').prepend( li );
+    //$(li).bind('click',onCodeTabClick);	
+    saveCodeToStorage(name,code,path);
+}
+
+function saveCodeToStorage( name, code, path){
+    localStorage.setItem( name, JSON.stringify({'name':name,'code':code,'path':path}) );
+}	
+
+function loadCodeFromStorage( name){
+    console.log('loadCodeFromStorage ',name);
+    var snippet  = localStorage.getItem( name );
+    if(snippet){
+	   return JSON.parse(snippet).code;
+	}else 
+    return null;	
+}	
+
+		   
+					  
+</script>

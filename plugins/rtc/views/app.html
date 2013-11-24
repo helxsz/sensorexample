@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/assets/css/loading.css">
+    <link href="/assets/css/animate.min.css" rel="stylesheet"> 	
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">  
+	
+	<script src="/assets/js/bootstrap/js/bootstrap.min.js"></script>
+	<script src="/assets/js/jquery/jquery-1.8.1.min.js"></script>
+	<script src="/assets/js/all.fineuploader-3.8.2.min.js"></script>
+	<script src="/assets/js/underscore.js"></script>
+    <script src="/assets/js/backbone/backbone-min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
+	<script src="/assets/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/assets/js/modernizr.js" type="text/javascript" charset="utf-8"></script>
+	
+<script src="/assets/js/bootstrap/js/bootstrap-tooltip.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-popover.js"></script>  
+<script src="/assets/js/bootstrap/js/bootstrap-alert.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-modal.js"></script> 
+<script src="/assets/js/bootstrap/js/bootstrap-dropdown.js"></script>
+
+<script src="/assets/js/d3.v3.min.js"></script>
+<script src="/assets/js/rtc/MediaStreamRecorder.js"></script>
+<script src="/assets/js/rtc/RecordRTC.js"></script>
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+  </head>
+<style>
+body {
+  background: #222222 url('http://unsplash.s3.amazonaws.com/batch%2010/gipsy_in_the_woods.jpg') no-repeat top center fixed; 
+  font-family:'Open Sans', sans;
+  background:#f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+ 
+::-webkit-scrollbar-thumb {
+  margin: 2px;
+  border-radius: 0;
+  background: rgba(0,0,0,0.2);
+}
+
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,300italic,400italic,500,500italic,700,700italic,900,900italic,100italic);
+
+#errorMsg {
+position: absolute;
+
+z-index: 99999999999999999999;
+-webkit-transition: top 1000ms ease-out;
+-moz-transition: top 1000ms ease-out;
+-ms-transition: top 1000ms ease-out;
+-o-transition: top 1000ms ease-out;
+transition: top 1000ms ease-out;
+}
+
+.content{
+     position: relative;
+	margin-top:140px;	 
+}
+
+#editor { 
+height: 351px;
+margin-top: 20px;	
+}
+</style>  
+
+
+  <body>
+    <div class="wrapper">
+	    <div class="inner-wrapper">
+			
+            <div class="row-fluid" style="margin-top:80px;">     
+                <div id="chart"></div> 
+                <div id="audios-container"></div>				
+            </div>
+
+            <div class="row-fluid" style="margin-top:80px;">			
+                <div>
+                    <label for="options">video options</label>
+                        <select id="options">
+                                <option selected="selected">video/webm</option>
+                                <option>image/gif</option>
+                        </select>
+                    <label for="video-width">video width</label>
+                    <input id="video-width" value="320" type="text">
+                    <label for="video-height">video height</label>
+                    <input id="video-height" value="240" type="text">
+                </div>
+                <div id="videos-container"></div>			
+	        </div>		
+		</div>
+	</div>				
+  </body>
+
+
+
+<script>
+ /**/ 
+var fullpath = window.location.pathname +window.location.search ;
+console.log(fullpath,window.location.search);
+var token = getUrlVars()['token'];
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+
+$('#loading')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+        $(this).show();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+    })
+	.ajaxError(
+        function(e, x, settings, exception) {
+            var message;
+            var statusErrorMap = {
+                '400' : "Server understood the request but request content was invalid.",
+                '401' : "Unauthorised access.",
+                '403' : "Forbidden resouce can't be accessed",
+                '500' : "Internal Server Error.",
+                '503' : "Service Unavailable"
+            };
+            if (x.status) {
+                message =statusErrorMap[x.status];
+                                if(!message){
+                                      message="Unknow Error \n.";
+                                  }
+            }else if(exception=='parsererror'){
+                message="Error.\nParsing JSON Request failed.";
+            }else if(exception=='timeout'){
+                message="Request Time out.";
+            }else if(exception=='abort'){
+                message="Request was aborted by the server";
+            }else {
+                message="Unknow Error \n.";
+            }
+            $(this).css("display","inline");
+            $(this).html(message);
+ });
+
+			
+</script>
+
+<script>
+
+// https://www.webrtc-experiment.com/RecordRTC/PHP/
+            var mediaConstraints = { audio: true };
+            navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+
+            function onMediaSuccess(stream) {
+                var mediaRecorder = new MediaStreamRecorder(stream);
+                mediaRecorder.mimeType = 'audio/ogg';
+                mediaRecorder.ondataavailable = function(blob) {
+                    var a = document.createElement('a');
+                    a.target = '_blank';
+                    a.innerHTML = 'Open Recorded Audio No. ' + (index++);
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        a.href = e.target.result;
+                    };
+                    reader.readAsDataURL(blob);
+
+                    audiosContainer.appendChild(a);
+                    audiosContainer.appendChild(document.createElement('hr'));
+                };
+
+                // get blob after each 5 second!
+                mediaRecorder.start(5 * 1000);
+            }
+
+            function onMediaError(e) {
+                console.error('media error', e);
+            }
+
+            var audiosContainer = document.getElementById('audios-container');
+            var index = 1;
+</script>
+
+<script>
+            var mediaConstraints = { video: true };
+            //navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+
+            function onMediaSuccess(stream) {
+                var video = document.createElement('video');
+
+                var videoWidth = document.getElementById('video-width').value || 320;
+                var videoHeight = document.getElementById('video-height').value || 240;
+
+                video = mergeProps(video, {
+                    width: videoWidth,
+                    height: videoHeight,
+                    src: URL.createObjectURL(stream)
+                });
+                video.play();
+
+                videosContainer.appendChild(video);
+                videosContainer.appendChild(document.createElement('hr'));
+
+                var mediaRecorder = new MediaStreamRecorder(stream);
+                mediaRecorder.mimeType = document.getElementById('options').value;
+                mediaRecorder.videoWidth = videoWidth;
+                mediaRecorder.videoHeight = videoHeight;
+                // mediaRecorder.frameRate = 300;
+                // mediaRecorder.quality = 15;
+                mediaRecorder.ondataavailable = function(blob) {
+                    var a = document.createElement('a');
+                    a.target = '_blank';
+                    a.innerHTML = 'Open Recorded Video No. ' + (index++);
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        a.href = e.target.result;
+                    };
+                    reader.readAsDataURL(blob);
+
+                    videosContainer.appendChild(a);
+                    videosContainer.appendChild(document.createElement('hr'));
+                };
+
+                // get blob after each 5 second!
+                mediaRecorder.start(5 * 1000);
+            }
+
+            function onMediaError(e) {
+                console.error('media error', e);
+            }
+
+            var videosContainer = document.getElementById('videos-container');
+            var index = 1;
+</script>
+
+<script>
+    // https://github.com/peers/peerjs
+    var peer = new Peer('pick-an-id', {key: 'myapikey'}); 
+    var conn = peer.connect('another-peers-id');
+        conn.on('open', function(){
+       conn.send('hi!');
+    });
+	
+	peer.on('connection', function(conn) {
+        conn.on('data', function(data){
+        // Will print 'hi!'
+        console.log(data);
+       });
+    });
+	
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia; 
+    navigator.getUserMedia({video: true, audio: true}, function(stream) {
+        var call = peer.call('another-peers-id', stream);
+        call.on('stream', function(remoteStream) {
+            // Show stream in some <video> element.
+        });
+        }, function(err) {
+            console.log('Failed to get local stream' ,err);
+    });
+	
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    peer.on('call', function(call) {
+         navigator.getUserMedia({video: true, audio: true}, function(stream) {
+         call.answer(stream); // Answer the call with an A/V stream.
+         call.on('stream', function(remoteStream) {
+             // Show stream in some <video> element.
+          });
+        }, function(err) {
+             console.log('Failed to get local stream' ,err);
+        });
+    });
+
+	
+</script>

@@ -72,7 +72,6 @@ configLogging();
 
 //  allowed cross domain
 var allowCrossDomain = function(req, res, next) {
-  // Added other domains you want the server to give access to
   // WARNING - Be careful with what origins you give access to
   var allowedHost = [
     'http://localhost',
@@ -651,7 +650,6 @@ function done (err) {
   });
 }
 
-/// file grid
 
 
 ///////////////////////////////////////////////////// 
