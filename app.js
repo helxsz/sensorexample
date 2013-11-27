@@ -18,7 +18,7 @@ var config = require('./conf/config.js'),
     webdir = '/web',
     mobiledir = '/mobile';  
 
-// Virtual Hosts
+// Virtual Hosts 
 /*   
 var site_vhosts=[],vhosts;
 site_vhosts.push(express.vhost('qinyh.com',offical));
