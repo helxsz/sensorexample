@@ -43,14 +43,14 @@ var sessionStore;
 function configSessionStore(){
     var redisClient = require("redis").createClient(config.redis.port,config.redis.host)
     redisClient.auth(config.redis.auth, function(result) {
-	    winston.info("Redis authenticated.".green);  
+	    winston.info("Redis authenticated.".yellow);  
     });
     redisClient.on("error", function (err) {  
         winston.error("redis Error " + err.red);  
         return false;  
     });    
     redisClient.on('connect',function(err){
-	    winston.info('redis connect success'.green);
+	    winston.info('redis connect success'.yellow);
     });
     var RedisStore  = require("connect-redis")(express);
     sessionStore = new RedisStore({  client:redisClient  });
@@ -59,11 +59,6 @@ function configSessionStore(){
 
 var winston
 function configLogging(){
-    /*
-    var logging = require('./utils/logging.js');
-    winston = require('winston'); 
-    logging.init();
-	*/
 	winston = require('./utils/logging.js');
 }
 configLogging();
@@ -234,7 +229,7 @@ app.configure(function(){
 	      //console.log('not secure'.red,req.headers.host,req.get('Host'),req.url);
           //return res.redirect('https://' + req.get('Host') + req.url);
         }
-		//console.log('secure '.green);
+		//console.log('secure '.yellow);
         next();
     });
 	app.set('trust proxy', true);
@@ -264,9 +259,9 @@ function conditionalCSRF(req, res, next) {
  //console.log(ua);
  /*
  if(/mobile/i.test(ua)) {
-     console.log('mobile.html'.green);
+     console.log('mobile.html'.yellow);
  } else {
-     console.log('desktop.html'.green);
+     console.log('desktop.html'.yellow);
  }
   */   
   if (ua.indexOf("android") == -1) {
@@ -353,7 +348,7 @@ var startSSLServer = function(){
       };
 	   
       https_server = https.createServer(options,app).listen(443, '0.0.0.0', function(){
-            winston.info("Express server listening on port ".green + 433);
+            winston.info("Express server listening on port ".yellow + 433);
 			var websocket = require('./routes/websocket_api');
 			websocket.initWebsocket(https_server);
       });	  
@@ -527,12 +522,12 @@ mongoose.connect(config.mongodb_development,opts,function(err){
 		    onConnectUnexpected(err);
 		}	
 	}
-	else winston.info('mongodb connect success');
+	else winston.info('mongodb connect success'.yellow);
 });
 
 mongoose.connection.on('open', function (err) {
       if (reconnTimer) { clearTimeout(reconnTimer); reconnTimer = null; }
-      winston.info('connection opening');
+      winston.info('connection opening'.yellow);
 	  /*
 	  if(!err){
 	    //http://stackoverflow.com/questions/18688282/handling-timeouts-with-node-js-and-mongodb
@@ -588,7 +583,7 @@ function tryReconnect() {
 	        winston.error('connect mongodb error'.red,err);
 		    onConnectUnexpected(err);
 	    }
-	    else winston.log('mongodb connect success'.green,mongoose.connection.readyState);
+	    else winston.log('mongodb connect success'.yellow,mongoose.connection.readyState);
   });
 }
 
@@ -597,7 +592,7 @@ function onConnectUnexpected(error){
 		var reportAPI = require('./routes/report_api');
 		reportAPI.reportToAdmin('cannot connect to mongodb '+error,function(err,data){
 	           if(err) { console.log('can not send problem report mail ',err); }
-	           else { console.log('send problem report mail successfully'.green); }		
+	           else { console.log('send problem report mail successfully'.yellow); }		
 		})
 }
 
@@ -687,7 +682,7 @@ function bootPlugins(app,route) {
         }).forEach(function (file) {
 		    
 			file = path.join(file, "app.js");
-			winston.info(file);
+			//winston.info(file);
 			var i = file.lastIndexOf('.');
             var ext= (i < 0) ? '' : file.substr(i);
 			if(ext==".js")

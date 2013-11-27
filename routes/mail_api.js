@@ -33,7 +33,7 @@ var smtpTransport = emailer.createTransport("SMTP", {
     }
 });
 
-winston.info("website email:",config.email.user,config.email.pass);
+//winston.info("website email:",config.email.user,config.email.pass);
 
 
 /*

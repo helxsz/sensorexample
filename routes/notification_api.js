@@ -42,7 +42,7 @@ redisClient.on("error", function (err) {
 });    
 
 redisClient.on('connect',function(err){
-	winston.info('redis connect success');
+	winston.info('redis connect success'.yellow);
 })
 
 
@@ -231,7 +231,7 @@ function listenCourseEvent(pattern){
     });    
 
     redisClient.on('connect',function(err){
-	    winston.info('redis connect success');
+	    winston.info('redis connect success'.yellow);
     })
 	
     redisClient.psubscribe(pattern);
