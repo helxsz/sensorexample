@@ -49,6 +49,7 @@
 	, "mqtt":"latest"
 	, "peer":"latest"
 	, "jsonld":"latest"
+	, "aws-sdk":"latest"
   }
   ,"engines":{
         "node":"latest"
