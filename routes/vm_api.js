@@ -1,5 +1,4 @@
 var util = require('util'),
-    express = require('express'),
     vm = require('vm'),
 	path = require('path'),
     fs = require('fs'),
@@ -7,18 +6,15 @@ var util = require('util'),
     color = require('colors'),
     check = require('validator').check,
     sanitize = require('validator').sanitize,
-    crypto = require('crypto'),
-	ejs = require('ejs');
+    crypto = require('crypto');
 
-var app = require('../../app').app,
-    gridfs = require("../../utils/gridfs"),
-	vm = require("../../utils/vm");	
-    runner = require("../../utils/runner"),
-	winston = require('../../utils/logging.js');
+var app = require('../app').app,
+    gridfs = require("./gridfs"),
+	vm = require("../utils/vm");	
+    runner = require("../utils/runner");
 
-app.use(express.static(__dirname+'/coding'));
-	
-app.get('/test/virtual',function(req,res,next){
+
+app.get('/lab/multi',function(req,res,next){
 	/*
     var root = path.join("lib","abc")+"/";
 	console.log('root   ',root);	
@@ -47,15 +43,7 @@ app.get('/test/virtual',function(req,res,next){
 		     
 	});	*/
     
-    //res.render('lab/multi/app'); 
-	ejs.renderFile(__dirname + '/views/app.html',{}, function(err, result) {
-        if (!err) {
-            res.end(result);
-        }
-        else {
-            res.end('An error occurred');
-        }
-    });	
+    res.render('lab/multi/app');    
 })	
 
 /*
@@ -137,7 +125,7 @@ app.put('/lab/vmcode/stopall',function(req,res,next){
 app.put('/lab/vmcode/start',function(req,res,next){
     var token = req.query.token, filename = req.query.name;
 	console.log('vmcode start '.green, token, "    ",filename  );
-	var path = __dirname+'/coding/'+token+'/'+filename;
+	var path = '../fablab/public/coding/'+token+'/'+filename;
 	fs.exists(path, function (exists) {
         if(exists){
 		    console.log('file exists, so start server'.green);
@@ -159,7 +147,7 @@ app.put('/lab/vmcode/start',function(req,res,next){
 app.put('/lab/vmcode/stop',function(req,res,next){
     var token = req.query.token, filename = req.query.name;
 	console.log('vmcode stop '.green, token, "    ",filename  );
-    var path = __dirname+'/coding/'+token+'/'+filename;		
+    var path = '../fablab/public/coding/'+token+'/'+filename;		
 	fs.exists(path, function (exists) {
         if(exists){
 		    console.log('file exists, so stop server'.green);
@@ -185,12 +173,10 @@ app.put('/lab/vmcode/stop',function(req,res,next){
 
 	
 app.get('/lab/vmcode',function(req, res,next){
-    var token = req.query.token;
-    console.log("a new request , token  is  null ",token);
-    if(token == null){
-       
+   var token = req.query.token;
+   if(token == null){
 		token = (Math.random() * 1e18).toString(36);
-		var path = __dirname+'/coding/'+token;
+		var path = '../fablab/public/coding/'+token;
         fs.exists(path, function (exists) {			    
             console.log('create a token, exists: ' + JSON.stringify(exists));
 			if(exists==true){
@@ -206,10 +192,9 @@ app.get('/lab/vmcode',function(req, res,next){
 		        }) 
 			}
         });				
-    }
-    else{
-        console.log("token  is not null ",token);
-        var path = __dirname+'/coding/'+token;
+   }
+   else{
+        var path = '../fablab/public/coding/'+token;
         fs.exists(path, function (exists) {
             if(exists==true){
 			    // get info of all files 
@@ -233,16 +218,8 @@ app.get('/lab/vmcode',function(req, res,next){
 					async.each(files, readFile, function(err){
 						if(req.xhr)
 						res.send(200,{'files':dir});
-						else{
-						    //res.render('lab/server/app');   
-							ejs.renderFile(__dirname + '/views/app.html',{}, function(err, result) {
-                                if (!err) {
-                                    res.end(result);
-                                }else {                                
-                                    res.end('An error occurred');
-                                }
-                            });	
-						}
+						else
+						res.render('lab/server/app');   // render the page and give the url a specific query 
                     });
 	            });
 			    
@@ -251,7 +228,7 @@ app.get('/lab/vmcode',function(req, res,next){
 				console.log('file:',token," don't existed".red);
 			}
         })		
-    }
+   }
 })
 	
 app.post('/lab/vmcode', uploadCode);   // get random token for anomy user identity, token is the directory name
@@ -301,7 +278,7 @@ function saveCode(req,res,next){
     var token = req.query.token, filename = req.query.name;
 	var code = req.body.code;
 	console.log('code , ',code);
-    var path = __dirname+'/coding/'+token+'/'+filename;
+    var path = '../fablab/public/coding/'+token+'/'+filename;
 	fs.exists(path, function (exists) {
         if(exists){
 		    console.log('file exists, so update'.green);
@@ -325,7 +302,7 @@ function saveCode(req,res,next){
 app.del('/lab/vmcode',deleteCode);
 function deleteCode(req, res, next){
     var token = req.query.token, filename = req.query.name;
-    var path = __dirname+'/coding/'+token+'/'+filename;
+    var path = '../fablab/public/coding/'+token+'/'+filename;
 	fs.exists(path, function (exists) {
         if(exists){
 		    console.log('file exists, so delete'.green);			
@@ -345,4 +322,3 @@ function deleteCode(req, res, next){
 		}	
 	})
 }
-

@@ -1,4 +1,5 @@
 var fs = require('fs'),
+    util = require("util"),
     express = require('express'),
     http = require('http'),
     domain = require('domain'),
@@ -10,7 +11,7 @@ var fs = require('fs'),
 	colors = require('colors'),
     mongoose = require('mongoose'),
 	GridStore = mongoose.mongo.GridStore,
-    db = mongoose.connection.db;;
+    db = mongoose.connection.db;
 	
 var config = require('./conf/config.js'),
     app = express(),
@@ -168,7 +169,7 @@ app.configure(function(){
     }
 		
     //app.use(express.csrf()); 
-	app.use(conditionalCSRF);
+	//app.use(conditionalCSRF);
     app.use(function(req, res, next){
       res.locals.token = req.session._csrf;
 	  res.locals.year = new Date().getFullYear();
@@ -187,7 +188,7 @@ app.configure(function(){
     app.use(logErrors);
     app.use(clientErrorHandler);
     app.use(errorHandler); 
-
+    /*
     app.use(function (req,res, next) {
         var d = domain.create();
         d.on('error', function (err) {
@@ -201,7 +202,7 @@ app.configure(function(){
         d.run(next);
     });	
 	
-	/*
+	
 	app.use(function(req,res,next){
 	    //console.log(req.ip,req.header('Referer'));	
 	http://hublog.hubmed.org/archives/001927.html
@@ -222,7 +223,7 @@ app.configure(function(){
            res.redirect('https://' + req.headers.host + req.url);
         }
     });	
-    */   
+     
     //http://stackoverflow.com/questions/10697660/force-ssl-with-expressjs-3	
 	app.use(function(req, res, next) {
        if(!req.secure) {
@@ -232,9 +233,11 @@ app.configure(function(){
 		//console.log('secure '.yellow);
         next();
     });
+	
 	app.set('trust proxy', true);
 	
 	app.use(app.router);	
+	 */ 
     app.use(function(req, res, next){
         res.status(404); 
         if(req.xhr){
@@ -471,9 +474,12 @@ app.on('close', function () {
 //  terminator === the termination handler.
 function terminator(sig) {
    if (typeof sig === "string") {
-      winston.info('%s: Received %s - terminating Node server ...',Date(Date.now()), sig);                 
-      process.exit(1);
-	  app.close();
+      winston.info('%s: Received %s - terminating Node server ...',Date(Date.now()), sig);
+      mongoose.connection.close(function () {
+         console.log('Mongoose default connection disconnected through app termination');
+         process.exit(0);
+      });	  
+	  
    }
    winston.info('%s: Node server stopped.'.red, Date(Date.now()) );
 }
@@ -486,7 +492,15 @@ process.on('exit', function() { terminator(); });
 ].forEach(function(element, index, array) {
     process.on(element, function() { terminator(element); });
 });
-var util = require("util");
+
+
+process.on('SIGINT', function() {
+  mongoose.connection.close(function () {
+    console.log('Mongoose default connection disconnected through app termination'.red);
+    process.exit(0);
+  });
+});
+
 // Don't crash on errors.
 process.on("uncaughtException", function(error) {
   util.log("uncaught exception: ".red + error);
@@ -510,7 +524,7 @@ var database_error = null;
 
 mongoose.connect(config.mongodb_development,opts,function(err){
 	if(err) { 
-	    winston.error('connect mongodb error'.red,err);
+	    winston.error('connect mongodb error'.red+" "+err.name+" "+ err.errmsg);
 		database_error = err;
 		if(err.name == 'MongoError' && err.code == 18 && err.errmsg == 'auth fails'){
 		/*

@@ -50,6 +50,10 @@
 	, "peer":"latest"
 	, "jsonld":"latest"
 	, "aws-sdk":"latest"
+	, "nconf":"latest"
+	, "lodash":"latest"
+	, "hubot":"latest"
+	, "coffee-script":"latest"
   }
   ,"engines":{
         "node":"latest"

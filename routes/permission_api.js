@@ -63,6 +63,67 @@ function authUser1(req,res,next){
 	 }
 }
 
+
+function basicAuth(req, res, next) {
+  var auth, parts, plain
+  if (!(auth = req.get('authorization'))) return next()
+  parts = auth.split(' ')
+  if (parts.length !== 2 || parts[0].toLowerCase() !== 'basic') return next()
+  try {
+    plain = new Buffer(parts[1], 'base64').toString().split(':')
+  } catch (e) {
+    console.error('Invalid base64 in auth header')
+    return next()
+  }
+  if (plain.length < 2) {
+    console.error('Invalid auth header')
+    return next()
+  }
+/*
+  User.authenticate(plain[0], plain.slice(1).join(':'), function (err, user) {
+    if (err || !user) {
+      console.log("basic auth: user not found");
+      return res.send(401, 'Invalid username/password in basic auth')
+    }
+    req.user = user
+    return next()
+  })
+  */
+}
+
+
+var requireUser = function require_auth(req, res, next) {
+  if (req.user !== undefined) {
+    next();
+  } else {
+    req.session.return_to = req.url
+    res.redirect("/login");
+  }
+};
+
+var requireUserOr401 = function (req, res, next){
+  if (req.user !== undefined){
+    next();
+  } else {
+    res.statusCode = 401;
+    res.end("not authorized");
+  }
+};
+
+// Require admin privileges
+var requireAdminOr401 = function require_admin(req, res, next){
+  if (req.user === undefined ||
+        req.user['account_level'] === undefined ||
+        req.user.account_level < 1){
+      res.statusCode = 401;
+      res.end("not authorized");
+  } else {
+      next();
+  }
+};
+
+
+
 function authStudentInCourse(req,res,next){
 		//console.log('authStudents'.green, req.session.username,req.session.uid,'cid',req.params.id);
 		 	//	     
@@ -130,8 +191,7 @@ function deciphterSessionParameter(str,secret){
    return deciphered;
 }
 
-exports.authStudentInCourse =authStudentInCourse;
-exports.authTutorInCourse = authTutorInCourse;
+
 
 // Simple route middleware to ensure user is authenticated.  Otherwise send to login page.
 exports.ensureAuthenticated = function ensureAuthenticated(req, res, next) {
@@ -149,7 +209,16 @@ exports.ensureAdmin = function ensureAdmin(req, res, next) {
 };
 
 
-exports.authUser = authUser;
-exports.authUser1 = authUser1;
-exports.cipherSessionParameter = cipherSessionParameter;
-exports.deciphterSessionParameter =deciphterSessionParameter;
+
+module.exports = {
+    authUser: authUser
+   ,authUser1: authUser1
+   ,cipherSessionParameter :cipherSessionParameter
+   ,deciphterSessionParameter: deciphterSessionParameter
+   ,authStudentInCourse :authStudentInCourse
+   ,authTutorInCourse : authTutorInCourse
+   // Auth middleware
+   , requireUser: requireUser
+   , requireUserOr401: requireUserOr401
+   , requireAdminOr401: requireAdminOr401
+}

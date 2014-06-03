@@ -1,6 +1,5 @@
 /***
    still to do   
-   Embedded images in HTML
    Different transport methods -  Amazon SES
    the problem of behind of proxy -- https://github.com/andris9/Nodemailer/issues/176
 ****/
@@ -10,18 +9,15 @@ var emailer = require('nodemailer'),
    	path = require('path'),
     fs = require('fs'),
     async = require('async'),
-    color = require('colors');
+    color = require('colors'),
+	ejs = require('ejs'),
+	_ = require('underscore');
+	
 var config = require('../conf/config.js'),
     errors = require('../utils/errors'),
 	gridfs = require("../utils/gridfs"),
 	winston = require('../utils/logging.js'); 
-/*
-var config = {
-    user:"feynlabs.uk@gmail.com"
-   ,pass:"newstartup"
-   ,name:"Feynlabs"
-};
-*/
+
 var SITE_ROOT_URL = "https://"+config.host;  //"http:localhost:8080"
 var smtpTransport = emailer.createTransport("SMTP", {
     host: "smtp.gmail.com", // hostname
@@ -33,20 +29,53 @@ var smtpTransport = emailer.createTransport("SMTP", {
     }
 });
 
-//winston.info("website email:",config.email.user,config.email.pass);
-
-
 /*
-// Create an Amazon SES transport object
-var transport = nodemailer.createTransport("SES", {
-        AWSAccessKeyID: "AWSACCESSKEY",
-        AWSSecretKey: "/AWS/SECRET",
-        ServiceUrl: "https://email.us-east-1.amazonaws.com" // optional
-});
+
 */
 
 //sendActiveMail('584829839@qq.com','token','name');
 //sendResetPassMail('584829839@qq.com','token','name');
+//sendTestMail('xi@redninja.co.uk',function(err,data){});
+
+// http://stackoverflow.com/questions/15201724/how-can-i-pass-variable-to-ejs-compile
+function renderTemplate(file,value){ 	
+    var compiled = ejs.compile(fs.readFileSync(path.join(__dirname, '../views', 'email_templates',file), 'utf8'));
+    var html = compiled(value);   	
+    return html;	
+}
+
+
+
+
+
+
+
+
+
+
+
+function sendTestMail(email, callback){
+   var from = config.email.user;
+   var to = email;
+   var subject = 'Feynlabs Test';
+   
+   var html = renderTemplate('test.html',{ title : 'EJS', text : 'Hello, World!' });
+   
+   console.log('..........',html);
+   sendMail({
+    from: from,
+    to: to,
+    subject: subject,
+    html: html
+  },callback);    
+
+}
+exports.sendTestMail = sendTestMail;
+
+
+
+
+
 
 exports.sendActiveMail = sendActiveMail;
 exports.sendResetPassMail = sendResetPassMail; 
@@ -63,7 +92,7 @@ function sendInvitationMail(url, description,tutor,mail,callback){
   var from = config.email.user;
   var to = mail;
   var subject = 'Feynlabs Invitation';
-  winston.data('sendInvitationMail'.green,from, to , subject);
+  winston.debug('sendInvitationMail'.green,from, to , subject);
   //course/:id/invitation/:token/reply			
 			
     html = 
@@ -118,7 +147,7 @@ function sendRegistraionMail(username,mail,callback){
     var to = mail;
     var subject = 'Feynlabs Registraion';
   
-    winston.data('sendRegistraionMail'.green, from,to,subject);
+    winston.debug('sendRegistraionMail'.green, from,to,subject);
     //course/:id/invitation/:token/reply
 			
     html = 
@@ -157,7 +186,7 @@ function sendForgetPasswordMail(username,mail,token,callback){
     var to = mail;
     var subject = 'Password Retrival';
   
-    winston.data('sendRegistraionMail'.green, from,to,subject);
+    winston.debug('sendRegistraionMail'.green, from,to,subject);
 			
     html = 
 	       '<table cellpadding="0" cellspacing="0" style="width:600px;color: #f5290a;">'

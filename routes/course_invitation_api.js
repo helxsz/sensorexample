@@ -1,3 +1,5 @@
+// https://github.com/Strider-CD/strider/blob/master/routes/api/collaborators/api.js
+
 var async = require('async'),
     fs = require('fs'),
     colors = require('colors'),

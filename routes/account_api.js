@@ -18,7 +18,7 @@ var app = require('../app').app,
     config = require('../conf/config.js'),
 	gridfs = require("../utils/gridfs"),
     winston = require('../utils/logging.js'); 	
- 
+
 
 /** 
  *   sign up
@@ -57,9 +57,7 @@ function signupWithInvitation(req,res,next){
         else if(data){
 		    res.render('first_invitation.html',locals);
 		}		
-	})
-
-   
+	}) 
 }
 
 function signupPage(req,res){
@@ -83,11 +81,11 @@ function signupPage(req,res){
 			    res.redirect('/');
             }			
 		 })
-	 } else {
+	} else {
 		console.log('signupPage,not found session'.red);
 		locals.title = 'Sign Up';
 	    res.render('signup',locals);
-	 }
+	}
 }
 
 function loginPage(req,res){
@@ -116,7 +114,8 @@ function loginPage(req,res){
 	     res.render('signin',locals);
 	 }
 }
-var followModel = require('../model/follow_model');
+
+
 function signupUser(req,res,next){
 
     console.log('post  /signup  ',req.body.username,req.body.email,req.body.password);	
@@ -139,11 +138,11 @@ function signupUser(req,res,next){
 	var email, username, password;        
     email = sanitize(req.body.email).trim(), email = sanitize(email).xss();  
 	try {
-               check(email).isEmail();
-              } catch (e) {
-                   res.statusCode = 400;
-                   res.end(JSON.stringify({status:"error", errors:[{"message":"email is invalid"}]}));      
-                   return;
+        check(email).isEmail();
+        } catch (e) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({status:"error", errors:[{"message":"email is invalid"}]}));      
+        return;
      }	 
 
 	if (!/^[a-zA-Z0-9\-\_]+$/.test(username)) {
@@ -280,13 +279,11 @@ function loginUser(req, res, next) {
 		   
              } 	 
 			 
-            // Regenerate session when signing in
-            // to prevent fixation 
-	        /*      */
+            // Regenerate session when signing in  to prevent fixation 
+
             req.session.regenerate(function(){
-                 // Store the user's primary key 
-                 // in the session store to be retrieved,
-                 // or in this case the entire user object
+                 // Store the user's primary key in the session store to be retrieved, or in this case the entire user object
+
 		        console.log('');
                 req.session.uid = data._id;
                 req.session.username = data.username;

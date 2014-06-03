@@ -36,7 +36,11 @@ var UserSchema = mongoose.Schema({
 								   github:{id:String,avatar:String,name:String,token:String},
 								   google:{id:String,avatar:String,name:String,token:String}
 								},
-								cr:[]
+								cr:[],
+								counts:{  
+								    msg:{type:Number, default:0}, 
+                                    noti:{type:Number, default:0}									
+								}
 								// other 
 								/*
 								activation: {
@@ -89,8 +93,7 @@ UserSchema.pre('save', function(next) {
 		});
 		// 16 chars ID  http://sebastian.formzoo.com/2012/04/12/mongodb-shorten-the-objectid/
 		// encode
-		var b64 = new Buffer('47cc67093475061e3d95369d', 'hex').toString('base64').replace('+','-').replace('/','_');
-	
+		var b64 = new Buffer('47cc67093475061e3d95369d', 'hex').toString('base64').replace('+','-').replace('/','_');	
 	}
     else{
         this.mdate = Date.now();
@@ -316,7 +319,6 @@ function authenticateFromPass(username,password,callback){
 
 function updateUser(condition,update,callback){
 	var options = { new: false };	
-	//UserModel.findOneAndUpdate(condition,update,options,function(err,ref){
 	UserModel.update(condition,update,options,function(err,ref){
 		if(err) {
 			console.log('err  on updateUser',err);
@@ -324,10 +326,25 @@ function updateUser(condition,update,callback){
 		}
 		else
 		{
-			  //console.log('update  on '+ref);				  
 			  callback(null,ref);
 		}
 	})
+}
+
+function findAndUpdateUser(condition, update, select, callback){
+    
+	var options = { new: false, select:select };	
+	UserModel.findOneAndUpdate(condition,update,options,function(err,ref){
+		if(err) {
+			console.log('err  on updateUser',err);
+			callback(err, null);
+		}
+		else
+		{
+			  callback(null,ref);
+		}
+	})
+
 }
 
 
@@ -348,6 +365,7 @@ exports.createNewUser = createNewUser;
 exports.findUsers =findUsers;
 
 exports.updateUser = updateUser;
+exports.findAndUpdateUser = findAndUpdateUser;
 exports.deleteUserById = deleteUserById;
 exports.findUserById = findUserById;
 exports.findUserByQuery = findUserByQuery;
@@ -361,8 +379,8 @@ exports.checkUser = function (username, callback) {
   });
 };
 
-exports.getByName = function (username, callback) {
-  UserModel.findOne({ username: username }, function (err, user) {
+exports.getByName = function (username, select, callback) {
+  UserModel.findOne({ username: username }, select,function (err, user) {
     if (err) {
       callback(err, null);
     } else {
